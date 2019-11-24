@@ -84,6 +84,8 @@ public class UserDataBaseManager {
                     "VALUES(\'" + name + "\',\'" + byName + "\')");
             stmt.executeUpdate("INSERT INTO friend_map(name,friend_name) " +
                     "VALUES(\'" + byName + "\',\'" + name + "\')");
+            if (name.equals(byName))
+                return "same";
             return name;
         }
         return "failed";

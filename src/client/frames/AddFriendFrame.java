@@ -47,8 +47,19 @@ public class AddFriendFrame extends JFrame {
             String info = queryField.getText();
             try {
                 String name = SocketFunctions.makeFriendWith(info, CurrentUser.user);
-                JOptionPane.showMessageDialog(mainPanel, (name==null)? "您查找的用户不存在！":
-                        "成功添加" + name + "为您的好友");
+                String dialogue;
+                switch (name){
+                    case "not found":
+                        dialogue = "您查找的用户不存在！";
+                        break;
+                    case "same":
+                        dialogue = "添加的好友不能为您自己！";
+                        break;
+                    default:
+                        dialogue = "成功添加" + name + "为您的好友";
+                        break;
+                }
+                JOptionPane.showMessageDialog(mainPanel, dialogue);
                 CurrentUser.user.makeFriend(name);
             } catch (IOException ex) {
                 ex.printStackTrace();

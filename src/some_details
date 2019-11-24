@@ -1,4 +1,5 @@
 1.JFrame中使用setMinimumSize可以调整大小，而setPreferredSize和setSize直接使用时没有效果。
 2.setAlignment(SOMETIMES)可以调整组件的位置。
-3.sql中判断查询语句结果是否为空时可以使用rs.next()返回一个boolean
-4.Integer.parseInt()只会在runtime时报错，所以在转换前可加一个NumberUtils.isNumber(str)判断str是否可以转换
+3.sql中判断查询语句结果是否为空时可以使用rs.next()返回一个boolean。
+4.Integer.parseInt()只会在runtime时报错，所以在转换前可加一个NumberUtils.isNumber(str)判断str是否可以转换。
+5.若光标所处位置的值为0，使用!rs.next()后该值变为1。？？？？？？

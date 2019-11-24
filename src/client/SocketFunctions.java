@@ -80,7 +80,6 @@ public class SocketFunctions {
         int len = inputStream.read(bytes);
         if (len == -1) throw new ServerNotFoundException();
         String result = new String(bytes, 0, len);
-        if (result.equals("not found")) return null;
-        else                            return result;
+        return result;
     }
 }
