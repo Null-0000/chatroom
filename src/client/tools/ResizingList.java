@@ -3,6 +3,9 @@ package client.tools;
 public class ResizingList<Item> {
     private Item[] items;
     private int N;
+    public ResizingList(){
+        items = (Item[]) new Object[1];
+    }
     public void add(Item item){
         if (N == items.length)
             resize(2 * N);

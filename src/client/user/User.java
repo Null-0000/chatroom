@@ -11,7 +11,6 @@ public class User {
     private UserCard card;
     private FriendListPanel friendListPanel;
     private UserFrame frame;
-    private SelfDataManager dataManager;
 
 
     public boolean comparePassword(String password){
@@ -21,12 +20,10 @@ public class User {
         info = loadData(ID, password);
         if (info == null)
             throw new PasswordException();
-        dataManager = new SelfDataManager();
         this.card = new UserCard(info.name, info.sig, info.ID);
         this.friendListPanel = new FriendListPanel(info.friends);
         this.frame = new UserFrame(card, friendListPanel);
     }
-
     private UserInfo loadData(int ID, String password) throws IOException {
         //链接服务器，获取用户图片，昵称，签名, 朋友
         UserInfo info = SocketFunctions.loadUserInfo(ID, password);
@@ -35,15 +32,15 @@ public class User {
 
     public void makeFriend(String friend){
         info.friends.add(friend);
+        friendListPanel.addMember(friend);
     }
     public void setFrameActive(){
         frame.setVisible(true);
-    }
-    public void pullData(){
-
     }
 
     public String toString(){
         return info.name;
     }
+
+
 }

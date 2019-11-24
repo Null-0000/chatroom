@@ -1,5 +1,7 @@
 package server;
 
+import client.exceptions.UnknownException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,25 +31,12 @@ public class ServerThread extends Thread {
             byte[] bytes = new byte[1024];
             len = inputStream.read(bytes);
             inMessage = new String(bytes, 0, len);
-            Matcher m = headre.matcher(inMessage);
-            String head;
-            if (m.find()) {
-                head = m.group(1);
-            }
-            else {
+            String outMessage = disposeInMessage(inMessage);
+            if (outMessage == null){
+                System.out.println("an unknown exception occurs");
                 return;
             }
-            if (head.equals("load user info")){
-                System.out.println("-------正在加载用户信息------");
-                sendUserInfo(inMessage);
-                System.out.println("加载完毕");
-            }
-            else if (head.equals("register")){
-                System.out.println("-------正在注册中-------");
-                register(inMessage);
-                System.out.println("注册完毕");
-            }
-
+            outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
             socket.close();
             inputStream.close();
             outputStream.close();
@@ -56,8 +45,48 @@ public class ServerThread extends Thread {
         }
     }
 
+    private String disposeInMessage(String inMessage) throws IOException, SQLException {
+        Matcher m = headre.matcher(inMessage);
+        String head;
+        if (m.find()) {
+            head = m.group(1);
+            inMessage = inMessage.substring(m.group(0).length() + 1);
+        }
+        else {
+            return null;
+        }
 
-    private void sendUserInfo(String message) throws IOException {
+        String output = null;
+        if (head.equals("load user info")){
+            System.out.println("-------正在加载用户信息------");
+            output = sendUserInfo(inMessage);
+            System.out.println("加载完毕");
+        }
+        else if (head.equals("register")){
+            System.out.println("-------正在注册中-------");
+            output = register(inMessage);
+            System.out.println("注册完毕");
+        }
+        else if (head.equals("make friend")){
+            System.out.println("-------正在查找用户的信息-------");
+            output = makeFriend(inMessage);
+            System.out.println("添加朋友完毕");
+        }
+
+        return output;
+    }
+
+    private String makeFriend(String message) throws SQLException {
+        Pattern p = Pattern.compile("Binfo (.*) Einfo Bname (.*) Ename");
+        Matcher m = p.matcher(message);
+        String result = null;
+        if (m.find())
+            result = manager.makeFriend(m.group(1), m.group(2));
+        return result;
+    }
+
+
+    private String sendUserInfo(String message) {
         String outMessage;
         Pattern p = Pattern.compile("BID (\\d*) EID Bpassword (.*) Epassword");
         Matcher m = p.matcher(message);
@@ -72,8 +101,7 @@ public class ServerThread extends Thread {
         String[] selected = manager.selectByIDAndPassword(ID, password);
         if (selected == null){
             System.out.println("ID与密码不匹配");
-            outputStream.write("error".getBytes(StandardCharsets.UTF_8));
-            return;
+            return "error";
         }
         outMessage = "Bname " + selected[0] + " Ename Bsig " + selected[1] + " Esig Bfriends ";
         if (selected.length == 2) outMessage+="null ";
@@ -81,20 +109,15 @@ public class ServerThread extends Thread {
             outMessage += selected[i] + " ";
         }
         outMessage += "Efriends";
-        outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
+        return outMessage;
     }
 
-    private void register(String message) throws SQLException {
+    private String register(String message) throws SQLException {
         Pattern p = Pattern.compile("Bname (.*) Ename Bpassword (.*) Epassword Bsig (.*) Esig");
         Matcher m = p.matcher(message);
-        if (m.find()) {
-            int ID = manager.register(m.group(1), m.group(2), m.group(3));
-            try {
-                outputStream.write(ID);
-            }catch (IOException e){
-                e.printStackTrace();
-            }
-        }
+        String ID = null;
+        if (m.find()) ID = "" + manager.register(m.group(1), m.group(2), m.group(3));
+        return ID;
     }
 
 }

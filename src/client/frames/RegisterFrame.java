@@ -65,7 +65,7 @@ class RegisterFrame extends JFrame {
                 return;
             }
             if (checkHasNull(name, pw)) return;
-            int ID;
+            String ID;
             try {
                 ID = SocketFunctions.register(name, pw, sig);
             } catch (IOException ex) {

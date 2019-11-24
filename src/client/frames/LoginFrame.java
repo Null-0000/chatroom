@@ -1,7 +1,9 @@
 package client.frames;
 
+import client.CurrentUser;
 import client.exceptions.PasswordException;
 import client.user.User;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,8 +50,16 @@ public class LoginFrame extends JFrame {
     private class LoginListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+            int ID;
+            if (NumberUtils.isDigits(IDInput.getText()))
+                ID = Integer.parseInt(IDInput.getText());
+            else {
+                JOptionPane.showMessageDialog(panel, "您输入的ID不合法，请重新输入。");
+                return;
+            }
             try {
                 User user = new User(Integer.parseInt(IDInput.getText()), passwordInput.getText());
+                CurrentUser.user = user;
                 user.setFrameActive();
                 setVisible(false);
             } catch (PasswordException exception) {

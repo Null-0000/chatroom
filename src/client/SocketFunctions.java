@@ -1,6 +1,8 @@
 package client;
 
+import client.exceptions.ServerNotFoundException;
 import client.tools.ResizingList;
+import client.user.User;
 import client.user.UserInfo;
 
 import java.io.IOException;
@@ -36,10 +38,7 @@ public class SocketFunctions {
         if (m.find()) {
             String name = m.group(1);
             String sig = (m.group(2).equals("null"))?null: m.group(2);
-            if (m.group(3).equals("null")){
-                friends = null;
-            }
-            else {
+            if (!m.group(3).equals("null")){
                 Scanner scan = new Scanner(m.group(3));
                 while (scan.hasNext()) friends.add(scan.next());
             }
@@ -51,7 +50,7 @@ public class SocketFunctions {
         return null;
     }
     //register and get ID
-    public static int register(String name, String password, String sig) throws IOException {
+    public static String register(String name, String password, String sig) throws IOException {
         Socket socket = new Socket(HOST, PORT);
         
         OutputStream outputStream = socket.getOutputStream();
@@ -60,10 +59,28 @@ public class SocketFunctions {
         outputStream.write(message.getBytes(StandardCharsets.UTF_8));
         
         InputStream inputStream = socket.getInputStream();
-        int ID = inputStream.read();
+        byte[] bytes = new byte[1024];
+        int len = inputStream.read(bytes);
+        String ID = new String(bytes, 0, len);
         socket.close();
         outputStream.close();
         inputStream.close();
         return ID;
+    }
+
+    public static String makeFriendWith(String info, User user) throws IOException, ServerNotFoundException {
+        Socket socket = new Socket(HOST, PORT);
+        InputStream inputStream = socket.getInputStream();
+        OutputStream outputStream = socket.getOutputStream();
+
+        String message = "BHEAD make friend EHEAD Binfo " + info + " Einfo Bname " +
+                user.toString() + " Ename";
+        outputStream.write(message.getBytes(StandardCharsets.UTF_8));
+        byte[] bytes = new byte[1024];
+        int len = inputStream.read(bytes);
+        if (len == -1) throw new ServerNotFoundException();
+        String result = new String(bytes, 0, len);
+        if (result.equals("not found")) return null;
+        else                            return result;
     }
 }

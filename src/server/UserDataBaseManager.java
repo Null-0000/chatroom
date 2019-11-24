@@ -25,14 +25,18 @@ public class UserDataBaseManager {
     }
 
     private int getCurrentID() throws SQLException {
-        int ID = stmt.executeQuery("SELECT current_ID FROM global_info").getInt(1);
+        ResultSet rs = stmt.executeQuery("SELECT current_ID FROM global_info");
+        int ID = -1;
+        if (rs.next())
+            ID = rs.getInt(1);
         stmt.executeUpdate("UPDATE global_info SET current_ID=" + (ID+1) + " WHERE current_ID=" + ID);
         return ID;
     }
 
     private void addCurrentUsersAmount() throws SQLException {
-        int i = stmt.executeQuery("SELECT users FROM global_info").getInt(1);
-        stmt.executeUpdate("UPDATE global_info SET users=" + (i+1) + " WHERE users=" + i);
+        ResultSet rs = stmt.executeQuery("SELECT users FROM global_info");
+        if (rs.next())
+            stmt.executeUpdate("UPDATE global_info SET users=" + (rs.getInt(1)+1) + " WHERE users=" + rs.getInt(1));
     }
 
     public String[] selectByIDAndPassword(int id, String password) {
@@ -54,18 +58,34 @@ public class UserDataBaseManager {
         }
         ResultSet rs2;
         try {
-            rs2 = stmt.executeQuery("select name2 from relationship where name1=" + name);
+            rs2 = stmt.executeQuery("select friend_name from friend_map where name=\'" + name + "\'");
             rs2.last();
             result = new String[rs2.getRow() + 2];
             int cnt = 2;
-            while (rs2.previous()){
+            do {
                 result[cnt++] = rs2.getString(1);
-            }
+            } while (rs2.previous());
         } catch (SQLException e) {
             result = new String[2];
         }
         result[0] = name;
         result[1] = sig;
         return result;
+    }
+
+    public String makeFriend(String info, String byName) throws SQLException {
+        ResultSet rs = stmt.executeQuery("SELECT name FROM users_info WHERE name=\'" + info + "\'");
+        if (!rs.next()) {
+            rs = stmt.executeQuery("SELECT name FROM users_info WHERE ID=" + info);
+        }
+        if (rs.next()) {
+            String name = rs.getString(1);
+            stmt.executeUpdate("INSERT INTO friend_map(name,friend_name) " +
+                    "VALUES(\'" + name + "\',\'" + byName + "\')");
+            stmt.executeUpdate("INSERT INTO friend_map(name,friend_name) " +
+                    "VALUES(\'" + byName + "\',\'" + name + "\')");
+            return name;
+        }
+        return "failed";
     }
 }
