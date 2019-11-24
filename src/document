@@ -13,9 +13,9 @@
                      |---name char(255)
                      |---signature char(255)
                      |---password char(255)
-             |---relationship
-                     |---name1 char(255)
-                     |---name2 char(255)
+             |---friend_map
+                     |---name char(255)
+                     |---friend_name char(255)
              |---messages
                      |---name1 char(255)
                      |---name2 char(255)
