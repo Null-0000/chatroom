@@ -56,11 +56,11 @@ public class AddFriendFrame extends JFrame {
                         dialogue = "添加的好友不能为您自己！";
                         break;
                     default:
+                        CurrentUser.user.makeFriend(name);
                         dialogue = "成功添加" + name + "为您的好友";
                         break;
                 }
                 JOptionPane.showMessageDialog(mainPanel, dialogue);
-                CurrentUser.user.makeFriend(name);
             } catch (IOException ex) {
                 ex.printStackTrace();
             } catch (ServerNotFoundException ex) {

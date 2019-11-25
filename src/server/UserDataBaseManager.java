@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class UserDataBaseManager {
     private final String driver = "com.mysql.cj.jdbc.Driver";
-    private final String url = "jdbc:mysql://localhost:3306/chat_room";
+    private final String url = "jdbc:mysql://localhost:3306/chat_room?serverTimezone=UTC";
     private final String user = "henry";
     private final String pass = "mxylfbcz4321";
     private Connection conn;
@@ -88,6 +88,6 @@ public class UserDataBaseManager {
                 return "same";
             return name;
         }
-        return "failed";
+        return "not found";
     }
 }
