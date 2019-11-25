@@ -1,6 +1,7 @@
 package client.frames;
 
 import client.CurrentUser;
+import client.FontClass;
 import client.SocketFunctions;
 import client.exceptions.ServerNotFoundException;
 
@@ -18,6 +19,7 @@ public class AddFriendFrame extends JFrame {
     private JTextField queryField;
     private JButton submitButton;
     public AddFriendFrame(){
+        FontClass.loadIndyFont();
         setMinimumSize(new Dimension(W, H));
 
         mainPanel = new JPanel();

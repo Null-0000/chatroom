@@ -1,5 +1,6 @@
 package client.frames;
 
+import client.FontClass;
 import client.SocketFunctions;
 
 import javax.swing.*;
@@ -8,7 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
-class RegisterFrame extends JFrame {
+public class RegisterFrame extends JFrame {
     static final int W = 400;
     static final int H = 400;
     private JPanel mainPanel;
@@ -18,7 +19,8 @@ class RegisterFrame extends JFrame {
     private JTextField rpwField;
     private JTextField sigField;
     private JButton submitButton;
-    RegisterFrame(){
+    public RegisterFrame(){
+        FontClass.loadIndyFont();
         setTitle("Register");
         setMinimumSize(new Dimension(W, H));
 

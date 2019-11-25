@@ -1,6 +1,7 @@
 package client.frames;
 
 import client.CurrentUser;
+import client.FontClass;
 import client.user.FriendListPanel;
 import client.user.UserCard;
 
@@ -15,6 +16,8 @@ public class UserFrame extends JFrame {
     private JPanel userPanel;
     private JButton addFriendButton;
     public UserFrame(UserCard card, FriendListPanel friendListPanel){
+        FontClass.loadIndyFont();
+
         setName("User");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(W, H));

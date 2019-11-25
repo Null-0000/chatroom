@@ -1,6 +1,7 @@
 package client.frames;
 
 import client.CurrentUser;
+import client.FontClass;
 import client.exceptions.PasswordException;
 import client.user.User;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -12,16 +13,19 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 public class LoginFrame extends JFrame {
-    static final int W = 600;
-    static final int H = 200;
+    static final int W = 800;
+    static final int H = 225;
     private JPanel panel;
     private JTextField IDInput, passwordInput;
     private JButton submitButton;
-    private JButton registerButton;
+
     public LoginFrame(){
+        FontClass.loadIndyFont();
+
         setTitle("login");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(W, H));
+        setMaximumSize(new Dimension(W, H));
 
         panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -29,22 +33,19 @@ public class LoginFrame extends JFrame {
 
         IDInput = new JTextField();
         IDInput.setBorder(BorderFactory.createTitledBorder("ID"));
-        panel.add(IDInput);
 
         passwordInput = new JTextField();
         passwordInput.setBorder(BorderFactory.createTitledBorder("password"));
-        panel.add(passwordInput);
 
         submitButton = new JButton("submit");
         submitButton.addActionListener(new LoginListener());
+        submitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panel.add(IDInput);
+        panel.add(passwordInput);
         panel.add(submitButton);
-
-        registerButton = new JButton("register");
-        registerButton.addActionListener(new RegisterListener());
-        panel.add(registerButton);
-
         add(panel);
-        setVisible(true);
+
     }
 
     private class LoginListener implements ActionListener {
@@ -70,12 +71,4 @@ public class LoginFrame extends JFrame {
         }
     }
 
-    private class RegisterListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            RegisterFrame frame = new RegisterFrame();
-            frame.setVisible(true);
-        }
-    }
 }
