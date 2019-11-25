@@ -57,6 +57,9 @@ public class AddFriendFrame extends JFrame {
                     case "same":
                         dialogue = "添加的好友不能为您自己！";
                         break;
+                    case "added":
+                        dialogue = "您已添加该用户为好友！";
+                        break;
                     default:
                         CurrentUser.user.makeFriend(name);
                         dialogue = "成功添加" + name + "为您的好友";

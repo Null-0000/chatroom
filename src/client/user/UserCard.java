@@ -45,13 +45,13 @@ public class UserCard extends JPanel {
         mainPanel.setBorder(BorderFactory.createTitledBorder("my postcard"));
 
         left = new JPanel();
-        left.setPreferredSize(new Dimension(W/4, H));
+        left.setPreferredSize(new Dimension(W/3, H));
         left.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
         left.setBackground(Color.white);
         //此处未实现添加照片的功能
 
         right = new JPanel();
-        right.setPreferredSize(new Dimension(W * 3/4, H));
+        right.setPreferredSize(new Dimension(W * 2/3, H));
         right.setLayout(new BoxLayout(right, BoxLayout.Y_AXIS));
         right.setBackground(Color.white);
         right.add(Box.createVerticalGlue());

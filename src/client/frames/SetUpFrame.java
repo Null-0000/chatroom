@@ -56,6 +56,7 @@ public class SetUpFrame extends JFrame {
         public void actionPerformed(ActionEvent e) {
             RegisterFrame frame = new RegisterFrame();
             frame.setVisible(true);
+            setVisible(false);
         }
     }
 
@@ -64,6 +65,7 @@ public class SetUpFrame extends JFrame {
         public void actionPerformed(ActionEvent e) {
             LoginFrame frame = new LoginFrame();
             frame.setVisible(true);
+            setVisible(false);
         }
     }
 }

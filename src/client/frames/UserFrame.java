@@ -11,7 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class UserFrame extends JFrame {
-    public static final int W = 450;
+    public static final int W = 400;
     public static final int H = 800;
     private JPanel userPanel;
     private JButton addFriendButton;

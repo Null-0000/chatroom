@@ -1,5 +1,6 @@
 package client;
 
+import client.exceptions.PasswordException;
 import client.exceptions.ServerNotFoundException;
 import client.tools.ResizingList;
 import client.user.User;
@@ -81,5 +82,11 @@ public class SocketFunctions {
         if (len == -1) throw new ServerNotFoundException();
         String result = new String(bytes, 0, len);
         return result;
+    }
+
+    public static void login(int ID, String password) throws PasswordException, IOException {
+        User user = new User(ID, password);
+        CurrentUser.user = user;
+        user.setFrameActive();
     }
 }

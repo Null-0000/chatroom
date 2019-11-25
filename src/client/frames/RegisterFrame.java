@@ -2,6 +2,7 @@ package client.frames;
 
 import client.FontClass;
 import client.SocketFunctions;
+import client.exceptions.PasswordException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,13 +11,13 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 public class RegisterFrame extends JFrame {
-    static final int W = 400;
-    static final int H = 400;
+    static final int W = 500;
+    static final int H = 375;
     private JPanel mainPanel;
     private JLabel titleLabel;
     private JTextField nameField;
-    private JTextField pwField;
-    private JTextField rpwField;
+    private JPasswordField pwField;
+    private JPasswordField rpwField;
     private JTextField sigField;
     private JButton submitButton;
     public RegisterFrame(){
@@ -30,28 +31,31 @@ public class RegisterFrame extends JFrame {
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
         titleLabel = new JLabel("Register form");
-        mainPanel.add(titleLabel);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 30));
 
         nameField = new JTextField();
         nameField.setBorder(BorderFactory.createTitledBorder("name"));
-        mainPanel.add(nameField);
 
-        pwField = new JTextField();
+        pwField = new JPasswordField();
         pwField.setBorder(BorderFactory.createTitledBorder("password"));
-        mainPanel.add(pwField);
 
-        rpwField = new JTextField();
+        rpwField = new JPasswordField();
         rpwField.setBorder(BorderFactory.createTitledBorder("rewrite your password"));
-        mainPanel.add(rpwField);
 
         sigField = new JTextField();
-        sigField.setBorder(BorderFactory.createTitledBorder("sig"));
-        mainPanel.add(sigField);
+        sigField.setBorder(BorderFactory.createTitledBorder("signature"));
 
         submitButton = new JButton("submit");
+        submitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         submitButton.addActionListener(new submitButtonListener());
-        mainPanel.add(submitButton);
 
+        mainPanel.add(titleLabel);
+        mainPanel.add(nameField);
+        mainPanel.add(pwField);
+        mainPanel.add(rpwField);
+        mainPanel.add(sigField);
+        mainPanel.add(submitButton);
         add(mainPanel);
     }
 
@@ -59,8 +63,8 @@ public class RegisterFrame extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             String name = nameField.getText();
-            String pw = pwField.getText();
-            String rpw = rpwField.getText();
+            String pw = new String(pwField.getPassword());
+            String rpw = new String(rpwField.getPassword());
             String sig = sigField.getText();
             if (!pw.equals(rpw)){
                 JOptionPane.showMessageDialog(mainPanel,"两次输入的密码不一致，请重新输入！");
@@ -75,6 +79,13 @@ public class RegisterFrame extends JFrame {
                 return;
             }
             JOptionPane.showMessageDialog(mainPanel, "Your ID is " + ID);
+            try {
+                SocketFunctions.login(Integer.parseInt(ID), pw);
+            } catch (PasswordException ex) {
+                ex.printStackTrace();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
             setVisible(false);
         }
 

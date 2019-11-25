@@ -29,14 +29,14 @@ public class UserDataBaseManager {
         int ID = -1;
         if (rs.next())
             ID = rs.getInt(1);
-        stmt.executeUpdate("UPDATE global_info SET current_ID=" + (ID+1) + " WHERE current_ID=" + ID);
+        stmt.executeUpdate("UPDATE global_info SET current_ID=" + (ID + 1) + " WHERE current_ID=" + ID);
         return ID;
     }
 
     private void addCurrentUsersAmount() throws SQLException {
         ResultSet rs = stmt.executeQuery("SELECT users FROM global_info");
         if (rs.next())
-            stmt.executeUpdate("UPDATE global_info SET users=" + (rs.getInt(1)+1) + " WHERE users=" + rs.getInt(1));
+            stmt.executeUpdate("UPDATE global_info SET users=" + (rs.getInt(1) + 1) + " WHERE users=" + rs.getInt(1));
     }
 
     public String[] selectByIDAndPassword(int id, String password) {
@@ -74,20 +74,29 @@ public class UserDataBaseManager {
     }
 
     public String makeFriend(String info, String byName) throws SQLException {
+        String name;
         ResultSet rs = stmt.executeQuery("SELECT name FROM users_info WHERE name=\'" + info + "\'");
-        if (!rs.next()) {
-            rs = stmt.executeQuery("SELECT name FROM users_info WHERE ID=" + info);
-        }
         if (rs.next()) {
-            String name = rs.getString(1);
-            stmt.executeUpdate("INSERT INTO friend_map(name,friend_name) " +
-                    "VALUES(\'" + name + "\',\'" + byName + "\')");
-            stmt.executeUpdate("INSERT INTO friend_map(name,friend_name) " +
-                    "VALUES(\'" + byName + "\',\'" + name + "\')");
-            if (name.equals(byName))
-                return "same";
-            return name;
+            name = info;
+        } else {
+            rs = stmt.executeQuery("SELECT name FROM users_info WHERE ID=" + info);
+            if (rs.next()) {
+                name = rs.getString(1);
+            } else {
+                return "not found";
+            }
         }
-        return "not found";
+        if (name.equals(byName))
+            return "same";
+        ResultSet rs1 = stmt.executeQuery("select friend_name from friend_map where name=\'" + byName + "\'");
+        while (rs1.next())
+            if (rs1.getString(1).equals(name)) return "added";
+
+        stmt.executeUpdate("INSERT INTO friend_map(name,friend_name) " +
+                "VALUES(\'" + name + "\',\'" + byName + "\')");
+        stmt.executeUpdate("INSERT INTO friend_map(name,friend_name) " +
+                "VALUES(\'" + byName + "\',\'" + name + "\')");
+        return name;
     }
 }
+
