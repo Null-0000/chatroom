@@ -1,6 +1,8 @@
 package client.tools;
 
-public class ResizingList<Item> {
+import java.util.Iterator;
+
+public class ResizingList<Item> implements Iterable {
     private Item[] items;
     private int N;
     public ResizingList(){
@@ -27,4 +29,19 @@ public class ResizingList<Item> {
         return items[i];
     }
 
+    @Override
+    public Iterator iterator() {
+        return new Iterator() {
+            int count = 0;
+            @Override
+            public boolean hasNext() {
+                return count < N;
+            }
+
+            @Override
+            public Item next() {
+                return items[count++];
+            }
+        };
+    }
 }
