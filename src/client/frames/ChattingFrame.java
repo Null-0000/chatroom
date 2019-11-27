@@ -58,6 +58,8 @@ public class ChattingFrame extends JFrame{
         JScrollPane jScrollPane = new JScrollPane(dialogField);
         //       jScrollPane.setVerticalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
+ //       jScrollPane.setVerticalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
         jPanel.add(jScrollPane, BorderLayout.CENTER);
     }
 
@@ -119,6 +121,8 @@ public class ChattingFrame extends JFrame{
         typingField.setText("");
 
         //       isTurnOffKeyListener = true;
+
+ //       isTurnOffKeyListener = true;
 
         if(typingString.equals("")) {
             JOptionPane.showMessageDialog(jPanel, "warning: can not send an empty message", "alert", JOptionPane.ERROR_MESSAGE);
