@@ -1,5 +1,6 @@
 package client.user;
 
+import java.util.Date;
 import client.frames.ChattingFrame;
 import client.tools.ResizingList;
 
@@ -14,8 +15,8 @@ public class Dialogue {
         this.p2 = p2;
         messageList = new ResizingList<Message>();
     }
-    public void addMessage(String sender, String receiver, String content){
-        messageList.add(new Message(sender, receiver, content));
+    public void addMessage(String sender, String receiver, String content, Date date){
+        messageList.add(new Message(sender, receiver, content, date));
       //  chattingFrame.updateMessages();
     }
 }

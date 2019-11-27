@@ -1,13 +1,17 @@
 package client.user;
 
+import java.util.Date;
+
 public class Message {
-    private String by;
-    private String to;
+    private String sender;
+    private String receiver;
     private String content;
-    public Message(String by, String to, String content){
-        this.by = by;
-        this.to = to;
+    private Date date;
+    public Message(String sender, String receiver, String content, Date date){
+        this.sender = sender;
+        this.receiver = receiver;
         this.content = content;
+        this.date = date;
     }
 
 }
