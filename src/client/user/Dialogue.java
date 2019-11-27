@@ -1,22 +1,27 @@
 package client.user;
 
-import java.util.Date;
 import client.frames.ChattingFrame;
 import client.tools.ResizingList;
 
 public class Dialogue {
     private ResizingList<Message> messageList;
-    protected String p1;
-    protected String p2;
+    public String owner;
+    public String friend;
     private ChattingFrame chattingFrame;
 
-    public Dialogue(String p1, String p2){
-        this.p1 = p1;
-        this.p2 = p2;
+    public Dialogue(String owner, String friend){
+        this.owner = owner;
+        this.friend = friend;
+        this.chattingFrame = new ChattingFrame(owner, friend);
         messageList = new ResizingList<Message>();
+
     }
-    public void addMessage(String sender, String receiver, String content, Date date){
-        messageList.add(new Message(sender, receiver, content, date));
-      //  chattingFrame.updateMessages();
+    public void addMessage(String sender, String receiver, String content, String date){
+        Message message = new Message(sender, receiver, content, date);
+        messageList.add(message);
+        chattingFrame.updateDialogField(message);
+    }
+    public void setChattingFrameVisible(boolean b){
+        chattingFrame.setVisible(b);
     }
 }

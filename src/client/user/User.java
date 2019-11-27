@@ -38,43 +38,21 @@ public class User {
         this.outputStream = mySocket.getOutputStream();
 
         this.card = new UserCard(info.name, info.sig, info.ID);
-        this.friendListPanel = new FriendListPanel(info.friends);
+        this.friendListPanel = new FriendListPanel(dialogues);
         this.frame = new UserFrame(card, friendListPanel);
 
         receiveMessages();
 
     }
 
-    public void sendMessage(String receiver, String content) throws IOException {
+    public void sendMessage(String receiver, String content, String date) throws IOException {
         String outMessage = "BHEAD send message EHEAD Bsender " + info.name + " Esender Breceiver " + receiver +
-                " Ereceiver Bcontent " + content + " Econtent";
+                " Ereceiver Bcontent " + content + " Econtent Bdate " + date + " Edate";
         outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
     }
     private void receiveMessages() {
-        receiveMessageThread = new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("开始接收信息");
-                int len;
-                byte[] bytes = new byte[1024];
-                while (CurrentUser.active) {
-                    try {
-                        len = inputStream.read(bytes);
-                        if (len != -1) {
-                            String inMessage = new String(bytes, 0, len);
-                            String sender = selectBy(inMessage, "Bsender (.*?) Esender");
-                            String content = selectBy(inMessage, "Bcontent (.*?) Econtent");
-                            dialogues.receiveMessage(sender, content);
-                            //CurrentUser.user.notice(sender);
-                        }
-                    } catch (IOException e){
-                        e.printStackTrace();
-                    }
-                }
-                System.out.println("接收了一条信息");
-            }
-        };
-        receiveMessageThread.run();
+        ReceiveMessageThread receiveMessageThread = new ReceiveMessageThread();
+        receiveMessageThread.start();
     }
 
 
@@ -96,5 +74,29 @@ public class User {
         return info.name;
     }
 
-
+    class ReceiveMessageThread extends Thread{
+        @Override
+        public void run() {
+            System.out.println("开始接收信息");
+            int len;
+            byte[] bytes = new byte[1024];
+            while (true) {
+                try {
+                    len = inputStream.read(bytes);
+                    if (len != -1) {
+                        String inMessage = new String(bytes, 0, len);
+                        String sender = selectBy(inMessage, "Bsender (.*?) Esender");
+                        String content = selectBy(inMessage, "Bcontent (.*?) Econtent");
+                        String date = selectBy(inMessage, "Bdate (.*) Edate");
+                        dialogues.receiveMessage(sender, content, date);
+                        //notice(sender);
+                    }
+                } catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
 }
+
+

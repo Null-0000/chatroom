@@ -91,6 +91,7 @@ public class SocketFunctions {
         CurrentUser.user = user;
         CurrentUser.active = true;
         user.setFrameActive();
+
     }
 
     public static Socket connectToRemote(String name) throws IOException {

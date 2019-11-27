@@ -110,18 +110,20 @@ public class ServerThread extends Thread {
             if ((len = inputStream.read(bytes)) != -1){
                 message = new String(bytes, 0, len);
                 String sender = RegexFunctions.selectBy(message, "Bsender (.*) Esender");
-                String receiver = RegexFunctions.selectBy(message, "Breceiver (.*) Breceiver");
+                String receiver = RegexFunctions.selectBy(message, "Breceiver (.*) Ereceiver");
                 String content = RegexFunctions.selectBy(message, "Bcontent (.*) Econtent");
+                String date = RegexFunctions.selectBy(message, "Bdate (.*) Edate");
                 boolean active = false;
                 for (SocketTag socketTag : socketList) {
                     if (socketTag.toString().equals(receiver)) {
-                        String outMessage = "Bsender " + sender + " Esender Bcontent " + content + " Econtent";
+                        String outMessage = "Bsender " + sender + " Esender Bcontent " + content +
+                                " Econtent Bdate " + date + " Edate";
                         socketTag.getSocket().getOutputStream().write(outMessage.getBytes(StandardCharsets.UTF_8));
                         active = true;
                     }
                 }
                 if (!active)
-                    manager.storeMessage(sender, receiver, content);
+                    manager.storeMessage(sender, receiver, content, date);
             }
         }
     }
@@ -166,8 +168,6 @@ public class ServerThread extends Thread {
         if (m.find()) ID = "" + manager.register(m.group(1), m.group(2), m.group(3));
         return ID;
     }
-
-
 
 
 }
