@@ -1,7 +1,7 @@
 package client.frames;
 
 import client.FontClass;
-import client.SocketFunctions;
+import client.tools.SocketFunctions;
 import client.exceptions.PasswordException;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -59,7 +59,7 @@ public class LoginFrame extends JFrame {
                 return;
             }
             try {
-                SocketFunctions.login(Integer.parseInt(IDField.getText()), new String(passwordField.getPassword()));
+                SocketFunctions.login(ID, new String(passwordField.getPassword()));
                 setVisible(false);
             } catch (PasswordException exception) {
                 JOptionPane.showMessageDialog(panel, "ID与密码不匹配，请重新输入。");
@@ -68,5 +68,4 @@ public class LoginFrame extends JFrame {
             }
         }
     }
-
 }

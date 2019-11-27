@@ -1,6 +1,7 @@
 package server;
 
-import client.exceptions.UnknownException;
+import client.tools.RegexFunctions;
+import client.tools.ResizingList;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,13 +14,15 @@ import java.util.regex.Pattern;
 
 public class ServerThread extends Thread {
     private Socket socket;
+    private ResizingList<SocketTag> socketList;
     private InputStream inputStream;
     private OutputStream outputStream;
     private UserDataBaseManager manager;
     private final Pattern headre = Pattern.compile("^BHEAD (.*) EHEAD");
-    ServerThread(Socket socket, UserDataBaseManager manager){
+    public ServerThread(Socket socket, UserDataBaseManager manager, ResizingList<SocketTag> socketList){
         this.socket = socket;
         this.manager = manager;
+        this.socketList = socketList;
     }
     @Override
     public void run() {
@@ -34,8 +37,13 @@ public class ServerThread extends Thread {
             String outMessage = disposeInMessage(inMessage);
             if (outMessage == null){
                 System.out.println("an unknown exception occurs");
+                socket.close();
+                inputStream.close();
+                outputStream.close();
                 return;
             }
+            if (outMessage.equals("connect"))
+                return;
             outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
             socket.close();
             inputStream.close();
@@ -72,10 +80,51 @@ public class ServerThread extends Thread {
             output = makeFriend(inMessage);
             System.out.println("添加朋友完毕");
         }
+        else if (head.equals("connect")){
+            System.out.println("-------与用户开始进行通讯--------");
+            output = connectToClient(inMessage);
+
+        }
+        else if (head.equals("load dialogues")){
+            System.out.println("正在查找用户的对话信息");
+            output = loadDialogues(inMessage);
+            System.out.println("查找用户的对话信息完毕" );
+        }
 
         return output;
     }
 
+    private String loadDialogues(String inMessage) throws SQLException {
+        String name = RegexFunctions.selectBy(inMessage, "Bname (.*) Ename");
+        String output = manager.loadDialogues(name);
+        return output;
+    }
+
+    private String connectToClient(String inMessage) throws IOException, SQLException {
+        String name = RegexFunctions.selectBy(inMessage, "Bname (.*) Ename");
+        socketList.add(new SocketTag(name, socket));
+        int len;
+        byte[] bytes = new byte[1024];
+        String message;
+        while (true){
+            if ((len = inputStream.read(bytes)) != -1){
+                message = new String(bytes, 0, len);
+                String sender = RegexFunctions.selectBy(message, "Bsender (.*) Esender");
+                String receiver = RegexFunctions.selectBy(message, "Breceiver (.*) Breceiver");
+                String content = RegexFunctions.selectBy(message, "Bcontent (.*) Econtent");
+                boolean active = false;
+                for (SocketTag socketTag : socketList) {
+                    if (socketTag.toString().equals(receiver)) {
+                        String outMessage = "Bsender " + sender + " Esender Bcontent " + content + " Econtent";
+                        socketTag.getSocket().getOutputStream().write(outMessage.getBytes(StandardCharsets.UTF_8));
+                        active = true;
+                    }
+                }
+                if (!active)
+                    manager.storeMessage(sender, receiver, content);
+            }
+        }
+    }
     private String makeFriend(String message) throws SQLException {
         Pattern p = Pattern.compile("Binfo (.*) Einfo Bname (.*) Ename");
         Matcher m = p.matcher(message);
@@ -84,8 +133,6 @@ public class ServerThread extends Thread {
             result = manager.makeFriend(m.group(1), m.group(2));
         return result;
     }
-
-
     private String sendUserInfo(String message) {
         String outMessage;
         Pattern p = Pattern.compile("BID (\\d*) EID Bpassword (.*) Epassword");
@@ -111,13 +158,16 @@ public class ServerThread extends Thread {
         outMessage += "Efriends";
         return outMessage;
     }
-
     private String register(String message) throws SQLException {
+
         Pattern p = Pattern.compile("Bname (.*) Ename Bpassword (.*) Epassword Bsig (.*) Esig");
         Matcher m = p.matcher(message);
         String ID = null;
         if (m.find()) ID = "" + manager.register(m.group(1), m.group(2), m.group(3));
         return ID;
     }
+
+
+
 
 }

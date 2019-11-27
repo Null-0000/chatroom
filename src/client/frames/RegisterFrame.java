@@ -1,7 +1,7 @@
 package client.frames;
 
 import client.FontClass;
-import client.SocketFunctions;
+import client.tools.SocketFunctions;
 import client.exceptions.PasswordException;
 
 import javax.swing.*;

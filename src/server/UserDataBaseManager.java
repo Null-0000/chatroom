@@ -98,5 +98,20 @@ public class UserDataBaseManager {
                 "VALUES(\'" + byName + "\',\'" + name + "\')");
         return name;
     }
+
+    public void storeMessage(String sender, String receiver, String content) throws SQLException {
+        stmt.executeUpdate("INSERT INTO messages(sender,receiver,message) VALUES(\'" + sender + "\',\'" +
+                receiver + "\',\'" + content + "\')");
+    }
+
+    public String loadDialogues(String name) throws SQLException {
+        ResultSet rs = stmt.executeQuery("SELECT * FROM messages WHERE receiver=\'" + name + "\'");
+        String dialogues = "";
+        while (rs.next()){
+            dialogues += "Bsender " + rs.getString(1) + " Esender Bcontent " +
+                    rs.getString(3) + " Econtent";
+        }
+        return dialogues;
+    }
 }
 

@@ -2,7 +2,7 @@ package client.frames;
 
 import client.CurrentUser;
 import client.FontClass;
-import client.SocketFunctions;
+import client.tools.SocketFunctions;
 import client.exceptions.ServerNotFoundException;
 
 import javax.swing.*;
