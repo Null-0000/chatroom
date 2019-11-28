@@ -5,11 +5,11 @@ import client.exceptions.PasswordException;
 import client.frames.UserFrame;
 import client.tools.SocketFunctions;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import javax.swing.*;
+import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 import static client.tools.RegexFunctions.selectBy;
 
@@ -18,11 +18,14 @@ public class User {
     private UserCard card;
     private FriendListPanel friendListPanel;
     private UserFrame frame;
+
     private Socket mySocket;
     private InputStream inputStream;
     private OutputStream outputStream;
     private Runnable receiveMessageThread;
     private Dialogues dialogues;
+
+    public Dialogues manager;
 
     public boolean comparePassword(String password){
         return info.getPassword().equals(password);
@@ -31,7 +34,8 @@ public class User {
         info = loadUserData(ID, password);
         if (info == null)
             throw new PasswordException();
-        this.dialogues = new Dialogues(info.name, info.friends);
+
+        initMyDialogue(ID);
 
         this.mySocket = SocketFunctions.connectToRemote(info.name);
         this.inputStream = mySocket.getInputStream();
@@ -42,7 +46,51 @@ public class User {
         this.frame = new UserFrame(card, friendListPanel);
 
         receiveMessages();
+    }
 
+    /**
+     * initialise the user's dialogues from the data file
+     * if the data file goes wrong ,then pop a alert message dialogue
+     * @author Furyton
+     * @param userID
+     * @since 11.27
+     */
+
+    File file;
+    private void initMyDialogue(int userID) throws IOException {
+        file = new File("data/" + Integer.toString(userID) + ".dat");
+
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        manager = new Dialogues(info.name);
+
+        FileInputStream fileInputStream = new FileInputStream(file);
+        ObjectInputStream input = null;
+
+        if(fileInputStream.available() != 0){
+            input = new ObjectInputStream(fileInputStream);
+
+            try {
+                manager = (Dialogues) input.readObject();
+            }catch (ClassCastException e){
+                JOptionPane.showMessageDialog(null, "warning: can not send an empty message", "alert", JOptionPane.ERROR_MESSAGE);
+                new FileOutputStream(file);
+            } catch (InvalidClassException e){
+                JOptionPane.showMessageDialog(null, "warning: can not send an empty message", "alert", JOptionPane.ERROR_MESSAGE);
+                new FileOutputStream(file);
+            } catch (ClassNotFoundException e) {
+                JOptionPane.showMessageDialog(null, "warning: can not send an empty message", "alert", JOptionPane.ERROR_MESSAGE);
+                new FileOutputStream(file);
+            }
+        }
+
+        manager.setName(info.name);
+    }
+    public void writeDialogueManager() throws IOException {
+        ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(file));
+        output.writeObject(manager);
+        output.close();
     }
 
     public void sendMessage(String receiver, String content) throws IOException {
@@ -64,8 +112,17 @@ public class User {
                             String inMessage = new String(bytes, 0, len);
                             String sender = selectBy(inMessage, "Bsender (.*?) Esender");
                             String content = selectBy(inMessage, "Bcontent (.*?) Econtent");
-                            dialogues.receiveMessage(sender, content);
-                            //CurrentUser.user.notice(sender);
+
+                            //HERE
+                            Date date = new Date();
+                            //HERE
+                            int friendID = 0;
+
+                            synchronized (manager){
+                                Message message = new Message(info.name, sender, content, date);
+                                Dialogues.updateDialogue(message, sender);
+                                //CurrentUser.user.notice(sender);
+                            }
                         }
                     } catch (IOException e){
                         e.printStackTrace();
@@ -77,13 +134,12 @@ public class User {
         receiveMessageThread.run();
     }
 
-
     private UserInfo loadUserData(int ID, String password) throws IOException {
         //链接服务器，获取用户图片，昵称，签名, 朋友
         UserInfo info = SocketFunctions.loadUserInfo(ID, password);
         return info;
     }
-
+    //local message, send message, friend pop menu, icon image
     public void makeFriend(String friend){
         info.friends.add(friend);
         friendListPanel.addMember(friend);

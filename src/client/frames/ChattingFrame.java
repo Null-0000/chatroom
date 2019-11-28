@@ -1,10 +1,12 @@
 package client.frames;
 
 import client.FontClass;
+import client.user.Dialogues;
+import client.user.Message;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -17,17 +19,23 @@ public class ChattingFrame extends JFrame{
     private JTextArea typingField;
     private JButton sendButton;
 
+    private String friendName, userName;
+    private boolean shit = true;
+
 //    private JButton messageLogButton;
 
-    public ChattingFrame(String chatter, String fromID, String toID){
+    public ChattingFrame(String friendName, String userName){
         FontClass.loadIndyFont();
 
-        setName("Chatting with " + toID);
+        setTitle("You Are Chatting With " + friendName);
+        this.friendName = friendName; this.userName = userName;
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setDefaultLookAndFeelDecorated(true);
 
         setSize(600, 600);
+        setMaximumSize(new Dimension(700,700));
+        setMinimumSize(new Dimension(400, 400));
         setLocation(600, 50);
 
         jPanel = new JPanel();
@@ -54,6 +62,7 @@ public class ChattingFrame extends JFrame{
         dialogField = new JTextArea("testing dialogField");
         dialogField.setEditable(false);
         dialogField.setCaretPosition(dialogField.getText().length());
+        dialogField.setLineWrap(true);
 
         JScrollPane jScrollPane = new JScrollPane(dialogField);
         //       jScrollPane.setVerticalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -69,9 +78,9 @@ public class ChattingFrame extends JFrame{
      * @param message
      * message must be suit for a certain pattern, which has not been finished
      */
-    public void updateDialogField(String message){
+    public void updateDialogField(Message message){
         synchronized (dialogField){
-            dialogField.append("\n" + getDate() + "\n" + message + "\n");
+            dialogField.append(message.toString());
 //            dialogField.paintImmediately(dialogField.getBounds());//update view in time
             dialogField.setCaretPosition(dialogField.getText().length());
         }
@@ -81,16 +90,24 @@ public class ChattingFrame extends JFrame{
 
         typingField = new JTextArea(4, 1);
         typingField.setEditable(true);
+        typingField.setLineWrap(true);
+
+        JScrollPane jScrollPane = new JScrollPane(typingField);
+
 //        typingField.addKeyListener();
 
-        jPanel.add(typingField, BorderLayout.SOUTH);
+        jPanel.add(jScrollPane, BorderLayout.SOUTH);
     }
     private void setButton(){
         Panel panel = new Panel();
-        sendButton = new JButton("Send it.");
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        sendButton = new JButton("Send it");
         //messageLogButton = new JButton("message log");
         //panel.add(messageLogButton);
+        sendButton.setAlignmentX(1);
+        panel.add(Box.createHorizontalGlue());
         panel.add(sendButton);
+        panel.add(Box.createHorizontalStrut(20));
         add(panel, BorderLayout.SOUTH);
     }
     private void addActionListener(){
@@ -109,6 +126,24 @@ public class ChattingFrame extends JFrame{
                 }
             }
         });
+        typingField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if(shit) {
+                    typingField.setText("");
+                    shit = false;
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if(typingField.getText().length() == 0){
+                    typingField.setText("please input");
+                    typingField.setForeground(Color.GRAY);
+                    shit = true;
+                }
+            }
+        });
     }
 
     /**
@@ -119,10 +154,6 @@ public class ChattingFrame extends JFrame{
     private void sendMessage(){
         String typingString = typingField.getText();
         typingField.setText("");
-
-        //       isTurnOffKeyListener = true;
-
- //       isTurnOffKeyListener = true;
 
         if(typingString.equals("")) {
             JOptionPane.showMessageDialog(jPanel, "warning: can not send an empty message", "alert", JOptionPane.ERROR_MESSAGE);
@@ -136,20 +167,18 @@ public class ChattingFrame extends JFrame{
          */
         synchronized (dialogField){
             //possess the String typingString
-            updateDialogField(typingString);
+            Message message = new Message(friendName, userName, typingString, new Date());
+            updateDialogField(message);
+//            Dialogues.updateDialogue(message, friendName);
         }
-    }
-
-    private String getDate(){
-        Date date = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH-mm-ss");
-        return simpleDateFormat.format(date);
     }
 
     /**
      * for test
      */
-    /*public static void main(String[] args){
-        new ChattingFrame("wsg", "wsg's ID", "wkj's ID");
-    }*/
+
+    public static void main(String[] args){
+        new ChattingFrame("wkj", "wsg");
+    }
+
 }

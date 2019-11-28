@@ -16,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SocketFunctions {
-    private static final String HOST = "127.0.0.1";
+    private static final String HOST = "192.168.43.120";
     private static final int PORT = 5432;
 
     public static UserInfo loadUserInfo(int ID, String password) throws IOException {
@@ -88,6 +88,7 @@ public class SocketFunctions {
 
     public static void login(int ID, String password) throws PasswordException, IOException {
         User user = new User(ID, password);
+
         CurrentUser.user = user;
         CurrentUser.active = true;
         user.setFrameActive();

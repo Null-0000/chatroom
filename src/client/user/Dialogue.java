@@ -1,22 +1,49 @@
 package client.user;
 
-import java.util.Date;
 import client.frames.ChattingFrame;
-import client.tools.ResizingList;
+
+import java.util.ArrayList;
+import java.util.Date;
+
+/**
+ * dialogue between user and one friend
+ */
 
 public class Dialogue {
-    private ResizingList<Message> messageList;
-    protected String p1;
-    protected String p2;
-    private ChattingFrame chattingFrame;
+    private ArrayList<Message> messageArrayList;
+    String friendName;
+    ChattingFrame chattingFrame;
 
-    public Dialogue(String p1, String p2){
-        this.p1 = p1;
-        this.p2 = p2;
-        messageList = new ResizingList<Message>();
+    public Dialogue(String friendName) {
+        this.friendName = friendName;
     }
-    public void addMessage(String sender, String receiver, String content, Date date){
-        messageList.add(new Message(sender, receiver, content, date));
-      //  chattingFrame.updateMessages();
+
+    public void updateMessage(Message message) {
+        messageArrayList.add(message);
+
+        if(message.sender.equals(friendName)){
+            if(isGoingOn()){
+                chattingFrame.updateDialogField(message);
+            }
+        }
+//        messageArrayList.sort(Message::compareTo);
+    }
+
+    private boolean isGoingOn(){
+        return chattingFrame.isVisible();
+    }
+
+    public ArrayList<Message> getMessageArrayList() {
+        return messageArrayList;
+    }
+
+    public ArrayList<Message> getPeriodMessage(Date date) {
+        if (messageArrayList.isEmpty()) return null;
+        for (int i = messageArrayList.size() - 1; i >= 0; i--) {
+            if (messageArrayList.get(i).compareTo(date) < 0) {
+                return (ArrayList<Message>) messageArrayList.subList(i, messageArrayList.size() - 1);
+            }
+        }
+        return null;
     }
 }

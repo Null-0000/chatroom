@@ -2,6 +2,7 @@ package server;
 
 import client.tools.RegexFunctions;
 import client.tools.ResizingList;
+import com.sun.xml.internal.bind.api.impl.NameConverter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,20 +10,21 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ServerThread extends Thread {
     private Socket socket;
-    private ResizingList<SocketTag> socketList;
+    private Map<String, Socket> socketMap;
     private InputStream inputStream;
     private OutputStream outputStream;
     private UserDataBaseManager manager;
     private final Pattern headre = Pattern.compile("^BHEAD (.*) EHEAD");
-    public ServerThread(Socket socket, UserDataBaseManager manager, ResizingList<SocketTag> socketList){
+    public ServerThread(Socket socket, UserDataBaseManager manager, Map<String, Socket> socketMap){
         this.socket = socket;
         this.manager = manager;
-        this.socketList = socketList;
+        this.socketMap = socketMap;
     }
     @Override
     public void run() {
@@ -102,7 +104,8 @@ public class ServerThread extends Thread {
 
     private String connectToClient(String inMessage) throws IOException, SQLException {
         String name = RegexFunctions.selectBy(inMessage, "Bname (.*) Ename");
-        socketList.add(new SocketTag(name, socket));
+
+        socketMap.put(name, socket);
         int len;
         byte[] bytes = new byte[1024];
         String message;
@@ -112,16 +115,14 @@ public class ServerThread extends Thread {
                 String sender = RegexFunctions.selectBy(message, "Bsender (.*) Esender");
                 String receiver = RegexFunctions.selectBy(message, "Breceiver (.*) Breceiver");
                 String content = RegexFunctions.selectBy(message, "Bcontent (.*) Econtent");
-                boolean active = false;
-                for (SocketTag socketTag : socketList) {
-                    if (socketTag.toString().equals(receiver)) {
-                        String outMessage = "Bsender " + sender + " Esender Bcontent " + content + " Econtent";
-                        socketTag.getSocket().getOutputStream().write(outMessage.getBytes(StandardCharsets.UTF_8));
-                        active = true;
-                    }
-                }
-                if (!active)
+
+                Socket socket = socketMap.get(receiver);
+                if(socket != null){
+                    String outMessage = "Bsender " + sender + " Esender Bcontent " + content + " Econtent";
+                    socket.getOutputStream().write(outMessage.getBytes(StandardCharsets.UTF_8));
+                } else {
                     manager.storeMessage(sender, receiver, content);
+                }
             }
         }
     }

@@ -1,55 +1,40 @@
 package client.user;
 
-import client.tools.ResizingList;
-import client.tools.SocketFunctions;
-
-import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Dialogues {
-    private ResizingList<Dialogue> dialogues;
-    private String owner;
-    private ResizingList<String> friends;
-    public Dialogues(String name, ResizingList<String> friends) throws IOException {
-        this.dialogues = new ResizingList<Dialogue>();
-        this.owner = name;
-        this.friends = friends;
-        for (String friend: friends)
-            dialogues.add(new Dialogue(owner, friend));
-        //loadLocalData();
-        loadRemoteData();
+    private static Map<String, Dialogue> dialogueMap;//a dialogue with receiver
+    private static String userName;
+
+    public Dialogues(String userName) {
+        dialogueMap = new HashMap<>();
+        this.userName = userName;
 
     }
-    public void receiveMessage(String sender, String content){
-        for (Dialogue dialogue: dialogues){
-            if (dialogue.p2.equals(sender)) {
-                dialogue.addMessage(sender, owner, content);
-                break;
-            }
-        }
-    }
-    public void sendMessages(String receiver, String content){
-        for (Dialogue dialogue: dialogues){
-            if (dialogue.p2.equals(receiver)){
-                dialogue.addMessage(owner, receiver, content);
-                break;
-            }
-        }
+    public void setName(String userName){
+        this.userName = userName;
     }
 
-    //从远程数据库读取用户下线时接收地数据
-    private void loadRemoteData() throws IOException {
-        String inMessage = SocketFunctions.loadDialogueData(owner);
-        Pattern p = Pattern.compile("Bsender (.*?) Esender Bcontent (.*?) Econtent");
-        Matcher m = p.matcher(inMessage);
-        String sender;
-        String content;
-        while (m.find()){
-            sender = m.group(1);
-            content = m.group(2);
-            receiveMessage(sender, content);
+    public static void updateDialogue(Message message, String friendName){
+        Dialogue dialogue = dialogueMap.get(friendName);
+
+        if(dialogue == null){
+            dialogue = new Dialogue(friendName);
+            dialogue.updateMessage(message);
+            dialogueMap.put(friendName, dialogue);
+        } else {
+            dialogue.updateMessage(message);
         }
     }
-
+    public static ArrayList<Message> getAllDialogue(String friendName){
+        return dialogueMap.get(friendName).getMessageArrayList();
+    }
+    public static ArrayList<Message> getPeriodDialogue(String friendName, Date date){
+        Dialogue dialogue = dialogueMap.get(friendName);
+        if(dialogue == null) return null;
+        return dialogue.getPeriodMessage(date);
+    }
 }
