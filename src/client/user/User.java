@@ -27,9 +27,6 @@ public class User {
 
     public Dialogues manager;
 
-    public boolean comparePassword(String password){
-        return info.getPassword().equals(password);
-    }
     public User(int ID, String password) throws PasswordException, IOException {
         info = loadUserData(ID, password);
         if (info == null)
@@ -73,14 +70,8 @@ public class User {
 
             try {
                 manager = (Dialogues) input.readObject();
-            }catch (ClassCastException e){
-                JOptionPane.showMessageDialog(null, "warning: can not send an empty message", "alert", JOptionPane.ERROR_MESSAGE);
-                new FileOutputStream(file);
-            } catch (InvalidClassException e){
-                JOptionPane.showMessageDialog(null, "warning: can not send an empty message", "alert", JOptionPane.ERROR_MESSAGE);
-                new FileOutputStream(file);
-            } catch (ClassNotFoundException e) {
-                JOptionPane.showMessageDialog(null, "warning: can not send an empty message", "alert", JOptionPane.ERROR_MESSAGE);
+            }catch (ClassCastException |  InvalidClassException | ClassNotFoundException e){
+                JOptionPane.showMessageDialog(null, "loading local data error, we need to clear the local data...", "alert", JOptionPane.ERROR_MESSAGE);
                 new FileOutputStream(file);
             }
         }
@@ -112,14 +103,12 @@ public class User {
                             String inMessage = new String(bytes, 0, len);
                             String sender = selectBy(inMessage, "Bsender (.*?) Esender");
                             String content = selectBy(inMessage, "Bcontent (.*?) Econtent");
+                            String date = selectBy(inMessage, "Bdate (.*) Edate");
 
-                            //HERE
-                            Date date = new Date();
-                            //HERE
-                            int friendID = 0;
+                            Date date1 = new Date();
 
                             synchronized (manager){
-                                Message message = new Message(info.name, sender, content, date);
+                                Message message = new Message(info.name, sender, content, date1);
                                 Dialogues.updateDialogue(message, sender);
                                 //CurrentUser.user.notice(sender);
                             }
