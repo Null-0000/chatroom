@@ -1,9 +1,10 @@
 package client.user;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Message implements Comparable<Message>{
+public class Message implements Comparable<Message>, Serializable {
     public String receiver;
     public String sender;
     private String content;

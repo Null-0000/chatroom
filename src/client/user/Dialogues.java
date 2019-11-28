@@ -12,7 +12,6 @@ public class Dialogues {
     public Dialogues(String userName) {
         dialogueMap = new HashMap<>();
         this.userName = userName;
-
     }
     public void setName(String userName){
         this.userName = userName;
