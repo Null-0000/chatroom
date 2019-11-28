@@ -1,6 +1,5 @@
 package client.user;
 
-import client.CurrentUser;
 import client.tools.ResizingList;
 import client.frames.UserFrame;
 
@@ -47,7 +46,6 @@ public class FriendListPanel extends JPanel {
         add(scrollPane);
     }
     public void addMember(String friend){
-        friends.add(friend);
         ListModel listModel = new DefaultComboBoxModel(friends.items);
         friendList.setModel(listModel);
         friendList.repaint();
