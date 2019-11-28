@@ -1,6 +1,8 @@
 package server;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class UserDataBaseManager {
     private final String driver = "com.mysql.cj.jdbc.Driver";
@@ -99,19 +101,19 @@ public class UserDataBaseManager {
         return name;
     }
 
-    public void storeMessage(String sender, String receiver, String content) throws SQLException {
-        stmt.executeUpdate("INSERT INTO messages(sender,receiver,message) VALUES(\'" + sender + "\',\'" +
-                receiver + "\',\'" + content + "\')");
+    public void storeMessage(Message message) throws SQLException {
+        stmt.executeUpdate("INSERT INTO messages(sender,receiver,content,date) VALUES(\'" + message.sender + "\',\'" +
+                message.receiver + "\',\'" + message.content + "\',\'" + message.date + "\')");
     }
 
-    public String loadDialogues(String name) throws SQLException {
+    public ArrayList<Message> loadDialogues(String name) throws SQLException {
         ResultSet rs = stmt.executeQuery("SELECT * FROM messages WHERE receiver=\'" + name + "\'");
-        String dialogues = "";
+        ArrayList<Message> dialogues = new ArrayList<>();
+
         while (rs.next()){
-            dialogues += "Bsender " + rs.getString(1) + " Esender Bcontent " +
-                    rs.getString(3) + " Econtent";
+            dialogues.add(new Message(name, rs.getString(1), rs.getString(3), rs.getDate(4)));
         }
+
         return dialogues;
     }
 }
-
