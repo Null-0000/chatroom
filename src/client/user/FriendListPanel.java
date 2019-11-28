@@ -13,9 +13,10 @@ public class FriendListPanel extends JPanel {
     static final int H = UserFrame.H - UserCard.H;
     private ResizingList<String> friends;
     private Dialogues dialogues;
+    private JScrollPane scrollPane;
     private JList friendList;
     private JLabel title;
-
+    private ListModel listModel;
 
     public FriendListPanel(Dialogues dialogues){
         this.dialogues = dialogues;
@@ -29,7 +30,7 @@ public class FriendListPanel extends JPanel {
         title.setAlignmentX(CENTER_ALIGNMENT);
         title.setFont(new Font(Font.DIALOG, Font.BOLD, 35));
 
-        ListModel listModel = new DefaultComboBoxModel(friends.items);
+        listModel = new DefaultComboBoxModel(friends.items);
         friendList = new JList(listModel);
         friendList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         friendList.setSize(new Dimension(W-20, H-20));
@@ -39,15 +40,17 @@ public class FriendListPanel extends JPanel {
         }
 
         friendList.addListSelectionListener(new FriendListSelectionListener());
-        //未完成弹出聊天窗口机制
 
         add(title);
         add(Box.createVerticalStrut(10));
-        add(friendList);
+        scrollPane = new JScrollPane(friendList);
+        add(scrollPane);
     }
     public void addMember(String friend){
-        friendList.add(new JLabel(friend));
-        repaint();
+        friends.add(friend);
+        ListModel listModel = new DefaultComboBoxModel(friends.items);
+        friendList.setModel(listModel);
+        friendList.repaint();
     }
 
     private class FriendListSelectionListener implements javax.swing.event.ListSelectionListener {

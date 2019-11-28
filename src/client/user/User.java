@@ -21,7 +21,6 @@ public class User {
     private Socket mySocket;
     private InputStream inputStream;
     private OutputStream outputStream;
-    private Runnable receiveMessageThread;
     private Dialogues dialogues;
 
     public boolean comparePassword(String password){
