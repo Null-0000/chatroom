@@ -25,7 +25,7 @@ public class UserFrame extends JFrame {
         userPanel = new JPanel();
         userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
         userPanel.setPreferredSize(new Dimension(W, H));
-        userPanel.setBackground(Color.cyan);
+        userPanel.setBackground(Color.white);
 
         addFriendButton = new JButton("add");
         addFriendButton.setAlignmentX(LEFT_ALIGNMENT);

@@ -3,7 +3,7 @@ package client.tools;
 import java.util.Iterator;
 
 public class ResizingList<Item> implements Iterable<Item> {
-    private Item[] items;
+    public Item[] items;
     private int N;
     public ResizingList(){
         items = (Item[]) new Object[1];
