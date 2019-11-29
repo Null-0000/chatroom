@@ -9,10 +9,7 @@ import client.user.UserInfo;
 import com.sun.xml.internal.bind.api.impl.NameConverter;
 
 import javax.swing.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -31,10 +28,12 @@ public class SocketFunctions {
         OutputStream outputStream = socket.getOutputStream();
         InputStream inputStream = socket.getInputStream();
         ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
 
         outMessage = "BHEAD load user info EHEAD BID " + ID + " EID Bpassword " + password + " Epassword ";
-        outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
-        outputStream.flush();
+
+        objectOutputStream.writeObject(outMessage);
+        objectOutputStream.flush();
 
         try {
             inMessage = objectInputStream.readObject();
@@ -50,39 +49,43 @@ public class SocketFunctions {
         return (UserInfo)inMessage;
     }
     //register and get ID
-    public static String register(String name, String password, String sig) throws IOException {
+    public static String register(String name, String password, String sig) throws Exception {
         Socket socket = new Socket(HOST, PORT);
 
         OutputStream outputStream = socket.getOutputStream();
+        InputStream inputStream = socket.getInputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+
+
         String message = "BHEAD register EHEAD Bname " + name + " Ename Bpassword " +
                 password + " Epassword Bsig " + sig + " Esig";
-        outputStream.write(message.getBytes(StandardCharsets.UTF_8));
+//        outputStream.write(message.getBytes(StandardCharsets.UTF_8));
+        objectOutputStream.writeObject(message);
+        objectOutputStream.flush();
 
-        InputStream inputStream = socket.getInputStream();
-        byte[] bytes = new byte[1024];
-        int len = inputStream.read(bytes);
-        String ID = new String(bytes, 0, len);
+        String ID = (String)objectInputStream.readObject();
 
         socket.shutdownInput();
         socket.shutdownOutput();
         socket.close();
         return ID;
     }
-    public static String makeFriendWith(String info, User user) throws IOException, ServerNotFoundException {
+    public static String makeFriendWith(String info, User user) throws Exception {
         Socket socket = new Socket(HOST, PORT);
         InputStream inputStream = socket.getInputStream();
         OutputStream outputStream = socket.getOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 
         String message = "BHEAD make friend EHEAD Binfo " + info + " Einfo Bname " +
                 user.toString() + " Ename";
-        outputStream.write(message.getBytes(StandardCharsets.UTF_8));
-        byte[] bytes = new byte[1024];
-        int len = inputStream.read(bytes);
-        if (len == -1) throw new ServerNotFoundException();
-        String result = new String(bytes, 0, len);
-
+        objectOutputStream.writeObject(message);
+        objectOutputStream.flush();
         socket.shutdownOutput();
-        return result;
+
+        if(objectInputStream.available() != 0) return (String) objectInputStream.readObject();
+        else throw new ServerNotFoundException();
     }
     public static void login(int ID, String password) throws PasswordException, IOException {
         User user = new User(ID, password);
@@ -94,8 +97,12 @@ public class SocketFunctions {
     public static Socket connectToRemote(String name) throws IOException {
         Socket socket = new Socket(HOST, PORT);
         OutputStream outputStream = socket.getOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+
         String outMessage = "BHEAD connect EHEAD Bname " + name + " Ename";
-        outputStream.write(outMessage.getBytes());
+
+        objectOutputStream.writeObject(outMessage);
+        objectOutputStream.flush();
         return socket;
     }
     public static ArrayList<Message> loadDialogueData(String name) throws IOException {
@@ -103,9 +110,11 @@ public class SocketFunctions {
         OutputStream outputStream = socket.getOutputStream();
         InputStream inputStream = socket.getInputStream();
         ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
 
         String outMessage = "BHEAD load dialogues EHEAD Bname " + name + " Ename";
-        outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
+        objectOutputStream.writeObject(outMessage);
+        objectOutputStream.flush();
 
         ArrayList<Message> messages = new ArrayList<>();
         try {

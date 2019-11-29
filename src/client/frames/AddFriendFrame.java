@@ -70,6 +70,8 @@ public class AddFriendFrame extends JFrame {
                 ex.printStackTrace();
             } catch (ServerNotFoundException ex) {
                 ex.printStackTrace();
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
     }

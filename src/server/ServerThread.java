@@ -3,16 +3,16 @@ package server;
 import client.tools.RegexFunctions;
 import Kits.*;
 import client.user.UserInfo;
+import client.user.Message;
 
 import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 public class ServerThread extends Thread {
     private Socket socket;
@@ -186,7 +186,12 @@ public class ServerThread extends Thread {
             return "error";
         }
 
-        ArrayList<String> friendList = (ArrayList<String>) Arrays.asList(selected).subList(2, selected.length);
+        ArrayList<String> friendList = new ArrayList<>();
+
+        Collections.addAll(friendList, selected);
+
+        friendList.remove(0);
+        if(friendList.size() > 1) friendList.remove(1);
 
         outMessage = new UserInfo(ID, selected[0], selected[1], friendList);
 

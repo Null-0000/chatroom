@@ -89,6 +89,7 @@ public class User {
             try {
                  objectInputStream = new ObjectInputStream(inputStream);
             } catch (IOException e) {
+                e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "神秘错误", "ALERT", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -100,6 +101,7 @@ public class User {
                         dialogues.updateDialogue(message, message.sender);
                     }
                 } catch (IOException | ClassNotFoundException e){
+                    e.printStackTrace();
                     JOptionPane.showMessageDialog(null, "神秘错误", "ALERT", JOptionPane.ERROR_MESSAGE);
                 }
             }

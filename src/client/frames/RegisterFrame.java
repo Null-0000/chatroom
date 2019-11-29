@@ -71,12 +71,14 @@ public class RegisterFrame extends JFrame {
                 return;
             }
             if (checkHasNull(name, pw)) return;
-            String ID;
+            String ID = "";
             try {
                 ID = SocketFunctions.register(name, pw, sig);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(mainPanel, "error");
                 return;
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
             JOptionPane.showMessageDialog(mainPanel, "Your ID is " + ID);
             try {
