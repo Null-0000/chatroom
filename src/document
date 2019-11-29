@@ -17,10 +17,10 @@
                      |---name char(255)
                      |---friend_name char(255)
              |---messages
-                     |---name1 char(255)
-                     |---name2 char(255)
+                     |---sender char(255)
+                     |---receiver char(255)
                      |---content char(255)
-                     |---date char(255)
+                     |---datetime datetime
              |---global_info
                      |---users int(255) \\记录当前用户数
                      |---current_id int(255) \\记录下一个注册的用户将被分配的ID

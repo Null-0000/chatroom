@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class UserDataBaseManager {
     private final String driver = "com.mysql.cj.jdbc.Driver";
-    private final String url = "jdbc:mysql://localhost:3306/chat_room?serverTimezone=UTC";
+    private final String url = "jdbc:mysql://localhost:3306/chat_room?serverTimezone=Asia/Shanghai";
     private final String user = "henry";
     private final String pass = "mxylfbcz4321";
     private Connection conn;
@@ -93,17 +93,20 @@ public class UserDataBaseManager {
                 "VALUES(\'" + byName + "\',\'" + name + "\')");
         return name;
     }
-    public void storeMessage(String sender, String receiver, String content, String date) throws SQLException {
-        stmt.executeUpdate("INSERT INTO messages(sender,receiver,content,date) VALUES(\'" + sender + "\',\'" +
-                receiver + "\',\'" + content + "\',\'" + date + "\')");
+
+    public void storeMessage(String sender, String receiver, String content, long datetime) throws SQLException {
+        stmt.executeUpdate("INSERT INTO messages(sender,receiver,content,datetime) VALUES(\'" + sender + "\',\'" +
+                receiver + "\',\'" + content + "\',\'" + new Timestamp(datetime) + "\')");
     }
     public String loadDialogues(String name) throws SQLException {
         ResultSet rs = stmt.executeQuery("SELECT * FROM messages WHERE receiver=\'" + name + "\'");
         String dialogues = "";
         while (rs.next()){
             dialogues += "Bsender " + rs.getString(1) + " Esender Bcontent " +
-                    rs.getString(3) + " Econtent Bdate " + rs.getString(4) + " Edate";
+                    rs.getString(3) + " Econtent Bdatetime " + rs.getTimestamp(4).getTime() +
+                    " Edatetime";
         }
+        stmt.executeUpdate("DELETE FROM messages WHERE receiver=\'" + name + "\'");
         return dialogues;
     }
 

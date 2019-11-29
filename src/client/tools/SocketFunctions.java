@@ -11,17 +11,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SocketFunctions {
-    private static final String HOST = "192.168.43.120";
+    private static final String HOST = "127.0.0.1";
     private static final int PORT = 5432;
-
     public static UserInfo loadUserInfo(int ID, String password) throws IOException {
         String inMessage, outMessage;
-        ResizingList<String> friends = new ResizingList<>();
+        ArrayList<String> friends = new ArrayList<>();
         Socket socket = new Socket(HOST, PORT);
 
         OutputStream outputStream = socket.getOutputStream();
@@ -51,7 +51,6 @@ public class SocketFunctions {
         }
         return null;
     }
-
     //register and get ID
     public static String register(String name, String password, String sig) throws IOException {
         Socket socket = new Socket(HOST, PORT);
@@ -70,7 +69,6 @@ public class SocketFunctions {
         inputStream.close();
         return ID;
     }
-
     public static String makeFriendWith(String info, User user) throws IOException, ServerNotFoundException {
         Socket socket = new Socket(HOST, PORT);
         InputStream inputStream = socket.getInputStream();
@@ -85,7 +83,6 @@ public class SocketFunctions {
         String result = new String(bytes, 0, len);
         return result;
     }
-
     public static void login(int ID, String password) throws PasswordException, IOException {
         User user = new User(ID, password);
 
@@ -94,7 +91,6 @@ public class SocketFunctions {
         user.setFrameActive();
 
     }
-
     public static Socket connectToRemote(String name) throws IOException {
         Socket socket = new Socket(HOST, PORT);
         OutputStream outputStream = socket.getOutputStream();
@@ -102,13 +98,17 @@ public class SocketFunctions {
         outputStream.write(outMessage.getBytes());
         return socket;
     }
-
     public static String loadDialogueData(String name) throws IOException {
         Socket socket = new Socket(HOST, PORT);
         OutputStream outputStream = socket.getOutputStream();
         String outMessage = "BHEAD load dialogues EHEAD Bname " + name + " Ename";
         outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
 
+        try {
+            Thread.currentThread().sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         InputStream inputStream = socket.getInputStream();
         int len;
         byte[] bytes = new byte[1024];
@@ -119,5 +119,10 @@ public class SocketFunctions {
         return inMessage;
 
     }
+
+
+
+
+
 
 }

@@ -1,8 +1,6 @@
 package server;
 
 import client.tools.RegexFunctions;
-import client.tools.ResizingList;
-import com.sun.xml.internal.bind.api.impl.NameConverter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +36,7 @@ public class ServerThread extends Thread {
             inMessage = new String(bytes, 0, len);
             String outMessage = disposeInMessage(inMessage);
             if (outMessage == null){
-                System.out.println("an unknown exception occurs");
+                System.out.println("an unknown exception occurs or someone logs out");
                 socket.close();
                 inputStream.close();
                 outputStream.close();
@@ -95,13 +93,11 @@ public class ServerThread extends Thread {
 
         return output;
     }
-
     private String loadDialogues(String inMessage) throws SQLException {
         String name = RegexFunctions.selectBy(inMessage, "Bname (.*) Ename");
         String output = manager.loadDialogues(name);
         return output;
     }
-
     private String connectToClient(String inMessage) throws IOException, SQLException {
         String name = RegexFunctions.selectBy(inMessage, "Bname (.*) Ename");
 
@@ -112,19 +108,27 @@ public class ServerThread extends Thread {
         while (true){
             if ((len = inputStream.read(bytes)) != -1){
                 message = new String(bytes, 0, len);
+                if (message.equals("exit")) break;
                 String sender = RegexFunctions.selectBy(message, "Bsender (.*) Esender");
-                String receiver = RegexFunctions.selectBy(message, "Breceiver (.*) Breceiver");
+                String receiver = RegexFunctions.selectBy(message, "Breceiver (.*) Ereceiver");
                 String content = RegexFunctions.selectBy(message, "Bcontent (.*) Econtent");
+                long datetime = Long.parseLong(RegexFunctions.selectBy(message, "Bdatetime (.*) Edatetime"));
 
                 Socket socket = socketMap.get(receiver);
                 if(socket != null){
-                    String outMessage = "Bsender " + sender + " Esender Bcontent " + content + " Econtent";
+                    String outMessage = "Bsender " + sender + " Esender Bcontent " + content +
+                            " Econtent Bdatetime " + datetime + " Edatetime";
                     socket.getOutputStream().write(outMessage.getBytes(StandardCharsets.UTF_8));
                 } else {
-                    manager.storeMessage(sender, receiver, content);
+                    manager.storeMessage(sender, receiver, content, datetime);
                 }
             }
         }
+        outputStream.close();
+        inputStream.close();
+        socket.close();
+        socketMap.remove(name);
+        return null;
     }
     private String makeFriend(String message) throws SQLException {
         Pattern p = Pattern.compile("Binfo (.*) Einfo Bname (.*) Ename");
@@ -167,6 +171,9 @@ public class ServerThread extends Thread {
         if (m.find()) ID = "" + manager.register(m.group(1), m.group(2), m.group(3));
         return ID;
     }
+
+
+
 
 
 

@@ -1,16 +1,17 @@
 package client.user;
 
-import client.tools.ResizingList;
 import client.frames.UserFrame;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 
+import java.util.Vector;
+
 public class FriendListPanel extends JPanel {
     static final int W = UserFrame.W;
     static final int H = UserFrame.H - UserCard.H;
-    private ResizingList<String> friends;
+    private Vector<String> friends;
     private Dialogues dialogues;
     private JScrollPane scrollPane;
     private JList friendList;
@@ -19,7 +20,8 @@ public class FriendListPanel extends JPanel {
 
     public FriendListPanel(Dialogues dialogues){
         this.dialogues = dialogues;
-        this.friends = dialogues.getFriends();
+        this.friends = new Vector<String>();
+        this.friends.addAll(dialogues.getAllFriendName());
 
         setBackground(Color.white);
         setPreferredSize(new Dimension(W, H));
@@ -29,14 +31,10 @@ public class FriendListPanel extends JPanel {
         title.setAlignmentX(CENTER_ALIGNMENT);
         title.setFont(new Font(Font.DIALOG, Font.BOLD, 35));
 
-        listModel = new DefaultComboBoxModel(friends.items);
+        listModel = new DefaultComboBoxModel(friends);
         friendList = new JList(listModel);
-        friendList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        friendList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         friendList.setSize(new Dimension(W-20, H-20));
-
-        for (Dialogue dialogue: dialogues.getDialogues()){
-            friendList.add(new JLabel(dialogue.friend));
-        }
 
         friendList.addListSelectionListener(new FriendListSelectionListener());
 
@@ -45,8 +43,8 @@ public class FriendListPanel extends JPanel {
         scrollPane = new JScrollPane(friendList);
         add(scrollPane);
     }
-    public void addMember(String friend){
-        ListModel listModel = new DefaultComboBoxModel(friends.items);
+    public void addMember(){
+        ListModel listModel = new DefaultComboBoxModel(friends);
         friendList.setModel(listModel);
         friendList.repaint();
     }
@@ -55,7 +53,7 @@ public class FriendListPanel extends JPanel {
         @Override
         public void valueChanged(ListSelectionEvent e) {
             int index = e.getFirstIndex();
-            dialogues.getDialogues().getItem(index).setChattingFrameVisible(true);
+            dialogues.setChattingFrameVisible(friends.elementAt(index));
         }
     }
 }
