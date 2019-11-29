@@ -15,17 +15,14 @@ public class Message implements Comparable<Message>, Serializable {
         this.content = content;
         this.date = date;
     }
-
     private String getDate(){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH-mm-ss");
         return simpleDateFormat.format(date);
     }
-
     @Override
     public String toString() {
-        return "\n\t" + getDate() + "\n" + sender + " : " + content + "\n";
+        return "\n" + getDate()+ " " + sender + ":" + "\n\t" + content + "\n";
     }
-
     @Override
     public int compareTo(Message o) {
         return date.compareTo(o.date);
@@ -33,4 +30,5 @@ public class Message implements Comparable<Message>, Serializable {
     public int compareTo(Date date){
         return this.date.compareTo(date);
     }
+
 }

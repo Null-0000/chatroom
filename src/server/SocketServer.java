@@ -1,7 +1,5 @@
 package server;
 
-import client.tools.ResizingList;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;

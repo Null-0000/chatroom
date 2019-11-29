@@ -1,23 +1,29 @@
 package client.frames;
 
+import client.CurrentUser;
 import client.FontClass;
-import client.user.Dialogues;
+
 import client.user.Message;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author WuShiguang
  */
 
-public class ChattingFrame extends JFrame{
+public class ChattingFrame extends JFrame implements Serializable {
     private JPanel jPanel;
     private JTextArea dialogField;
     private JTextArea typingField;
     private JButton sendButton;
+    private SendButtonListener sendButtonListener;
+    private KeyBoardAdapter keyBoardAdapter;
+    private KeyFocusAdapter keyFocusAdapter;
 
     private String friendName, userName;
     private boolean shit = true;
@@ -30,7 +36,6 @@ public class ChattingFrame extends JFrame{
         setTitle("You Are Chatting With " + friendName);
         this.friendName = friendName; this.userName = userName;
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setDefaultLookAndFeelDecorated(true);
 
         setSize(600, 600);
@@ -48,8 +53,6 @@ public class ChattingFrame extends JFrame{
         addActionListener();
 
         add(jPanel, BorderLayout.CENTER);
-
-        setVisible(true);
     }
 
     /**
@@ -111,39 +114,12 @@ public class ChattingFrame extends JFrame{
         add(panel, BorderLayout.SOUTH);
     }
     private void addActionListener(){
-        sendButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendMessage();
-            }
-        });
-        typingField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    sendMessage();
-                    e.consume();
-                }
-            }
-        });
-        typingField.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if(shit) {
-                    typingField.setText("");
-                    shit = false;
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                if(typingField.getText().length() == 0){
-                    typingField.setText("please input");
-                    typingField.setForeground(Color.GRAY);
-                    shit = true;
-                }
-            }
-        });
+        sendButtonListener = new SendButtonListener();
+        keyBoardAdapter = new KeyBoardAdapter();
+        keyFocusAdapter = new KeyFocusAdapter();
+        sendButton.addActionListener(sendButtonListener);
+        typingField.addKeyListener(keyBoardAdapter);
+        typingField.addFocusListener(keyFocusAdapter);
     }
 
     /**
@@ -151,7 +127,7 @@ public class ChattingFrame extends JFrame{
      * establish a pattern for a message
      * call for a function which possess the message and send it to server
      */
-    private void sendMessage(){
+    private void sendMessage() throws IOException {
         String typingString = typingField.getText();
         typingField.setText("");
 
@@ -160,25 +136,73 @@ public class ChattingFrame extends JFrame{
             return;
         }
         //temporary
-        JOptionPane.showMessageDialog(jPanel, "your message: " + typingString, "假装消息已发送", JOptionPane.INFORMATION_MESSAGE);
+        //JOptionPane.showMessageDialog(jPanel, "your message: " + typingString, "假装消息已发送", JOptionPane.INFORMATION_MESSAGE);
 
         /**
          * send(typingString, fromID, toID)
-         */
+         s*/
         synchronized (dialogField){
             //possess the String typingString
-            Message message = new Message(friendName, userName, typingString, new Date());
+            Date now = new Date();
+            Message message = new Message(friendName, userName, typingString, now);
             updateDialogField(message);
+            CurrentUser.user.sendMessage(friendName, typingString, now.getTime());
 //            Dialogues.updateDialogue(message, friendName);
         }
     }
 
+    private class SendButtonListener implements Serializable, ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                sendMessage();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    private class KeyBoardAdapter extends KeyAdapter implements Serializable{
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                    try {
+                        sendMessage();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                    e.consume();
+                }
+
+        }
+    }
+
+    private class KeyFocusAdapter extends FocusAdapter implements Serializable{
+        @Override
+        public void focusGained(FocusEvent e) {
+            if(shit) {
+                typingField.setText("");
+                shit = false;
+            }
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            if(typingField.getText().length() == 0){
+                typingField.setText("please input");
+                typingField.setForeground(Color.GRAY);
+                shit = true;
+            }
+        }
+    }
     /**
      * for test
      */
-
+/*
     public static void main(String[] args){
         new ChattingFrame("wkj", "wsg");
     }
+
+ */
 
 }

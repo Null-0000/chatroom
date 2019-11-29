@@ -2,6 +2,7 @@ package client.frames;
 
 import client.CurrentUser;
 import client.FontClass;
+import client.tools.SocketFunctions;
 import client.user.FriendListPanel;
 import client.user.UserCard;
 
@@ -9,6 +10,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 public class UserFrame extends JFrame {
     public static final int W = 400;
@@ -19,13 +23,28 @@ public class UserFrame extends JFrame {
         FontClass.loadIndyFont();
 
         setName("User");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                int exit = JOptionPane.showConfirmDialog(null,
+                        "do you want to exit?");
+                if (exit == 0) {
+                    try {
+                        CurrentUser.user.exit();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                    System.exit(0);
+                }
+            }
+        });
         setMinimumSize(new Dimension(W, H));
 
         userPanel = new JPanel();
         userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
         userPanel.setPreferredSize(new Dimension(W, H));
-        userPanel.setBackground(Color.cyan);
+        userPanel.setBackground(Color.white);
 
         addFriendButton = new JButton("add");
         addFriendButton.setAlignmentX(LEFT_ALIGNMENT);
@@ -46,10 +65,5 @@ public class UserFrame extends JFrame {
         }
     }
 
-    @Override
-    public void setDefaultCloseOperation(int operation) {
-        super.setDefaultCloseOperation(operation);
-        CurrentUser.user = null;
-    }
 }
 
