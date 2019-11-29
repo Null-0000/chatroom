@@ -10,24 +10,28 @@ import client.user.UserInfo;
 import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class SocketFunctions {
     private static final String HOST = "127.0.0.1";
     private static final int PORT = 5432;
+    private static ObjectOutputStream objectOutputStream;
+    private static ObjectInputStream objectInputStream;
     public static UserInfo loadUserInfo(int ID, String password) throws IOException {
         String outMessage;
         Object inMessage;
         Socket socket = new Socket(HOST, PORT);
 
         outMessage = "BHEAD load user info EHEAD BID " + ID + " EID Bpassword " + password + " Epassword ";
+//初始化OutputStream
+        objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
 
-        User.objectOutputStream.writeObject(outMessage);
-        User.objectOutputStream.flush();
+        objectOutputStream.writeObject(outMessage);
+        objectOutputStream.flush();
 
-        try {
-            inMessage = User.objectInputStream.readObject();
+        try {//第一次初始化inputStream
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
+            inMessage = objectInputStream.readObject();
             if(inMessage instanceof String) return null;
         } catch (ClassNotFoundException e) {
             JOptionPane.showMessageDialog(null, "载入用户信息时错误", "ALERT", JOptionPane.ERROR_MESSAGE);
@@ -45,11 +49,10 @@ public class SocketFunctions {
 
         String message = "BHEAD register EHEAD Bname " + name + " Ename Bpassword " +
                 password + " Epassword Bsig " + sig + " Esig";
-//        outputStream.write(message.getBytes(StandardCharsets.UTF_8));
-        User.objectOutputStream.writeObject(message);
-        User.objectOutputStream.flush();
+        objectOutputStream.writeObject(message);
+        objectOutputStream.flush();
 
-        String ID = (String)User.objectInputStream.readObject();
+        String ID = (String)objectInputStream.readObject();
 
         socket.shutdownInput();
         socket.shutdownOutput();
@@ -61,11 +64,12 @@ public class SocketFunctions {
 
         String message = "BHEAD make friend EHEAD Binfo " + info + " Einfo Bname " +
                 user.toString() + " Ename";
-        User.objectOutputStream.writeObject(message);
-        User.objectOutputStream.flush();
+
+        objectOutputStream.writeObject(message);
+        objectOutputStream.flush();
         socket.shutdownOutput();
 
-        if(User.objectInputStream.available() != 0) return (String) User.objectInputStream.readObject();
+        if(objectInputStream.available() != 0) return (String) objectInputStream.readObject();
         else throw new ServerNotFoundException();
     }
     public static void login(int ID, String password) throws PasswordException, IOException {
@@ -79,20 +83,28 @@ public class SocketFunctions {
         Socket socket = new Socket(HOST, PORT);
         String outMessage = "BHEAD connect EHEAD Bname " + name + " Ename";
 
-        User.objectOutputStream.writeObject(outMessage);
-        User.objectOutputStream.flush();
+        objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+        objectInputStream = new ObjectInputStream(socket.getInputStream());
+
+        objectOutputStream.writeObject(outMessage);
+        objectOutputStream.flush();
         return socket;
     }
     public static ArrayList<Message> loadDialogueData(String name) throws IOException {
         Socket socket = new Socket(HOST, PORT);
 
         String outMessage = "BHEAD load dialogues EHEAD Bname " + name + " Ename";
-        User.objectOutputStream.writeObject(outMessage);
-        User.objectOutputStream.flush();
+
+        objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+        objectInputStream = new ObjectInputStream(socket.getInputStream());
+
+
+        objectOutputStream.writeObject(outMessage);
+        objectOutputStream.flush();
 
         ArrayList<Message> messages = new ArrayList<>();
         try {
-            messages = (ArrayList<Message>) User.objectInputStream.readObject();
+            messages = (ArrayList<Message>) objectInputStream.readObject();
         } catch (ClassNotFoundException e) {
             JOptionPane.showMessageDialog(null, "远程读入未读消息错误", "ALERT", JOptionPane.ERROR_MESSAGE);
         }

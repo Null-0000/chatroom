@@ -53,9 +53,11 @@ public class ServerThread extends Thread {
             if (outMessage.equals("connect"))
                 return;
 
+            //换了一个名字
+            ObjectOutputStream objectOutputStream1 = new ObjectOutputStream(socket.getOutputStream());
 //            outputStream.write(ClassConverter.getBytesFromObject((Serializable) outMessage));
-            objectOutputStream.writeObject(outMessage);
-            objectOutputStream.flush();
+            objectOutputStream1.writeObject(outMessage);
+            objectOutputStream1.flush();
 
             socket.close();
         } catch (Exception e) {
@@ -119,19 +121,23 @@ public class ServerThread extends Thread {
         Object getClass;
 
         while (true){
-            if(objectInputStream.available() > 0){
+
                 getClass = objectInputStream.readObject();
+
+                if(getClass == null) continue;
 
                 if(getClass instanceof String) break;
                 message = (Message)getClass;
 
                 Socket socket = socketMap.get(message.receiver);
 
+                ObjectOutputStream objectOutputStream1 = new ObjectOutputStream(socket.getOutputStream());
+
                 synchronized (socket){
                     if(socket != null) objectOutputStream.writeObject(message);
                     else manager.storeMessage(message);
                 }
-            }
+
         }
         socket.close();
         socketMap.remove(name);

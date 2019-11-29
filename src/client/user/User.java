@@ -7,10 +7,6 @@ import client.tools.SocketFunctions;
 import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-
-import static client.tools.RegexFunctions.selectBy;
 
 public class User {
     private UserInfo info;
@@ -40,7 +36,7 @@ public class User {
 
         this.mySocket = SocketFunctions.connectToRemote(info.name);
 
-        objectInputStream = new ObjectInputStream(mySocket.getInputStream());
+        //objectInputStream = new ObjectInputStream(mySocket.getInputStream());
         objectOutputStream = new ObjectOutputStream(mySocket.getOutputStream());
 
         this.card = new UserCard(info.name, info.sig, info.ID);
@@ -87,6 +83,12 @@ public class User {
             System.out.println("开始接收信息");
 
             Message message;
+
+            try {
+                objectInputStream = new ObjectInputStream(mySocket.getInputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             while (true) {
                 try {
