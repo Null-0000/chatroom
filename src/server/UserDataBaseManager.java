@@ -1,10 +1,11 @@
 package server;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class UserDataBaseManager {
     private final String driver = "com.mysql.cj.jdbc.Driver";
-    private final String url = "jdbc:mysql://localhost:3306/chat_room?serverTimezone=Asia/Shanghai";
+    private final String url = "jdbc:mysql://localhost:3306/chat_room?serverTimezone=Asia/Shanghai  ";
     private final String user = "henry";
     private final String pass = "mxylfbcz4321";
     private Connection conn;
@@ -94,27 +95,19 @@ public class UserDataBaseManager {
         return name;
     }
 
-    public void storeMessage(String sender, String receiver, String content, long datetime) throws SQLException {
-        stmt.executeUpdate("INSERT INTO messages(sender,receiver,content,datetime) VALUES(\'" + sender + "\',\'" +
-                receiver + "\',\'" + content + "\',\'" + new Timestamp(datetime) + "\')");
+    public void storeMessage(Message message) throws SQLException {
+        stmt.executeUpdate("INSERT INTO messages(sender,receiver,content,date) VALUES(\'" + message.sender + "\',\'" +
+                message.receiver + "\',\'" + message.content + "\',\'" + new Timestamp(message.date.getTime()) + "\')");
     }
-    public String loadDialogues(String name) throws SQLException {
+
+    public ArrayList<Message> loadDialogues(String name) throws SQLException {
         ResultSet rs = stmt.executeQuery("SELECT * FROM messages WHERE receiver=\'" + name + "\'");
-        String dialogues = "";
+        ArrayList<Message> dialogues = new ArrayList<>();
+
         while (rs.next()){
-            dialogues += "Bsender " + rs.getString(1) + " Esender Bcontent " +
-                    rs.getString(3) + " Econtent Bdatetime " + rs.getTimestamp(4).getTime() +
-                    " Edatetime";
+            dialogues.add(new Message(name, rs.getString(1), rs.getString(3), rs.getDate(4)));
         }
-        stmt.executeUpdate("DELETE FROM messages WHERE receiver=\'" + name + "\'");
+
         return dialogues;
     }
-
-
-
-
-
-
-
 }
-

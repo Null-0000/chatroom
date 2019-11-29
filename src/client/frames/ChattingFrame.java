@@ -70,7 +70,7 @@ public class ChattingFrame extends JFrame implements Serializable {
         JScrollPane jScrollPane = new JScrollPane(dialogField);
         //       jScrollPane.setVerticalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
- //       jScrollPane.setVerticalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        //       jScrollPane.setVerticalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         jPanel.add(jScrollPane, BorderLayout.CENTER);
     }
@@ -146,7 +146,7 @@ public class ChattingFrame extends JFrame implements Serializable {
             Date now = new Date();
             Message message = new Message(friendName, userName, typingString, now);
             updateDialogField(message);
-            CurrentUser.user.sendMessage(friendName, typingString, now.getTime());
+            CurrentUser.user.sendMessage(message);
 //            Dialogues.updateDialogue(message, friendName);
         }
     }
@@ -163,16 +163,16 @@ public class ChattingFrame extends JFrame implements Serializable {
     }
 
     private class KeyBoardAdapter extends KeyAdapter implements Serializable{
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    try {
-                        sendMessage();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                    e.consume();
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                try {
+                    sendMessage();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }
+                e.consume();
+            }
 
         }
     }

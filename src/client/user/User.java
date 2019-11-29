@@ -4,6 +4,7 @@ import client.exceptions.PasswordException;
 import client.frames.UserFrame;
 import client.tools.SocketFunctions;
 
+import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -24,9 +25,6 @@ public class User {
 
     public DialoguesManager manager;
 
-    public boolean comparePassword(String password){
-        return info.getPassword().equals(password);
-    }
     public User(int ID, String password) throws PasswordException, IOException {
         info = loadUserData(ID, password);
         if (info == null)
@@ -49,12 +47,13 @@ public class User {
         this.frame = new UserFrame(card, friendListPanel);
 
         receiveMessages();
-
     }
-    public void sendMessage(String receiver, String content, long datetime) throws IOException {
-        String outMessage = "BHEAD send message EHEAD Bsender " + info.name + " Esender Breceiver " + receiver +
-                " Ereceiver Bcontent " + content + " Econtent Bdatetime " + datetime + " Edatetime";
-        outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
+    public void sendMessage(Message message) throws IOException {
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        objectOutputStream.writeObject(message);
+        objectOutputStream.flush();
+
+        mySocket.shutdownOutput();
     }
     private void receiveMessages() {
         ReceiveMessageThread receiveMessageThread = new ReceiveMessageThread();
@@ -79,31 +78,29 @@ public class User {
         outputStream.write("exit".getBytes(StandardCharsets.UTF_8));
         manager.updateMyDialogues(dialogues);
         inputStream.close();
-        outputStream.close();
+        mySocket.shutdownOutput();
         mySocket.close();
     }
     class ReceiveMessageThread extends Thread{
-        @Override
         public void run() {
             System.out.println("开始接收信息");
-            int len;
-            byte[] bytes = new byte[1024];
+            ObjectInputStream objectInputStream;
+            Message message;
+            try {
+                 objectInputStream = new ObjectInputStream(inputStream);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "神秘错误", "ALERT", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             while (true) {
                 try {
-                    len = inputStream.read(bytes);
-                    if (len != -1) {
-                        String inMessage = new String(bytes, 0, len);
-                        String sender = selectBy(inMessage, "Bsender (.*?) Esender");
-                        String content = selectBy(inMessage, "Bcontent (.*?) Econtent");
-                        long datetime = Long.parseLong(selectBy(inMessage, "Bdatetime (.*?) Edatetime"));
-                        Date date = new Date(datetime);
-
-                        Message message = new Message(info.name, sender, content, date);
-                        dialogues.updateDialogue(message, sender);
-                        //notice(sender);
+                    if(objectInputStream.available() != 0){
+                        message = (Message)objectInputStream.readObject();
+                        dialogues.updateDialogue(message, message.sender);
                     }
-                } catch (IOException e){
-                    e.printStackTrace();
+                } catch (IOException | ClassNotFoundException e){
+                    JOptionPane.showMessageDialog(null, "神秘错误", "ALERT", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }

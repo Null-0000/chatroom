@@ -52,18 +52,9 @@ public class Dialogues implements Serializable {
     }
     //从远程数据库读取用户下线时接收地数据
     public void loadRemoteData() throws IOException {
-        String inMessage = SocketFunctions.loadDialogueData(userName);
-        Pattern p = Pattern.compile("Bsender (.*?) Esender Bcontent (.*?) Econtent Bdatetime (.*?) Edatetime");
-        Matcher m = p.matcher(inMessage);
-        String sender;
-        String content;
-        Date date;
-        while (m.find()){
-            sender = m.group(1);
-            content = m.group(2);
-            date = new Date(Long.parseLong(m.group(3)));
-            Message message = new Message(userName, sender, content, date);
-            updateDialogue(message, sender);
+        ArrayList<Message> messages = SocketFunctions.loadDialogueData(userName);
+        for(Message message: messages){
+            updateDialogue(message, message.sender);
         }
     }
 

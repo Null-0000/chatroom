@@ -1,6 +1,7 @@
 package client;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class FontClass {
     public static void loadIndyFont() {

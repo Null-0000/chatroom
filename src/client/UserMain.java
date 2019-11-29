@@ -6,7 +6,7 @@ import client.frames.SetUpFrame;
 
 import javax.swing.*;
 
-public class Main {
+public class UserMain {
     public static void main(String[] args){
         SetUpFrame frame = new SetUpFrame();
     }

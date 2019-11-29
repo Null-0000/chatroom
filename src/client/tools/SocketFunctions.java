@@ -3,11 +3,15 @@ package client.tools;
 import client.CurrentUser;
 import client.exceptions.PasswordException;
 import client.exceptions.ServerNotFoundException;
+import client.user.Message;
 import client.user.User;
 import client.user.UserInfo;
+import com.sun.xml.internal.bind.api.impl.NameConverter;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -20,36 +24,30 @@ public class SocketFunctions {
     private static final String HOST = "127.0.0.1";
     private static final int PORT = 5432;
     public static UserInfo loadUserInfo(int ID, String password) throws IOException {
-        String inMessage, outMessage;
-        ArrayList<String> friends = new ArrayList<>();
+        String outMessage;
+        Object inMessage;
         Socket socket = new Socket(HOST, PORT);
 
         OutputStream outputStream = socket.getOutputStream();
+        InputStream inputStream = socket.getInputStream();
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+
         outMessage = "BHEAD load user info EHEAD BID " + ID + " EID Bpassword " + password + " Epassword ";
         outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
-        socket.shutdownOutput();
+        outputStream.flush();
 
-        byte[] bytes = new byte[1024];
-        int len;
-        InputStream inputStream = socket.getInputStream();
-        len = inputStream.read(bytes);
-        inMessage = new String(bytes, 0, len);
-        if (inMessage.equals("error")) return null;
-        Pattern p = Pattern.compile("Bname (.*) Ename Bsig (.*) Esig Bfriends (.*) Efriends");
-        Matcher m = p.matcher(inMessage);
-        if (m.find()) {
-            String name = m.group(1);
-            String sig = (m.group(2).equals("null")) ? null : m.group(2);
-            if (!m.group(3).equals("null")) {
-                Scanner scan = new Scanner(m.group(3));
-                while (scan.hasNext()) friends.add(scan.next());
-            }
-            socket.close();
-            outputStream.close();
-            inputStream.close();
-            return new UserInfo(ID, password, name, sig, friends);
+        try {
+            inMessage = objectInputStream.readObject();
+            if(inMessage instanceof String) return null;
+        } catch (ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "载入用户信息时错误", "ALERT", JOptionPane.ERROR_MESSAGE);
+            return null;
         }
-        return null;
+        socket.shutdownOutput();
+        socket.shutdownInput();
+        socket.close();
+
+        return (UserInfo)inMessage;
     }
     //register and get ID
     public static String register(String name, String password, String sig) throws IOException {
@@ -64,9 +62,10 @@ public class SocketFunctions {
         byte[] bytes = new byte[1024];
         int len = inputStream.read(bytes);
         String ID = new String(bytes, 0, len);
+
+        socket.shutdownInput();
+        socket.shutdownOutput();
         socket.close();
-        outputStream.close();
-        inputStream.close();
         return ID;
     }
     public static String makeFriendWith(String info, User user) throws IOException, ServerNotFoundException {
@@ -81,6 +80,8 @@ public class SocketFunctions {
         int len = inputStream.read(bytes);
         if (len == -1) throw new ServerNotFoundException();
         String result = new String(bytes, 0, len);
+
+        socket.shutdownOutput();
         return result;
     }
     public static void login(int ID, String password) throws PasswordException, IOException {
@@ -89,7 +90,6 @@ public class SocketFunctions {
         CurrentUser.user = user;
         CurrentUser.active = true;
         user.setFrameActive();
-
     }
     public static Socket connectToRemote(String name) throws IOException {
         Socket socket = new Socket(HOST, PORT);
@@ -98,31 +98,26 @@ public class SocketFunctions {
         outputStream.write(outMessage.getBytes());
         return socket;
     }
-    public static String loadDialogueData(String name) throws IOException {
+    public static ArrayList<Message> loadDialogueData(String name) throws IOException {
         Socket socket = new Socket(HOST, PORT);
         OutputStream outputStream = socket.getOutputStream();
+        InputStream inputStream = socket.getInputStream();
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+
         String outMessage = "BHEAD load dialogues EHEAD Bname " + name + " Ename";
         outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
 
+        ArrayList<Message> messages = new ArrayList<>();
         try {
-            Thread.currentThread().sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            messages = (ArrayList<Message>) objectInputStream.readObject();
+        } catch (ClassNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "远程读入未读消息错误", "ALERT", JOptionPane.ERROR_MESSAGE);
         }
-        InputStream inputStream = socket.getInputStream();
-        int len;
-        byte[] bytes = new byte[1024];
-        String inMessage = "";
-        while ((len = inputStream.read(bytes)) != -1) {
-            inMessage += new String(bytes, 0, len);
-        }
-        return inMessage;
+        socket.shutdownOutput();
+        socket.shutdownInput();
+        socket.close();
+        objectInputStream.close();
 
+        return messages;
     }
-
-
-
-
-
-
 }

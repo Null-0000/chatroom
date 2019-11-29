@@ -1,13 +1,15 @@
 package server;
 
 import client.tools.RegexFunctions;
+import Kits.*;
+import client.user.UserInfo;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import javax.swing.*;
+import java.io.*;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,6 +21,7 @@ public class ServerThread extends Thread {
     private OutputStream outputStream;
     private UserDataBaseManager manager;
     private final Pattern headre = Pattern.compile("^BHEAD (.*) EHEAD");
+
     public ServerThread(Socket socket, UserDataBaseManager manager, Map<String, Socket> socketMap){
         this.socket = socket;
         this.manager = manager;
@@ -29,14 +32,32 @@ public class ServerThread extends Thread {
         try {
             inputStream =  socket.getInputStream();
             outputStream = socket.getOutputStream();
-            int len;
-            String inMessage;
-            byte[] bytes = new byte[1024];
-            len = inputStream.read(bytes);
-            inMessage = new String(bytes, 0, len);
-            String outMessage = disposeInMessage(inMessage);
+
+            ObjectOutputStream objectOutputStream = null;
+            ObjectInputStream objectInputStream = null;
+            try {
+                objectOutputStream = new ObjectOutputStream(outputStream);
+                objectInputStream = new ObjectInputStream(inputStream);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "与客户端连接错误", "ALERT", JOptionPane.ERROR_MESSAGE);
+            }
+
+            String inMessage = "";
+
+            try {
+                inMessage = (String)objectInputStream.readObject();
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "与客户端连接错误", "ALERT", JOptionPane.ERROR_MESSAGE);
+                socket.close();
+                inputStream.close();
+                outputStream.close();
+                return;
+            }
+
+            Object outMessage = disposeInMessage(inMessage);
+
             if (outMessage == null){
-                System.out.println("an unknown exception occurs or someone logs out");
+                System.out.println("an unknown exception occurs or someone log out");
                 socket.close();
                 inputStream.close();
                 outputStream.close();
@@ -44,16 +65,20 @@ public class ServerThread extends Thread {
             }
             if (outMessage.equals("connect"))
                 return;
-            outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
+
+//            outputStream.write(ClassConverter.getBytesFromObject((Serializable) outMessage));
+            objectOutputStream.writeObject(outMessage);
+            objectOutputStream.flush();
+
             socket.close();
             inputStream.close();
             outputStream.close();
-        } catch (IOException | SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private String disposeInMessage(String inMessage) throws IOException, SQLException {
+    private Object disposeInMessage(String inMessage) throws Exception {
         Matcher m = headre.matcher(inMessage);
         String head;
         if (m.find()) {
@@ -64,10 +89,10 @@ public class ServerThread extends Thread {
             return null;
         }
 
-        String output = null;
+        Object output = null;
         if (head.equals("load user info")){
             System.out.println("-------正在加载用户信息------");
-            output = sendUserInfo(inMessage);
+            output = sendUserInfo(inMessage);//done
             System.out.println("加载完毕");
         }
         else if (head.equals("register")){
@@ -82,45 +107,49 @@ public class ServerThread extends Thread {
         }
         else if (head.equals("connect")){
             System.out.println("-------与用户开始进行通讯--------");
-            output = connectToClient(inMessage);
-
+            output = connectToClient(inMessage);//done
         }
         else if (head.equals("load dialogues")){
             System.out.println("正在查找用户的对话信息");
-            output = loadDialogues(inMessage);
+            output = loadDialogues(inMessage);//done
             System.out.println("查找用户的对话信息完毕" );
         }
 
         return output;
     }
-    private String loadDialogues(String inMessage) throws SQLException {
+
+    private ArrayList<Message> loadDialogues(String inMessage) throws SQLException {
         String name = RegexFunctions.selectBy(inMessage, "Bname (.*) Ename");
-        String output = manager.loadDialogues(name);
-        return output;
+        ArrayList<Message> dialogues = manager.loadDialogues(name);
+        return dialogues;
     }
-    private String connectToClient(String inMessage) throws IOException, SQLException {
+
+    private String connectToClient(String inMessage) throws Exception {
         String name = RegexFunctions.selectBy(inMessage, "Bname (.*) Ename");
 
         socketMap.put(name, socket);
-        int len;
-        byte[] bytes = new byte[1024];
-        String message;
-        while (true){
-            if ((len = inputStream.read(bytes)) != -1){
-                message = new String(bytes, 0, len);
-                if (message.equals("exit")) break;
-                String sender = RegexFunctions.selectBy(message, "Bsender (.*) Esender");
-                String receiver = RegexFunctions.selectBy(message, "Breceiver (.*) Ereceiver");
-                String content = RegexFunctions.selectBy(message, "Bcontent (.*) Econtent");
-                long datetime = Long.parseLong(RegexFunctions.selectBy(message, "Bdatetime (.*) Edatetime"));
 
-                Socket socket = socketMap.get(receiver);
-                if(socket != null){
-                    String outMessage = "Bsender " + sender + " Esender Bcontent " + content +
-                            " Econtent Bdatetime " + datetime + " Edatetime";
-                    socket.getOutputStream().write(outMessage.getBytes(StandardCharsets.UTF_8));
-                } else {
-                    manager.storeMessage(sender, receiver, content, datetime);
+        byte[] bytes = new byte[1024];
+        Message message;
+        Object getClass;
+
+        inputStream = socket.getInputStream();
+        outputStream = socket.getOutputStream();
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+
+        while (true){
+            if(objectInputStream.available() > 0){
+                getClass = objectInputStream.readObject();
+
+                if(getClass instanceof String) break;
+                message = (Message)getClass;
+
+                Socket socket = socketMap.get(message.receiver);
+
+                synchronized (socket){
+                    if(socket != null) objectOutputStream.writeObject(message);
+                    else manager.storeMessage(message);
                 }
             }
         }
@@ -128,6 +157,7 @@ public class ServerThread extends Thread {
         inputStream.close();
         socket.close();
         socketMap.remove(name);
+
         return null;
     }
     private String makeFriend(String message) throws SQLException {
@@ -138,8 +168,8 @@ public class ServerThread extends Thread {
             result = manager.makeFriend(m.group(1), m.group(2));
         return result;
     }
-    private String sendUserInfo(String message) {
-        String outMessage;
+    private Object sendUserInfo(String message) {
+        Object outMessage;
         Pattern p = Pattern.compile("BID (\\d*) EID Bpassword (.*) Epassword");
         Matcher m = p.matcher(message);
         int ID = -1;
@@ -155,12 +185,11 @@ public class ServerThread extends Thread {
             System.out.println("ID与密码不匹配");
             return "error";
         }
-        outMessage = "Bname " + selected[0] + " Ename Bsig " + selected[1] + " Esig Bfriends ";
-        if (selected.length == 2) outMessage+="null ";
-        for (int i=2; i<selected.length; i++){
-            outMessage += selected[i] + " ";
-        }
-        outMessage += "Efriends";
+
+        ArrayList<String> friendList = (ArrayList<String>) Arrays.asList(selected).subList(2, selected.length);
+
+        outMessage = new UserInfo(ID, selected[0], selected[1], friendList);
+
         return outMessage;
     }
     private String register(String message) throws SQLException {
@@ -171,11 +200,4 @@ public class ServerThread extends Thread {
         if (m.find()) ID = "" + manager.register(m.group(1), m.group(2), m.group(3));
         return ID;
     }
-
-
-
-
-
-
-
 }
