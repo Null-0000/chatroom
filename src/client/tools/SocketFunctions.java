@@ -84,7 +84,8 @@ public class SocketFunctions {
         objectOutputStream.flush();
         socket.shutdownOutput();
 
-        if(objectInputStream.available() != 0) return (String) objectInputStream.readObject();
+        Object inMessage = objectInputStream.readObject();
+        if(inMessage != null) return (String) inMessage;
         else throw new ServerNotFoundException();
     }
     public static void login(int ID, String password) throws PasswordException, IOException {
