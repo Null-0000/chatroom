@@ -1,8 +1,8 @@
-package client;
+package client.tools;
 
+import client.CurrentUser;
 import client.exceptions.PasswordException;
 import client.exceptions.ServerNotFoundException;
-import client.tools.ResizingList;
 import client.user.User;
 import client.user.UserInfo;
 
@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,11 +21,11 @@ public class SocketFunctions {
     private static final int PORT = 5432;
     public static UserInfo loadUserInfo(int ID, String password) throws IOException {
         String inMessage, outMessage;
-        ResizingList<String> friends = new ResizingList<>();
+        ArrayList<String> friends = new ArrayList<>();
         Socket socket = new Socket(HOST, PORT);
 
         OutputStream outputStream = socket.getOutputStream();
-        outMessage = "BHEAD load user info EHEAD BID " + ID + " EID Bpassword " +password + " Epassword ";
+        outMessage = "BHEAD load user info EHEAD BID " + ID + " EID Bpassword " + password + " Epassword ";
         outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
         socket.shutdownOutput();
 
@@ -38,8 +39,8 @@ public class SocketFunctions {
         Matcher m = p.matcher(inMessage);
         if (m.find()) {
             String name = m.group(1);
-            String sig = (m.group(2).equals("null"))?null: m.group(2);
-            if (!m.group(3).equals("null")){
+            String sig = (m.group(2).equals("null")) ? null : m.group(2);
+            if (!m.group(3).equals("null")) {
                 Scanner scan = new Scanner(m.group(3));
                 while (scan.hasNext()) friends.add(scan.next());
             }
@@ -53,12 +54,12 @@ public class SocketFunctions {
     //register and get ID
     public static String register(String name, String password, String sig) throws IOException {
         Socket socket = new Socket(HOST, PORT);
-        
+
         OutputStream outputStream = socket.getOutputStream();
-        String message = "BHEAD register EHEAD Bname " + name +" Ename Bpassword " + 
-                          password + " Epassword Bsig " + sig + " Esig";
+        String message = "BHEAD register EHEAD Bname " + name + " Ename Bpassword " +
+                password + " Epassword Bsig " + sig + " Esig";
         outputStream.write(message.getBytes(StandardCharsets.UTF_8));
-        
+
         InputStream inputStream = socket.getInputStream();
         byte[] bytes = new byte[1024];
         int len = inputStream.read(bytes);
@@ -68,7 +69,6 @@ public class SocketFunctions {
         inputStream.close();
         return ID;
     }
-
     public static String makeFriendWith(String info, User user) throws IOException, ServerNotFoundException {
         Socket socket = new Socket(HOST, PORT);
         InputStream inputStream = socket.getInputStream();
@@ -83,10 +83,46 @@ public class SocketFunctions {
         String result = new String(bytes, 0, len);
         return result;
     }
-
     public static void login(int ID, String password) throws PasswordException, IOException {
         User user = new User(ID, password);
+
         CurrentUser.user = user;
+        CurrentUser.active = true;
         user.setFrameActive();
+
     }
+    public static Socket connectToRemote(String name) throws IOException {
+        Socket socket = new Socket(HOST, PORT);
+        OutputStream outputStream = socket.getOutputStream();
+        String outMessage = "BHEAD connect EHEAD Bname " + name + " Ename";
+        outputStream.write(outMessage.getBytes());
+        return socket;
+    }
+    public static String loadDialogueData(String name) throws IOException {
+        Socket socket = new Socket(HOST, PORT);
+        OutputStream outputStream = socket.getOutputStream();
+        String outMessage = "BHEAD load dialogues EHEAD Bname " + name + " Ename";
+        outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
+
+        try {
+            Thread.currentThread().sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        InputStream inputStream = socket.getInputStream();
+        int len;
+        byte[] bytes = new byte[1024];
+        String inMessage = "";
+        while ((len = inputStream.read(bytes)) != -1) {
+            inMessage += new String(bytes, 0, len);
+        }
+        return inMessage;
+
+    }
+
+
+
+
+
+
 }

@@ -1,33 +1,46 @@
 package client.frames;
 
+import client.CurrentUser;
 import client.FontClass;
+
+import client.user.Message;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.text.SimpleDateFormat;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author WuShiguang
  */
 
-public class ChattingFrame extends JFrame{
+public class ChattingFrame extends JFrame implements Serializable {
     private JPanel jPanel;
     private JTextArea dialogField;
     private JTextArea typingField;
     private JButton sendButton;
+    private SendButtonListener sendButtonListener;
+    private KeyBoardAdapter keyBoardAdapter;
+    private KeyFocusAdapter keyFocusAdapter;
+
+    private String friendName, userName;
+    private boolean shit = true;
 
 //    private JButton messageLogButton;
 
-    public ChattingFrame(String chatter, String fromID, String toID){
+    public ChattingFrame(String friendName, String userName){
         FontClass.loadIndyFont();
 
-        setName("Chatting with " + toID);
+        setTitle("You Are Chatting With " + friendName);
+        this.friendName = friendName; this.userName = userName;
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setDefaultLookAndFeelDecorated(true);
 
         setSize(600, 600);
+        setMaximumSize(new Dimension(700,700));
+        setMinimumSize(new Dimension(400, 400));
         setLocation(600, 50);
 
         jPanel = new JPanel();
@@ -40,8 +53,6 @@ public class ChattingFrame extends JFrame{
         addActionListener();
 
         add(jPanel, BorderLayout.CENTER);
-
-        setVisible(true);
     }
 
     /**
@@ -54,8 +65,11 @@ public class ChattingFrame extends JFrame{
         dialogField = new JTextArea("testing dialogField");
         dialogField.setEditable(false);
         dialogField.setCaretPosition(dialogField.getText().length());
+        dialogField.setLineWrap(true);
 
         JScrollPane jScrollPane = new JScrollPane(dialogField);
+        //       jScrollPane.setVerticalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
  //       jScrollPane.setVerticalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         jPanel.add(jScrollPane, BorderLayout.CENTER);
@@ -67,9 +81,9 @@ public class ChattingFrame extends JFrame{
      * @param message
      * message must be suit for a certain pattern, which has not been finished
      */
-    public void updateDialogField(String message){
+    public void updateDialogField(Message message){
         synchronized (dialogField){
-            dialogField.append("\n" + getDate() + "\n" + message + "\n");
+            dialogField.append(message.toString());
 //            dialogField.paintImmediately(dialogField.getBounds());//update view in time
             dialogField.setCaretPosition(dialogField.getText().length());
         }
@@ -79,34 +93,33 @@ public class ChattingFrame extends JFrame{
 
         typingField = new JTextArea(4, 1);
         typingField.setEditable(true);
+        typingField.setLineWrap(true);
+
+        JScrollPane jScrollPane = new JScrollPane(typingField);
+
 //        typingField.addKeyListener();
 
-        jPanel.add(typingField, BorderLayout.SOUTH);
+        jPanel.add(jScrollPane, BorderLayout.SOUTH);
     }
     private void setButton(){
         Panel panel = new Panel();
-        sendButton = new JButton("Send it.");
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        sendButton = new JButton("Send it");
         //messageLogButton = new JButton("message log");
         //panel.add(messageLogButton);
+        sendButton.setAlignmentX(1);
+        panel.add(Box.createHorizontalGlue());
         panel.add(sendButton);
+        panel.add(Box.createHorizontalStrut(20));
         add(panel, BorderLayout.SOUTH);
     }
     private void addActionListener(){
-        sendButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendMessage();
-            }
-        });
-        typingField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    sendMessage();
-                    e.consume();
-                }
-            }
-        });
+        sendButtonListener = new SendButtonListener();
+        keyBoardAdapter = new KeyBoardAdapter();
+        keyFocusAdapter = new KeyFocusAdapter();
+        sendButton.addActionListener(sendButtonListener);
+        typingField.addKeyListener(keyBoardAdapter);
+        typingField.addFocusListener(keyFocusAdapter);
     }
 
     /**
@@ -114,38 +127,82 @@ public class ChattingFrame extends JFrame{
      * establish a pattern for a message
      * call for a function which possess the message and send it to server
      */
-    private void sendMessage(){
+    private void sendMessage() throws IOException {
         String typingString = typingField.getText();
         typingField.setText("");
-
- //       isTurnOffKeyListener = true;
 
         if(typingString.equals("")) {
             JOptionPane.showMessageDialog(jPanel, "warning: can not send an empty message", "alert", JOptionPane.ERROR_MESSAGE);
             return;
         }
         //temporary
-        JOptionPane.showMessageDialog(jPanel, "your message: " + typingString, "假装消息已发送", JOptionPane.INFORMATION_MESSAGE);
+        //JOptionPane.showMessageDialog(jPanel, "your message: " + typingString, "假装消息已发送", JOptionPane.INFORMATION_MESSAGE);
 
         /**
          * send(typingString, fromID, toID)
-         */
+         s*/
         synchronized (dialogField){
             //possess the String typingString
-            updateDialogField(typingString);
+            Date now = new Date();
+            Message message = new Message(friendName, userName, typingString, now);
+            updateDialogField(message);
+            CurrentUser.user.sendMessage(friendName, typingString, now.getTime());
+//            Dialogues.updateDialogue(message, friendName);
         }
     }
 
-    private String getDate(){
-        Date date = new Date();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH-mm-ss");
-        return simpleDateFormat.format(date);
+    private class SendButtonListener implements Serializable, ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                sendMessage();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
+    private class KeyBoardAdapter extends KeyAdapter implements Serializable{
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                    try {
+                        sendMessage();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                    e.consume();
+                }
+
+        }
+    }
+
+    private class KeyFocusAdapter extends FocusAdapter implements Serializable{
+        @Override
+        public void focusGained(FocusEvent e) {
+            if(shit) {
+                typingField.setText("");
+                shit = false;
+            }
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            if(typingField.getText().length() == 0){
+                typingField.setText("please input");
+                typingField.setForeground(Color.GRAY);
+                shit = true;
+            }
+        }
+    }
     /**
      * for test
      */
-    /*public static void main(String[] args){
-        new ChattingFrame("wsg", "wsg's ID", "wkj's ID");
-    }*/
+/*
+    public static void main(String[] args){
+        new ChattingFrame("wkj", "wsg");
+    }
+
+ */
+
 }

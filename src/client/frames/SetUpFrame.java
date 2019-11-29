@@ -11,8 +11,7 @@ public class SetUpFrame extends JFrame {
     public static int W = 600;
     public static int H = 180;
     private JLabel title;
-    private JPanel mainPanel;
-    private JPanel buttonPanel;
+    private JPanel mainPanel, buttonPanel;
     private JLabel label;
     private JButton registerButton, loginButton;
     public SetUpFrame(){

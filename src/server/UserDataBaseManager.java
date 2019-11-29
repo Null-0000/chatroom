@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class UserDataBaseManager {
     private final String driver = "com.mysql.cj.jdbc.Driver";
-    private final String url = "jdbc:mysql://localhost:3306/chat_room?serverTimezone=UTC";
+    private final String url = "jdbc:mysql://localhost:3306/chat_room?serverTimezone=Asia/Shanghai";
     private final String user = "henry";
     private final String pass = "mxylfbcz4321";
     private Connection conn;
@@ -15,7 +15,6 @@ public class UserDataBaseManager {
         conn = DriverManager.getConnection(url, user, pass);
         stmt = conn.createStatement();
     }
-
     public int register(String name, String password, String sig) throws SQLException {
         addCurrentUsersAmount();
         int ID = getCurrentID();
@@ -23,7 +22,6 @@ public class UserDataBaseManager {
         stmt.executeUpdate(cmd);
         return ID;
     }
-
     private int getCurrentID() throws SQLException {
         ResultSet rs = stmt.executeQuery("SELECT current_ID FROM global_info");
         int ID = -1;
@@ -32,13 +30,11 @@ public class UserDataBaseManager {
         stmt.executeUpdate("UPDATE global_info SET current_ID=" + (ID + 1) + " WHERE current_ID=" + ID);
         return ID;
     }
-
     private void addCurrentUsersAmount() throws SQLException {
         ResultSet rs = stmt.executeQuery("SELECT users FROM global_info");
         if (rs.next())
             stmt.executeUpdate("UPDATE global_info SET users=" + (rs.getInt(1) + 1) + " WHERE users=" + rs.getInt(1));
     }
-
     public String[] selectByIDAndPassword(int id, String password) {
         if (id < 0) return null;
         String[] result;
@@ -72,7 +68,6 @@ public class UserDataBaseManager {
         result[1] = sig;
         return result;
     }
-
     public String makeFriend(String info, String byName) throws SQLException {
         String name;
         ResultSet rs = stmt.executeQuery("SELECT name FROM users_info WHERE name=\'" + info + "\'");
@@ -98,5 +93,28 @@ public class UserDataBaseManager {
                 "VALUES(\'" + byName + "\',\'" + name + "\')");
         return name;
     }
+
+    public void storeMessage(String sender, String receiver, String content, long datetime) throws SQLException {
+        stmt.executeUpdate("INSERT INTO messages(sender,receiver,content,datetime) VALUES(\'" + sender + "\',\'" +
+                receiver + "\',\'" + content + "\',\'" + new Timestamp(datetime) + "\')");
+    }
+    public String loadDialogues(String name) throws SQLException {
+        ResultSet rs = stmt.executeQuery("SELECT * FROM messages WHERE receiver=\'" + name + "\'");
+        String dialogues = "";
+        while (rs.next()){
+            dialogues += "Bsender " + rs.getString(1) + " Esender Bcontent " +
+                    rs.getString(3) + " Econtent Bdatetime " + rs.getTimestamp(4).getTime() +
+                    " Edatetime";
+        }
+        stmt.executeUpdate("DELETE FROM messages WHERE receiver=\'" + name + "\'");
+        return dialogues;
+    }
+
+
+
+
+
+
+
 }
 
