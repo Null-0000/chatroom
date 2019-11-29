@@ -17,31 +17,21 @@ import java.util.regex.Pattern;
 public class ServerThread extends Thread {
     private Socket socket;
     private Map<String, Socket> socketMap;
-    private InputStream inputStream;
-    private OutputStream outputStream;
+    private ObjectOutputStream objectOutputStream;
+    private ObjectInputStream objectInputStream;
     private UserDataBaseManager manager;
     private final Pattern headre = Pattern.compile("^BHEAD (.*) EHEAD");
 
-    public ServerThread(Socket socket, UserDataBaseManager manager, Map<String, Socket> socketMap){
+    public ServerThread(Socket socket, UserDataBaseManager manager, Map<String, Socket> socketMap) throws IOException {
         this.socket = socket;
         this.manager = manager;
         this.socketMap = socketMap;
+        objectInputStream = new ObjectInputStream(socket.getInputStream());
+        objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
     }
     @Override
     public void run() {
         try {
-            inputStream =  socket.getInputStream();
-            outputStream = socket.getOutputStream();
-
-            ObjectOutputStream objectOutputStream = null;
-            ObjectInputStream objectInputStream = null;
-            try {
-                objectOutputStream = new ObjectOutputStream(outputStream);
-                objectInputStream = new ObjectInputStream(inputStream);
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "与客户端连接错误", "ALERT", JOptionPane.ERROR_MESSAGE);
-            }
-
             String inMessage = "";
 
             try {
@@ -50,8 +40,6 @@ public class ServerThread extends Thread {
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "与客户端连接错误", "ALERT", JOptionPane.ERROR_MESSAGE);
                 socket.close();
-                inputStream.close();
-                outputStream.close();
                 return;
             }
 
@@ -60,8 +48,6 @@ public class ServerThread extends Thread {
             if (outMessage == null){
                 System.out.println("an unknown exception occurs or someone log out");
                 socket.close();
-                inputStream.close();
-                outputStream.close();
                 return;
             }
             if (outMessage.equals("connect"))
@@ -72,8 +58,6 @@ public class ServerThread extends Thread {
             objectOutputStream.flush();
 
             socket.close();
-            inputStream.close();
-            outputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -134,11 +118,6 @@ public class ServerThread extends Thread {
         Message message;
         Object getClass;
 
-        inputStream = socket.getInputStream();
-        outputStream = socket.getOutputStream();
-        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-
         while (true){
             if(objectInputStream.available() > 0){
                 getClass = objectInputStream.readObject();
@@ -154,8 +133,6 @@ public class ServerThread extends Thread {
                 }
             }
         }
-        outputStream.close();
-        inputStream.close();
         socket.close();
         socketMap.remove(name);
 

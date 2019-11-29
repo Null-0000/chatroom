@@ -19,8 +19,8 @@ public class User {
     private UserFrame frame;
 
     private Socket mySocket;
-    private InputStream inputStream;
-    private OutputStream outputStream;
+    public static ObjectInputStream objectInputStream;
+    public static ObjectOutputStream objectOutputStream;
     private Dialogues dialogues;
 
     public DialoguesManager manager;
@@ -39,8 +39,9 @@ public class User {
         dialogues.loadRemoteData();
 
         this.mySocket = SocketFunctions.connectToRemote(info.name);
-        this.inputStream = mySocket.getInputStream();
-        this.outputStream = mySocket.getOutputStream();
+
+        objectInputStream = new ObjectInputStream(mySocket.getInputStream());
+        objectOutputStream = new ObjectOutputStream(mySocket.getOutputStream());
 
         this.card = new UserCard(info.name, info.sig, info.ID);
         this.friendListPanel = new FriendListPanel(dialogues);
@@ -49,7 +50,6 @@ public class User {
         receiveMessages();
     }
     public void sendMessage(Message message) throws IOException {
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
         objectOutputStream.writeObject(message);
         objectOutputStream.flush();
 
@@ -75,24 +75,18 @@ public class User {
         return info.name;
     }
     public void exit() throws IOException {
-        outputStream.write("exit".getBytes(StandardCharsets.UTF_8));
+        objectOutputStream.writeObject("exit");
+        objectOutputStream.flush();
+
         manager.updateMyDialogues(dialogues);
-        inputStream.close();
         mySocket.shutdownOutput();
         mySocket.close();
     }
     class ReceiveMessageThread extends Thread{
         public void run() {
             System.out.println("开始接收信息");
-            ObjectInputStream objectInputStream;
+
             Message message;
-            try {
-                 objectInputStream = new ObjectInputStream(inputStream);
-            } catch (IOException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "神秘错误", "ALERT", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
 
             while (true) {
                 try {
@@ -106,6 +100,6 @@ public class User {
                 }
             }
         }
-    };
+    }
 
 }
