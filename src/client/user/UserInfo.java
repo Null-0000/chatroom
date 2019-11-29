@@ -1,8 +1,9 @@
 package client.user;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class UserInfo {
+public class UserInfo implements Serializable {
     public int ID;
     public String name;
     public String sig;

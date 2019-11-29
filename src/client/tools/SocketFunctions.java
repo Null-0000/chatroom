@@ -9,10 +9,7 @@ import client.user.UserInfo;
 import com.sun.xml.internal.bind.api.impl.NameConverter;
 
 import javax.swing.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -33,7 +30,9 @@ public class SocketFunctions {
         ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 
         outMessage = "BHEAD load user info EHEAD BID " + ID + " EID Bpassword " + password + " Epassword ";
-        outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
+        //outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        objectOutputStream.writeObject(outMessage);
         outputStream.flush();
 
         try {

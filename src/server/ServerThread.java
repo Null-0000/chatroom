@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +40,7 @@ public class ServerThread extends Thread {
                 objectOutputStream = new ObjectOutputStream(outputStream);
                 objectInputStream = new ObjectInputStream(inputStream);
             } catch (IOException e) {
+                e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "与客户端连接错误", "ALERT", JOptionPane.ERROR_MESSAGE);
             }
 
@@ -186,7 +188,16 @@ public class ServerThread extends Thread {
             return "error";
         }
 
-        ArrayList<String> friendList = (ArrayList<String>) Arrays.asList(selected).subList(2, selected.length);
+       /* ArrayList<String> friendList = (ArrayList<String>) Arrays.asList(selected);
+        friendList.remove(0);
+        friendList.remove(1);
+
+        */
+
+        List<String> list = Arrays.asList(selected);
+        ArrayList<String> friendList = new ArrayList<String>(list);
+        friendList.remove(0);
+        friendList.remove(1);
 
         outMessage = new UserInfo(ID, selected[0], selected[1], friendList);
 
