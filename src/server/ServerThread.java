@@ -45,6 +45,7 @@ public class ServerThread extends Thread {
             String inMessage = "";
 
             try {
+                assert objectInputStream != null;
                 inMessage = (String)objectInputStream.readObject();
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "与客户端连接错误", "ALERT", JOptionPane.ERROR_MESSAGE);
