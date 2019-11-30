@@ -35,7 +35,6 @@ public class MyController {
         }
         try {
             SocketFunctions.login(ID, passwordField.getText());
-
         } catch (PasswordException exception) {
             //JOptionPane.showMessageDialog(panel, "ID与密码不匹配，请重新输入。");
             alert.setHeaderText("ID与密码不匹配，请重新输入！");
