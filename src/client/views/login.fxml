@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
+<?import java.net.URL?>
+<GridPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="client.views.MyController"
+          prefHeight="400.0" prefWidth="600.0"
+          alignment="CENTER" hgap="10" vgap="10">
+    <padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
+    <Text fx:id="welcomeText" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2">Welcome</Text>
+    <Label GridPane.columnIndex="0" GridPane.rowIndex="1">userID</Label>
+    <TextField fx:id="IDField" GridPane.columnIndex="1" GridPane.rowIndex="1"></TextField>
+    <Label GridPane.columnIndex="0" GridPane.rowIndex="2">password</Label>
+    <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="2"></PasswordField>
+    <HBox GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="BOTTOM_RIGHT">
+        <Button onAction="#loginButtonAction">Sign in</Button>
+    </HBox>
+    <stylesheets>
+        <URL value="@Login.css"/>
+    </stylesheets>
+
+</GridPane>
