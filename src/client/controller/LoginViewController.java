@@ -7,10 +7,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import org.apache.commons.lang3.math.NumberUtils;
 
-public class LoginStageController {
+import java.io.IOException;
+
+public class LoginViewController {
     @FXML
     private GridPane root;
     @FXML
@@ -18,10 +22,7 @@ public class LoginStageController {
     @FXML
     private PasswordField passwordField;
     @FXML
-    protected void loginButtonAction(ActionEvent event){
-        int ID;
-
-
+    protected void loginButtonAction(ActionEvent event) throws IOException {
         if(IDField.getText().isEmpty()){
             showAlert("请输入你的ID");
             return;
@@ -31,25 +32,19 @@ public class LoginStageController {
             return;
         }
 
+        int ID; String password = passwordField.getText();
         if (NumberUtils.isDigits(IDField.getText())) ID = Integer.parseInt(IDField.getText());
         else {
             showAlert("您输入的ID不合法，请重新输入");
             return;
         }
-/*      try {
-            SocketFunctions.login(ID, passwordField.getText());
-        } catch (PasswordException exception) {
-            //JOptionPane.showMessageDialog(panel, "ID与密码不匹配，请重新输入。");
-            alert.setHeaderText("ID与密码不匹配，请重新输入！");
-            alert.show();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }*/
+        boolean isAccessible = Connector.getInstance().loadUserInfo(ID, password);
+        if(isAccessible) showAlert("将要跳转到主界面");
+        else showAlert("ID不存在或密码错误");
     }
     @FXML
     protected void registerButtonAction(){
-        StageM.getManager().show(Resource.RegisterID);
-        StageM.getManager().close(Resource.LoginViewID);
+        StageM.getManager().shift(Resource.LoginViewID, Resource.RegisterID);
     }
 
     private void showAlert(String message){
@@ -58,5 +53,11 @@ public class LoginStageController {
         alert.setContentText(null);
         alert.setHeaderText(message);
         alert.show();
+    }
+
+    public void paneKeyAction(KeyEvent keyEvent) throws IOException {
+        if(keyEvent.getCode() == KeyCode.ENTER){
+            loginButtonAction(new ActionEvent());
+        }
     }
 }

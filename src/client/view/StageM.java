@@ -27,14 +27,17 @@ public class StageM {
         stageMap.put(viewID, stage);
     }
 
-    public Stage getStage(String stageName){
-        return stageMap.get(stageName);
+    public Stage getStage(String viewID){
+        return stageMap.get(viewID);
     }
 
-    public void show(String stageName){
-        getStage(stageName).show();
+    public void show(String viewID){
+        getStage(viewID).show();
     }
-    public void close(String stageName){
-        getStage(stageName).close();
+    public void close(String viewID){
+        getStage(viewID).close();
+    }
+    public void shift(String viewIDA, String viewIDB){
+        close(viewIDA); show(viewIDB);
     }
 }

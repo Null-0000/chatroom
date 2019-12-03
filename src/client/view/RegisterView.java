@@ -2,17 +2,30 @@ package client.view;
 
 import client.launcher.Resource;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
 public class RegisterView extends Stage {
     public RegisterView() throws IOException {
-        Parent root = FXMLLoader.load(this.getClass().getResource(Resource.LoginViewResource));
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root, 500, 500));
-        stage.setTitle("Register");
+        GridPane root = FXMLLoader.load(this.getClass().getResource(Resource.RegisterViewResource));
+
+        this.setTitle("Register");
+        Text text = new Text();
+
+        root.setOnMouseClicked(event -> {
+            root.requestFocus();
+        });
+
+        this.setScene(new Scene(root, 500, 500));
+        this.setOnCloseRequest(e -> StageM.getManager().show(Resource.LoginViewID));
     }
 }
