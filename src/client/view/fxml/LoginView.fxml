@@ -6,7 +6,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Text?>
 <GridPane
-          stylesheets="@../fxml/css/LoginView.css"
+          stylesheets="@../fxml/css/SuperView.css"
           xmlns="http://javafx.com/javafx"
           xmlns:fx="http://javafx.com/fxml"
           fx:controller="client.controller.LoginViewController"
@@ -14,14 +14,14 @@
           alignment="CENTER" hgap="10" vgap="10"
           onKeyPressed="#paneKeyAction">
     <padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
-    <Text fx:id="welcomeText" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2">Welcome</Text>
+    <Text fx:id="welcomeText" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2" styleClass="font-title">Welcome</Text>
     <Label GridPane.columnIndex="0" GridPane.rowIndex="1">userID</Label>
     <TextField fx:id="IDField" GridPane.columnIndex="1" GridPane.rowIndex="1"></TextField>
     <Label GridPane.columnIndex="0" GridPane.rowIndex="2">password</Label>
     <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="2"></PasswordField>
     <HBox GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="BOTTOM_RIGHT" spacing="10">
-        <Button onAction="#loginButtonAction">Sign in</Button>
-        <Button onAction="#registerButtonAction">Register</Button>
+        <Button onAction="#loginButtonAction" styleClass="btn-basic:hover,btn-radius-large">Sign in</Button>
+        <Button onAction="#registerButtonAction" styleClass="btn-basic:hover,btn-radius-large">Register</Button>
     </HBox>
 
 

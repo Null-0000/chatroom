@@ -25,7 +25,7 @@ public class RegisterView extends Stage {
             root.requestFocus();
         });
 
-        this.setScene(new Scene(root, 500, 500));
+        this.setScene(new Scene(root, 700, 400));
         this.setOnCloseRequest(e -> StageM.getManager().show(Resource.LoginViewID));
     }
 }

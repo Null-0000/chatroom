@@ -8,7 +8,7 @@
 <GridPane xmlns="http://javafx.com/javafx"
           xmlns:fx="http://javafx.com/fxml"
           fx:controller="client.controller.RegisterViewController"
-          stylesheets="@../fxml/css/RegisterView.css"
+          stylesheets="@../fxml/css/SuperView.css"
 
           prefHeight="400.0" prefWidth="600.0"
           alignment="CENTER" hgap="10" vgap="10"
@@ -16,19 +16,19 @@
     <padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
     <Text fx:id="registerTitle" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2">Register</Text>
     <Label GridPane.columnIndex="0" GridPane.rowIndex="1">Your name</Label>
-    <TextField fx:id="userName" GridPane.columnIndex="1" GridPane.rowIndex="1" promptText="请输入你的昵称"></TextField>
+    <TextField fx:id="userName" GridPane.columnIndex="1" GridPane.rowIndex="1" promptText="请输入你的昵称" GridPane.columnSpan="15"></TextField>
 
     <Label GridPane.columnIndex="0" GridPane.rowIndex="2">Your Password</Label>
-    <PasswordField fx:id="userPassword" GridPane.columnIndex="1" GridPane.rowIndex="2" promptText="请输入你的密码"></PasswordField>
+    <PasswordField fx:id="userPassword" GridPane.columnIndex="1" GridPane.rowIndex="2" promptText="请输入你的密码" GridPane.columnSpan="15"></PasswordField>
 
     <Label GridPane.columnIndex="0" GridPane.rowIndex="3">Confirm Your Password</Label>
-    <PasswordField fx:id="userPasswordConfirm" GridPane.columnIndex="1" GridPane.rowIndex="3" promptText="请再次输入你的密码"></PasswordField>
+    <PasswordField fx:id="userPasswordConfirm" GridPane.columnIndex="1" GridPane.rowIndex="3" promptText="请再次输入你的密码" GridPane.columnSpan="15"></PasswordField>
 
     <Label GridPane.columnIndex="0" GridPane.rowIndex="4">Your Signature</Label>
-    <TextField fx:id="userSignature" GridPane.columnIndex="1" GridPane.rowIndex="4" promptText="请输入你的个性签名"></TextField>
+    <TextField fx:id="userSignature" GridPane.columnIndex="1" GridPane.rowIndex="4" promptText="请输入你的个性签名" GridPane.columnSpan="15"></TextField>
 
-    <HBox GridPane.columnIndex="0" GridPane.rowIndex="5" spacing="10" alignment="BOTTOM_RIGHT">
-        <Button fx:id="submitButton" onAction="#submitButton"> Submit </Button>
+    <HBox GridPane.columnIndex="1" GridPane.rowIndex="5" spacing="10" alignment="BOTTOM_RIGHT">
+        <Button fx:id="submitButton" onAction="#submitButton" styleClass="btn-basic:hover,btn-radius-large"> Submit </Button>
     </HBox>
 
 </GridPane>

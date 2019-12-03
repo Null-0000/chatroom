@@ -22,9 +22,8 @@ public class Dialogue implements Serializable {
         /*if(message.sender.equals(friendName)){
             if(isGoingOn()){
                 chattingFrame.updateDialogField(message);
-            }
-        }
-
+                }
+           }
          */
 //        messageArrayList.sort(Message::compareTo);
     }
