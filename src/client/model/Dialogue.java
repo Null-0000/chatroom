@@ -1,5 +1,8 @@
 package client.model;
 
+import client.view.ChatView;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,10 +14,12 @@ import java.util.Date;
 public class Dialogue implements Serializable {
     private ArrayList<Message> messageArrayList;
     private String friendName;
+    private ChatView chatView;
 
-    public Dialogue(String friendName, String userName) {
+    public Dialogue(String friendName, String userName) throws IOException {
         this.friendName = friendName;
         this.messageArrayList = new ArrayList<Message>();
+        this.chatView = new ChatView(friendName);
     }
     public void updateMessage(Message message) {
         messageArrayList.add(message);
@@ -42,7 +47,9 @@ public class Dialogue implements Serializable {
         }
         return null;
     }
-
+    public void show(){
+        chatView.show();
+    }
 //    public void setChattingFrameVisible() {
 //        chattingFrame.setVisible(true);
 //    }

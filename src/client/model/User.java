@@ -75,7 +75,10 @@ public class User {
     public ArrayList<String> getFriendList() {
         return friendList;
     }
-    public void sendMessage(String receiver, String content, long datetime) throws IOException {
+    public void sendMessage(Message message) throws IOException {
+        String receiver = message.receiver;
+        String content = message.getContent();
+        long datetime = message.getDate().getTime();
         String outMessage = "BHEAD send message EHEAD Bsender " + name + " Esender Breceiver " + receiver +
                 " Ereceiver Bcontent " + content + " Econtent Bdatetime " + datetime + " Edatetime";
         outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
@@ -92,6 +95,7 @@ public class User {
         outputStream.close();
         mySocket.close();
     }
+
     class ReceiveMessageThread extends Thread{
         @Override
         public void run() {

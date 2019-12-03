@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.web.WebView?>
+<?import java.net.URL?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="client.controller.ChatViewController"
+            prefHeight="670.0" prefWidth="600.0">
+    <children>
+        <VBox spacing="10" alignment="CENTER">
+            <padding><Insets top="5" bottom="5" left="5" right="5"/></padding>
+            <Label fx:id="chatToLabel"></Label>
+            <WebView fx:id="webView" prefWidth="600" prefHeight="400"></WebView>
+            <TextArea fx:id="textArea" prefWidth="600" prefHeight="200"></TextArea>
+            <HBox alignment="BOTTOM_RIGHT">
+                <Button fx:id="sendButton" onAction="#sendMessage">Send</Button>
+            </HBox>
+        </VBox>
+    </children>
+    <stylesheets>
+        <URL value="@css/ChatView.css"></URL>
+    </stylesheets>
+</AnchorPane>

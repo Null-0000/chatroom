@@ -11,7 +11,7 @@ public class Dialogues implements Serializable {
     private Map<String, Dialogue> dialogueMap;
     private String userName;
 
-    public Dialogues(String userName, ArrayList<String> friends) {
+    public Dialogues(String userName, ArrayList<String> friends) throws IOException {
         this.dialogueMap = new HashMap<>();
         this.userName = userName;
         for (String friend: friends){
@@ -22,7 +22,7 @@ public class Dialogues implements Serializable {
     public void setName(String userName){
         this.userName = userName;
     }
-    public void updateDialogue(Message message, String friendName){
+    public void updateDialogue(Message message, String friendName) throws IOException {
         Dialogue dialogue = dialogueMap.get(friendName);
 
         if(dialogue == null){
