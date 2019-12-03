@@ -8,16 +8,11 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-/**
- * 登陆窗口
- */
-
-public class LoginView extends Stage {
-
-    public LoginView() throws IOException {
+public class RegisterView extends Stage {
+    public RegisterView() throws IOException {
         Parent root = FXMLLoader.load(this.getClass().getResource(Resource.LoginViewResource));
-
-        Scene scene = new Scene(root, 500, 500);
-        this.setScene(scene);
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root, 500, 500));
+        stage.setTitle("Register");
     }
 }

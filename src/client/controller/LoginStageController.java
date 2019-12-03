@@ -1,5 +1,7 @@
 package client.controller;
 
+import client.launcher.Resource;
+import client.view.StageM;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -18,15 +20,20 @@ public class LoginStageController {
     @FXML
     protected void loginButtonAction(ActionEvent event){
         int ID;
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setContentText(null);
-        if (NumberUtils.isDigits(IDField.getText()))
-            ID = Integer.parseInt(IDField.getText());
+
+
+        if(IDField.getText().isEmpty()){
+            showAlert("请输入你的ID");
+            return;
+        }
+        if(passwordField.getText().isEmpty()){
+            showAlert("请输入密码");
+            return;
+        }
+
+        if (NumberUtils.isDigits(IDField.getText())) ID = Integer.parseInt(IDField.getText());
         else {
-            //JOptionPane.showMessageDialog(panel, "您输入的ID不合法，请重新输入。");
-            alert.setHeaderText("您输入的ID不合法，请重新输入！");
-            alert.show();
+            showAlert("您输入的ID不合法，请重新输入");
             return;
         }
 /*      try {
@@ -38,5 +45,18 @@ public class LoginStageController {
         } catch (IOException ex) {
             ex.printStackTrace();
         }*/
+    }
+    @FXML
+    protected void registerButtonAction(){
+        StageM.getManager().show(Resource.RegisterID);
+        StageM.getManager().close(Resource.LoginViewID);
+    }
+
+    private void showAlert(String message){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setContentText(null);
+        alert.setHeaderText(message);
+        alert.show();
     }
 }

@@ -21,6 +21,8 @@
     <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="2"></PasswordField>
     <HBox GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="BOTTOM_RIGHT">
         <Button onAction="#loginButtonAction">Sign in</Button>
+        <Button onAction="#registerButtonAction">Register</Button>
     </HBox>
+
 
 </GridPane>

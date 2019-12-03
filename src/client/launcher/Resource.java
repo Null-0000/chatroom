@@ -1,0 +1,14 @@
+package client.launcher;
+
+/**
+ * 在这个类中添加stage的ID以及对应的位置
+ * 使代码更加优美
+ */
+
+public class Resource {
+    public static String LoginViewID = "LoginView";
+    public static String LoginViewResource = "/client/view/fxml/LoginView.fxml";
+
+    public static String RegisterID = "RegisterID";
+    public static String RegisterViewResource = "/client/view/fxml/RegisterView.fxml";
+}
