@@ -5,7 +5,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Text?>
-<?import java.net.URL?>
 <GridPane
           stylesheets="@../fxml/css/LoginView.css"
           xmlns="http://javafx.com/javafx"

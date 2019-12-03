@@ -1,6 +1,6 @@
 package client.controller;
 
-import client.model.UserInfo;
+import client.model.User;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,11 +15,13 @@ import java.util.regex.Pattern;
 /**
  * 用于与服务器通信
  * sendMessage,loadDialogues,loadUserInfo,receiveMessage
+ * Connector.getInstance().sendMessage(XXX).
  */
 
 public class Connector {
     private final String HOST = "127.0.0.1";
     private final int PORT = 5432;
+//    Socket
 
     private static Connector instance = new Connector();
     public static Connector getInstance() {
@@ -53,7 +55,7 @@ public class Connector {
             socket.close();
             outputStream.close();
             inputStream.close();
-            UserInfo.getInstance().setField(ID, name, sig, friends);
+            User.getInstance().setField(ID, name, sig, friends);
             return true;
         }
         return false;
@@ -74,5 +76,48 @@ public class Connector {
         outputStream.close();
         inputStream.close();
         return ID;
+    }
+    public boolean makeFriendWith(String info) throws IOException {
+        Socket socket = new Socket(HOST, PORT);
+        InputStream inputStream = socket.getInputStream();
+        OutputStream outputStream = socket.getOutputStream();
+
+        String message = "BHEAD make friend EHEAD Binfo " + info + " Einfo Bname " +
+                User.getInstance().getName() + " Ename";
+        outputStream.write(message.getBytes(StandardCharsets.UTF_8));
+        byte[] bytes = new byte[1024];
+        int len = inputStream.read(bytes);
+        if (len == -1) throw new IOException();
+        String result = new String(bytes, 0, len);
+
+        if(result.equals("not found")) return false;
+        else if(result.equals("added")){
+            User.getInstance().addFriend(info);
+            return true;
+        }
+        return false;
+    }
+
+    public Socket connectToRemote(String name) throws IOException {
+        Socket socket = new Socket(HOST, PORT);
+        OutputStream outputStream = socket.getOutputStream();
+        String outMessage = "BHEAD connect EHEAD Bname " + name + " Ename";
+        outputStream.write(outMessage.getBytes());
+        return socket;
+    }
+    public String loadDialogueData() throws IOException {
+        Socket socket = new Socket(HOST, PORT);
+        OutputStream outputStream = socket.getOutputStream();
+        String outMessage = "BHEAD load dialogues EHEAD Bname " + User.getInstance().getName() + " Ename";
+        outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
+
+        InputStream inputStream = socket.getInputStream();
+        int len;
+        byte[] bytes = new byte[1024];
+        String inMessage = "";
+        while ((len = inputStream.read(bytes)) != -1) {
+            inMessage += new String(bytes, 0, len);
+        }
+        return inMessage;
     }
 }

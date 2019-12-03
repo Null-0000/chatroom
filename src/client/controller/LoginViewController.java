@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.launcher.Resource;
+import client.model.User;
 import client.view.StageM;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,7 +23,7 @@ public class LoginViewController {
     @FXML
     private PasswordField passwordField;
     @FXML
-    protected void loginButtonAction(ActionEvent event) throws IOException {
+    protected void loginButtonAction(ActionEvent event){
         if(IDField.getText().isEmpty()){
             showAlert("请输入你的ID");
             return;
@@ -38,8 +39,23 @@ public class LoginViewController {
             showAlert("您输入的ID不合法，请重新输入");
             return;
         }
-        boolean isAccessible = Connector.getInstance().loadUserInfo(ID, password);
-        if(isAccessible) showAlert("将要跳转到主界面");
+        boolean isAccessible = false;
+        try {
+            isAccessible = Connector.getInstance().loadUserInfo(ID, password);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("服务器连接错误");
+            return;
+        }
+        if(isAccessible){
+            try {
+                User.getInstance().initialise();
+            } catch (IOException e) {
+                e.printStackTrace();
+                showAlert("载入服务端用户信息错误");
+            }
+            StageM.getManager().shift(Resource.LoginViewID, Resource.MainViewID);
+        }
         else showAlert("ID不存在或密码错误");
     }
     @FXML

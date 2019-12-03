@@ -2,7 +2,6 @@ package client.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -10,8 +9,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 public class RegisterViewController {
     @FXML
@@ -51,6 +48,7 @@ public class RegisterViewController {
         }
         try {
             int ID = Integer.parseInt(Connector.getInstance().register(name, password, signature));
+            showMessage("你获得的ID为" + ID);
         } catch (NumberFormatException e){
             e.printStackTrace();
             showAlert("服务器分配ID错误");
@@ -59,12 +57,18 @@ public class RegisterViewController {
             showAlert("Unknown Error");
         }
     }
+    private void showMessage(String message){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(message);
+        alert.showAndWait();
+    }
     private void showAlert(String message){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setContentText(null);
         alert.setHeaderText(message);
-        alert.show();
+        alert.showAndWait();
     }
 
     @FXML
