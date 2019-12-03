@@ -5,7 +5,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,15 +23,8 @@ public class StageM {
 
     private static Map<String, Stage> stageMap = new HashMap<>();
 
-    public void addStage(String stageName){
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource(stageName));
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stageMap.put(stageName, stage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void addStage(String viewID, Stage stage){
+        stageMap.put(viewID, stage);
     }
 
     public Stage getStage(String stageName){

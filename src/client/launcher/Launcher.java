@@ -1,8 +1,11 @@
 package client.launcher;
 
+import client.view.LoginView;
 import client.view.StageM;
 import javafx.application.Application;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class Launcher extends Application {
 
@@ -11,8 +14,9 @@ public class Launcher extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
-        StageM.getManager().addStage(Recourse.LoginStage);
-        StageM.getManager().show(Recourse.LoginStage);
+    public void start(Stage primaryStage) throws IOException {
+        LoginView loginView = new LoginView();
+        StageM.getManager().addStage(Resource.LoginViewID, loginView);
+        StageM.getManager().show(Resource.LoginViewID);
     }
 }
