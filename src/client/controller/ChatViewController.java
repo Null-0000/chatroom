@@ -1,7 +1,9 @@
 package client.controller;
 
+import client.model.Dialogue;
 import client.model.Message;
 import client.model.User;
+import javafx.beans.property.ListProperty;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -26,6 +28,9 @@ public class ChatViewController implements Initializable {
     @FXML private Label chatToLabel;
     private String chatTo;
     private Document document;
+    public ChatViewController(String chatTo){
+        this.chatTo = chatTo;
+    }
     @FXML private void sendMessage() throws IOException {
         String content = textArea.getText();
         textArea.setText("");
@@ -37,14 +42,11 @@ public class ChatViewController implements Initializable {
         synchronized (webView){
             Date now = new Date();
             Message message = new Message(chatTo, User.getInstance().getName(), content, now);
-            updateWebView(message, false);
             User.getInstance().sendMessage(message);
         }
     }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        chatTo = chatToLabel.getText();
-
         WebEngine engine = webView.getEngine();
         engine.getLoadWorker().stateProperty().addListener((obs, o, n)->{
             if (n == Worker.State.SUCCEEDED){
@@ -52,9 +54,19 @@ public class ChatViewController implements Initializable {
             }
         });
         engine.load(getClass().getResource("../view/fxml/WebView.html").toExternalForm());
-
     }
-    public void updateWebView(Message message, boolean left){
+    public void synchroniseMessages(ListProperty<Message> messageList){
+        messageList.addListener((obs, ov, nv) ->{
+            System.out.println("changed from " + ov + " to " + nv);
+            Message newMessage = nv.get(nv.size() - 1);
+            if (newMessage.sender.equals(chatTo)){
+                updateWebView(newMessage, false);
+            } else if (newMessage.sender.equals(User.getInstance().getName())){
+                updateWebView(newMessage, true);
+            }
+        });
+    }
+    private void updateWebView(Message message, boolean left){
         Element appendMessageHead = document.createElement("p");
         Element appendMessageContent = document.createElement("p");
         appendMessageHead.setTextContent(message.getHead());

@@ -1,10 +1,13 @@
 package client.view;
 
+import client.controller.ChatViewController;
 import client.launcher.Resource;
 import client.model.Message;
+import javafx.beans.property.ListProperty;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXMLLoader;
 
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 
@@ -25,9 +28,15 @@ public class ChatView extends Stage {
     private WebEngine webEngine;
 
      */
-    public ChatView(String chatTo) throws IOException {
-        AnchorPane root = FXMLLoader.load(this.getClass().getResource(Resource.ChatViewResource));
+    public ChatView(String chatTo, ListProperty<Message> messageList) throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        ChatViewController controller = new ChatViewController(chatTo);
+        controller.synchroniseMessages(messageList);
+        loader.setController(controller);
+        loader.setLocation(this.getClass().getResource(Resource.ChatViewResource));
         setTitle("chatting chamber");
+
+        AnchorPane root = loader.load();
 
         VBox vBox = (VBox) root.getChildren().get(0);
         ((Label) vBox.getChildren().get(0)).setText(chatTo);

@@ -1,5 +1,6 @@
 package client.model;
 
+import javafx.beans.property.MapProperty;
 import javafx.scene.control.Alert;
 
 import javax.swing.*;
@@ -22,17 +23,17 @@ public class DialoguesManager {
      * @author Furyton
      * @since 11.27
      */
-    public Dialogues initMyDialogues() throws IOException {
-        Dialogues dialogues = null;
+    public MapProperty<String, Dialogue> initMyDialogues() throws IOException {
+        MapProperty<String, Dialogue> dialogueMap = null;
 
         FileInputStream fileInputStream = new FileInputStream(file);
-        ObjectInputStream input = null;
+        ObjectInputStream input;
 
         if(fileInputStream.available() != 0){
             input = new ObjectInputStream(fileInputStream);
 
             try {
-                dialogues = (Dialogues) input.readObject();
+                dialogueMap = (MapProperty<String, Dialogue>) input.readObject();
             } catch (ClassCastException | InvalidClassException | ClassNotFoundException e){
                 JOptionPane.showMessageDialog(null, "warning: loading file error, deleting.....",
                         "alert", JOptionPane.ERROR_MESSAGE);
@@ -46,15 +47,15 @@ public class DialoguesManager {
         }
         fileInputStream.close();
 
-        return dialogues;
+        return dialogueMap;
     }
-    public void updateMyDialogues(Dialogues dialogues) throws IOException {
+    public void updateMyDialogues(MapProperty<String, Dialogue> dialogueMap) throws IOException {
         if (fileExist())
             file.delete();
         file.createNewFile();
         OutputStream outputStream = new FileOutputStream(file);
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-        objectOutputStream.writeObject(dialogues);
+        objectOutputStream.writeObject(dialogueMap);
         outputStream.close();
         objectOutputStream.close();
     }

@@ -2,7 +2,11 @@ package client.model;
 
 import client.controller.Connector;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.MapProperty;
+import javafx.beans.property.SimpleMapProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +15,9 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static client.model.RegexFunctions.selectBy;
 
@@ -20,7 +27,7 @@ public class User {
     private int ID;
     private ArrayList<String> friendList;
     private DialoguesManager manager;
-    private Dialogues dialogues;
+    private MapProperty<String, Dialogue> dialogueMap;
     private Socket mySocket;
 
     private static User instance = new User();
@@ -37,21 +44,44 @@ public class User {
         this.signature = signature;
         this.friendList = friendList;
     }
-    public void initialise() throws IOException, InterruptedException {
+    public void initialise() throws IOException {
         manager = new DialoguesManager(name);
+        Dialogue dialogue;
         if (!manager.fileExist()) {
-            dialogues = new Dialogues(name, friendList);
+            ObservableMap<String, Dialogue> observableMap = FXCollections.observableHashMap();
+            for (String friend: friendList){
+                dialogue = new Dialogue(friend, name);
+                observableMap.put(friend, dialogue);
+            }
+            dialogueMap = new SimpleMapProperty<>(observableMap);
+            dialogueMap.setValue(observableMap);
         }
         else {
-            dialogues = manager.initMyDialogues();
+            /**从本地读取信息*/
+            dialogueMap = manager.initMyDialogues();
         }
-        dialogues.loadRemoteData();
+        loadRemoteData();
 
         this.mySocket = Connector.getInstance().connectToRemote(name);
         this.inputStream = mySocket.getInputStream();
         this.outputStream = mySocket.getOutputStream();
 
         receiveMessages();
+    }
+    public void loadRemoteData() throws IOException {
+        String inMessage = Connector.getInstance().loadDialogueData();
+        Pattern p = Pattern.compile("Bsender (.*?) Esender Bcontent (.*?) Econtent Bdatetime (.*?) Edatetime");
+        Matcher m = p.matcher(inMessage);
+        String sender;
+        String content;
+        Date date;
+        while (m.find()){
+            sender = m.group(1);
+            content = m.group(2);
+            date = new Date(Long.parseLong(m.group(3)));
+            Message message = new Message(name, sender, content, date);
+            dialogueMap.get(sender).updateMessage(message);
+        }
     }
 
     public void addFriend(String friendName){
@@ -71,15 +101,19 @@ public class User {
     }
 
     public Dialogue getDialogueFrom(String friendName){
-        return dialogues.getAllDialogue(friendName);
+        return dialogueMap.get(friendName);
+    }
+    public MapProperty<String, Dialogue> dialogueMapProperty(){
+        return dialogueMap;
     }
 
     public ArrayList<String> getFriendList() {
         return friendList;
     }
     public void sendMessage(Message message) throws IOException {
-        dialogues.updateDialogue(message);
+        //dialogues.updateDialogue(message);
         String receiver = message.receiver;
+        dialogueMap.get(receiver).updateMessage(message);
         String content = message.getContent();
         long datetime = message.getDate().getTime();
         String outMessage = "BHEAD send message EHEAD Bsender " + name + " Esender Breceiver " + receiver +
@@ -93,7 +127,8 @@ public class User {
 
     public void exit() throws IOException {
         outputStream.write("exit".getBytes(StandardCharsets.UTF_8));
-        manager.updateMyDialogues(dialogues);
+        /**登出时储存文件*/
+        manager.updateMyDialogues(dialogueMap);
         inputStream.close();
         outputStream.close();
         mySocket.close();
@@ -116,7 +151,7 @@ public class User {
                         Date date = new Date(datetime);
 
                         Message message = new Message(name, sender, content, date);
-                        dialogues.updateDialogue(message);
+                        dialogueMap.get(sender).updateMessage(message);
                         //notice(sender);
                     }
                 } catch (IOException e) {

@@ -52,7 +52,7 @@ public class LoginViewController {
             try {
                 User.getInstance().initialise();
                 StageM.getManager().addStage(Resource.MainViewID, new MainView(User.getInstance()));
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
                 showAlert("载入服务端用户信息错误");
             }

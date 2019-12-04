@@ -29,7 +29,8 @@ public class Dialogue implements Serializable {
         this.friendName = friendName;
         ObservableList<Message> observableList = FXCollections.observableArrayList();
         this.messageList = new SimpleListProperty<>(observableList);
-        this.chatView = new ChatView(friendName);
+        chatView = new ChatView(friendName, messageList);
+
         //StageM.getManager().addStage(userName + " to " + friendName, chatView);
         /*
         messageList.addListener((obs, ov, nv)->{
@@ -43,6 +44,7 @@ public class Dialogue implements Serializable {
 
          */
     }
+
     public void updateMessage(Message message) {
         messageList.add(message);
 
