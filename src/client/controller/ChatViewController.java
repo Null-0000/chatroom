@@ -15,6 +15,7 @@ import javafx.scene.web.WebView;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class ChatViewController implements Initializable {
     @FXML private Label chatToLabel;
     private String chatTo;
     private Document document;
+    private Node divItem;
     public ChatViewController(String chatTo){
         this.chatTo = chatTo;
     }
@@ -51,18 +53,19 @@ public class ChatViewController implements Initializable {
         engine.getLoadWorker().stateProperty().addListener((obs, o, n)->{
             if (n == Worker.State.SUCCEEDED){
                 document = engine.getDocument();
+                divItem = document.getElementsByTagName("div").item(0);
+                System.out.println(divItem);
             }
         });
         engine.load(getClass().getResource("../view/fxml/WebView.html").toExternalForm());
     }
     public void synchroniseMessages(ListProperty<Message> messageList){
         messageList.addListener((obs, ov, nv) ->{
-            System.out.println("changed from " + ov + " to " + nv);
             Message newMessage = nv.get(nv.size() - 1);
             if (newMessage.sender.equals(chatTo)){
-                updateWebView(newMessage, false);
-            } else if (newMessage.sender.equals(User.getInstance().getName())){
                 updateWebView(newMessage, true);
+            } else {
+                updateWebView(newMessage, false);
             }
         });
     }
@@ -79,7 +82,7 @@ public class ChatViewController implements Initializable {
             appendMessageHead.setAttribute("align", "RIGHT");
             appendMessageContent.setAttribute("align", "RIGHT");
         }
-        document.getElementsByTagName("div").item(0).appendChild(appendMessageHead);
-        document.getElementsByTagName("div").item(0).appendChild(appendMessageContent);
+        divItem.appendChild(appendMessageHead);
+        divItem.appendChild(appendMessageContent);
     }
 }
