@@ -1,14 +1,19 @@
 package client.model;
 
 import client.controller.Connector;
+import javafx.scene.control.Alert;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static client.model.RegexFunctions.selectBy;
 
@@ -18,7 +23,7 @@ public class User {
     private int ID;
     private ArrayList<String> friendList;
     private DialoguesManager manager;
-    private Dialogues dialogues;
+    private Map<String, Dialogue> dialogues;
     private Socket mySocket;
 
     private static User instance = new User();
@@ -37,19 +42,17 @@ public class User {
     }
     public void initialise() throws IOException {
         manager = new DialoguesManager(name);
-        if (!manager.fileExist()) {
-            dialogues = new Dialogues(name, friendList);
-        }
-        else {
-            dialogues = manager.initMyDialogues();
-        }
-        dialogues.loadRemoteData();
+        dialogues = manager.initMyDialogues();
+
+//        if(dialogues == null) showAlert("在user的initialise里dialogues为空");
+
+        loadRemoteData();
 
         this.mySocket = Connector.getInstance().connectToRemote(name);
         this.inputStream = mySocket.getInputStream();
         this.outputStream = mySocket.getOutputStream();
 
-        receiveMessages();
+        new ReceiveMessageThread().start();
     }
 
     public void addFriend(String friendName){
@@ -68,21 +71,36 @@ public class User {
         return ID;
     }
 
+    public void loadRemoteData() throws IOException {
+        String inMessage = Connector.getInstance().loadDialogueData();
+        Pattern p = Pattern.compile("Bsender (.*?) Esender Bcontent (.*?) Econtent Bdatetime (.*?) Edatetime");
+        Matcher m = p.matcher(inMessage);
+        String sender;
+        String content;
+        Date date;
+        while (m.find()){
+            sender = m.group(1);
+            content = m.group(2);
+            date = new Date(Long.parseLong(m.group(3)));
+            Message message = new Message(name, sender, content, date);
+            dialogues.get(sender).updateMessage(message);
+        }
+    }
     public Dialogue getDialogueFrom(String friendName){
-        return dialogues.getAllDialogue(friendName);
+        return dialogues.get(friendName);
     }
 
     public ArrayList<String> getFriendList() {
         return friendList;
     }
-    public void sendMessage(String receiver, String content, long datetime) throws IOException {
+    public void sendMessage(Message message) throws IOException {
+        String receiver = message.receiver;
+        dialogues.get(receiver).updateMessage(message);
+        String content = message.getContent();
+        long datetime = message.getDate().getTime();
         String outMessage = "BHEAD send message EHEAD Bsender " + name + " Esender Breceiver " + receiver +
                 " Ereceiver Bcontent " + content + " Econtent Bdatetime " + datetime + " Edatetime";
         outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
-    }
-    private void receiveMessages() {
-        ReceiveMessageThread receiveMessageThread = new ReceiveMessageThread();
-        receiveMessageThread.start();
     }
 
     public void exit() throws IOException {
@@ -92,6 +110,7 @@ public class User {
         outputStream.close();
         mySocket.close();
     }
+
     class ReceiveMessageThread extends Thread{
         @Override
         public void run() {
@@ -99,6 +118,7 @@ public class User {
             int len;
             byte[] bytes = new byte[1024];
             while (true) {
+
                 try {
                     len = inputStream.read(bytes);
                     if (len != -1) {
@@ -109,13 +129,24 @@ public class User {
                         Date date = new Date(datetime);
 
                         Message message = new Message(name, sender, content, date);
-                        dialogues.updateDialogue(message, sender);
+                        dialogues.get(sender).updateMessage(message);
                         //notice(sender);
                     }
-                } catch (IOException e){
+                } catch (SocketException e){
+                    System.out.println("接受消息线程结束");
+                    return;
+                } catch (IOException e) {
                     e.printStackTrace();
+                    return;
                 }
             }
         }
+    }
+    private void showAlert(String message){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setContentText(null);
+        alert.setHeaderText(message);
+        alert.showAndWait();
     }
 }

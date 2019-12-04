@@ -2,6 +2,7 @@ package client.controller;
 
 import client.launcher.Resource;
 import client.model.User;
+import client.view.MainView;
 import client.view.StageM;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -50,6 +51,7 @@ public class LoginViewController {
         if(isAccessible){
             try {
                 User.getInstance().initialise();
+                StageM.getManager().addStage(Resource.MainViewID, new MainView(User.getInstance()));
             } catch (IOException e) {
                 e.printStackTrace();
                 showAlert("载入服务端用户信息错误");

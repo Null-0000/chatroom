@@ -19,11 +19,11 @@ public class Launcher extends Application {
     public void start(Stage primaryStage) throws IOException {
         LoginView loginView = new LoginView();
         RegisterView registerView = new RegisterView();
-        MainView mainView = new MainView();
+
         loginView.isShowing();
         StageM.getManager().addStage(Resource.LoginViewID, loginView);
         StageM.getManager().addStage(Resource.RegisterID, registerView);
-        StageM.getManager().addStage(Resource.MainViewID, mainView);
+
         StageM.getManager().show(Resource.LoginViewID);
     }
 }

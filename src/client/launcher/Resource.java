@@ -12,6 +12,10 @@ public class Resource {
     public static String RegisterID = "RegisterID";
     public static String RegisterViewResource = "/client/view/fxml/RegisterView.fxml";
 
+    public static String ChatID = "ChatID";
+    public static String ChatViewResource = "/client/view/fxml/ChatView.fxml";
+
     public static String MainViewID = "MainViewID";
     public static String MainViewResource = "/client/view/fxml/MainView.fxml";
+
 }

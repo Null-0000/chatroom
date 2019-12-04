@@ -1,20 +1,30 @@
 package client.model;
 
 import javafx.scene.control.Alert;
-
-import javax.swing.*;
 import java.io.*;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DialoguesManager {
     private String userName;
+    private String fileName;
+    private String directory = "src/client/data";
     private File file;
     public DialoguesManager(String userName) throws IOException {
         this.userName = userName;
-        file = new File("src/client/data/" + userName + ".dat");
-    }
-    public boolean fileExist(){
-        return file.exists();
+        fileName = this.userName + ".dat";
+        file = new File(directory + "/" + fileName);
+
+        showMessage("正在构造DialoguesManager\n" + file.exists());
+
+        if(!file.exists()){
+            (new File(directory)).mkdir();
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
     /**
      * initialise the user's dialogues from the data file
@@ -22,40 +32,50 @@ public class DialoguesManager {
      * @author Furyton
      * @since 11.27
      */
-    public Dialogues initMyDialogues() throws IOException {
-        Dialogues dialogues = null;
-
+    public Map<String, Dialogue> initMyDialogues() throws IOException {
         FileInputStream fileInputStream = new FileInputStream(file);
-        ObjectInputStream input = null;
+        ObjectInputStream input;
+
+        Map<String, Dialogue> myDialogues = null;
 
         if(fileInputStream.available() != 0){
             input = new ObjectInputStream(fileInputStream);
-
             try {
-                dialogues = (Dialogues) input.readObject();
+                myDialogues = (Map<String, Dialogue>)input.readObject();
             } catch (ClassCastException | InvalidClassException | ClassNotFoundException e){
-                JOptionPane.showMessageDialog(null, "warning: loading file error, deleting.....",
-                        "alert", JOptionPane.ERROR_MESSAGE);
-
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Error");
                 alert.setHeaderText("warning: loading file error, deleting.....");
-
-                file.delete();
+                alert.showAndWait();
+                (new FileOutputStream(file)).close();
             }
+            showMessage("本地文件不为空");
         }
         fileInputStream.close();
 
-        return dialogues;
+        if(myDialogues == null) return getNewMap();
+
+        return myDialogues;
     }
-    public void updateMyDialogues(Dialogues dialogues) throws IOException {
-        if (fileExist())
-            file.delete();
-        file.createNewFile();
+    private Map<String, Dialogue> getNewMap() throws IOException {
+        Map<String, Dialogue> myDialogues = new HashMap<>();
+        for (String friend: User.getInstance().getFriendList()){
+            myDialogues.put(friend, new Dialogue(friend, User.getInstance().getName()));
+        }
+
+        return myDialogues;
+    }
+    public void updateMyDialogues(Map<String, Dialogue> dialogues) throws IOException {
         OutputStream outputStream = new FileOutputStream(file);
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
         objectOutputStream.writeObject(dialogues);
         outputStream.close();
         objectOutputStream.close();
+    }
+    private void showMessage(String message){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(message);
+        alert.showAndWait();
     }
 }
