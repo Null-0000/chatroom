@@ -142,11 +142,4 @@ public class User {
             }
         }
     }
-    private void showAlert(String message){
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setContentText(null);
-        alert.setHeaderText(message);
-        alert.showAndWait();
-    }
 }

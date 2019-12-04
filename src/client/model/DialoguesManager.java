@@ -15,7 +15,7 @@ public class DialoguesManager {
         fileName = this.userName + ".dat";
         file = new File(directory + "/" + fileName);
 
-        showMessage("正在构造DialoguesManager\n" + file.exists());
+        //ShowDialog.showMessage("正在构造DialoguesManager\n" + file.exists());
 
         if(!file.exists()){
             (new File(directory)).mkdir();
@@ -49,11 +49,19 @@ public class DialoguesManager {
                 alert.showAndWait();
                 (new FileOutputStream(file)).close();
             }
-            showMessage("本地文件不为空");
+//            ShowDialog.showMessage("本地文件不为空");
         }
         fileInputStream.close();
 
         if(myDialogues == null) return getNewMap();
+        else{
+            for(String friend: User.getInstance().getFriendList()){
+                Dialogue d = myDialogues.get(friend);
+                if(d != null && d.getChatView()==null){
+                    d.setChatView();
+                }
+            }
+        }
 
         return myDialogues;
     }
@@ -71,11 +79,5 @@ public class DialoguesManager {
         objectOutputStream.writeObject(dialogues);
         outputStream.close();
         objectOutputStream.close();
-    }
-    private void showMessage(String message){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information");
-        alert.setHeaderText(message);
-        alert.showAndWait();
     }
 }

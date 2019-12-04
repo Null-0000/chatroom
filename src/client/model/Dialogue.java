@@ -1,6 +1,8 @@
 package client.model;
 
 import client.view.ChatView;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -29,7 +31,19 @@ public class Dialogue implements Serializable {
     public List<Message> getMessageList() {
         return messageList;
     }
-//    public ListProperty<Message> getPeriodMessage(Date date) {
+
+    public ChatView getChatView() {
+        return chatView;
+    }
+    public void setChatView(){
+        try {
+            chatView = new ChatView(friendName, messageList);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //    public ListProperty<Message> getPeriodMessage(Date date) {
 //        if (messageList.isEmpty()) return null;
 //        for (int i = messageList.size() - 1; i >= 0; i--) {
 //            if (messageList.get(i).compareTo(date) < 0) {
@@ -38,8 +52,8 @@ public class Dialogue implements Serializable {
 //        }
 //        return null;
 //    }
-    public void show() throws IOException {
-        if(chatView == null) chatView = new ChatView(friendName, messageList);
+    public void show() {
         chatView.show();
+        chatView.loadLocalMessages();
     }
 }

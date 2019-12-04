@@ -25,11 +25,7 @@ public class MainViewController implements Initializable {
         friList.getSelectionModel().selectedItemProperty().addListener(
                 (obs, ov, nv) -> {
                     Dialogue dialogue = User.getInstance().getDialogueFrom(nv);
-                    try {
-                        dialogue.show();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    dialogue.show();
                 }
         );
     }

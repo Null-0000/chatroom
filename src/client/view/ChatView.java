@@ -29,11 +29,14 @@ import java.util.List;
 
 public class ChatView extends Stage {
 
+    private ChatViewController controller;
+    List<Message> messageList;
+
     public ChatView(String chatTo, List<Message> messageList) throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        ChatViewController controller = new ChatViewController(chatTo);
-
-        ObservableList<Message> messages = FXCollections.observableArrayList(messageList);
+        controller = new ChatViewController(chatTo);
+        this.messageList = messageList;
+        ObservableList<Message> messages = FXCollections.observableArrayList(this.messageList);
 
         controller.synchroniseMessages(messages);
         loader.setController(controller);
@@ -47,5 +50,8 @@ public class ChatView extends Stage {
 
         Scene scene = new Scene(root);
         this.setScene(scene);
+    }
+    public void loadLocalMessages(){
+        controller.loadLocalMessages(this.messageList);
     }
 }
