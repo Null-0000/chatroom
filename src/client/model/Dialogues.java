@@ -11,24 +11,23 @@ public class Dialogues implements Serializable {
     private Map<String, Dialogue> dialogueMap;
     private String userName;
 
-    public Dialogues(String userName, ArrayList<String> friends) throws IOException {
+    public Dialogues(String userName, ArrayList<String> friends) throws IOException, InterruptedException {
         this.dialogueMap = new HashMap<>();
         this.userName = userName;
         for (String friend: friends){
             dialogueMap.put(friend, new Dialogue(friend, userName));
         }
     }
-
     public void setName(String userName){
         this.userName = userName;
     }
-    public void updateDialogue(Message message, String friendName) throws IOException {
-        Dialogue dialogue = dialogueMap.get(friendName);
-
+    public void updateDialogue(Message message) throws IOException {
+        String from = message.sender;
+        Dialogue dialogue = dialogueMap.get(from);
         if(dialogue == null){
-            dialogue = new Dialogue(friendName, userName);
+            dialogue = new Dialogue(from, userName);
             dialogue.updateMessage(message);
-            dialogueMap.put(friendName, dialogue);
+            dialogueMap.put(from, dialogue);
         } else {
             dialogue.updateMessage(message);
         }
@@ -51,7 +50,7 @@ public class Dialogues implements Serializable {
 //        dialogueMap.get(friendName).setChattingFrameVisible();
 //    }
     //从远程数据库读取用户下线时接收地数据
-    public void loadRemoteData() throws IOException {
+    public void loadRemoteData() throws IOException, InterruptedException {
         String inMessage = Connector.getInstance().loadDialogueData();
         Pattern p = Pattern.compile("Bsender (.*?) Esender Bcontent (.*?) Econtent Bdatetime (.*?) Edatetime");
         Matcher m = p.matcher(inMessage);
@@ -63,7 +62,7 @@ public class Dialogues implements Serializable {
             content = m.group(2);
             date = new Date(Long.parseLong(m.group(3)));
             Message message = new Message(userName, sender, content, date);
-            updateDialogue(message, sender);
+            updateDialogue(message);
         }
     }
 }

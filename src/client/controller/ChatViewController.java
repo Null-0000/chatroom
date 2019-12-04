@@ -24,7 +24,7 @@ public class ChatViewController implements Initializable {
     @FXML private WebView webView;
     @FXML private TextArea textArea;
     @FXML private Label chatToLabel;
-    String chatTo;
+    private String chatTo;
     private Document document;
     @FXML private void sendMessage() throws IOException {
         String content = textArea.getText();
@@ -52,6 +52,7 @@ public class ChatViewController implements Initializable {
             }
         });
         engine.load(getClass().getResource("../view/fxml/WebView.html").toExternalForm());
+
     }
     public void updateWebView(Message message, boolean left){
         Element appendMessageHead = document.createElement("p");

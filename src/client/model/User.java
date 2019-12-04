@@ -1,6 +1,8 @@
 package client.model;
 
 import client.controller.Connector;
+import javafx.beans.property.ListProperty;
+import javafx.collections.ObservableList;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +37,7 @@ public class User {
         this.signature = signature;
         this.friendList = friendList;
     }
-    public void initialise() throws IOException {
+    public void initialise() throws IOException, InterruptedException {
         manager = new DialoguesManager(name);
         if (!manager.fileExist()) {
             dialogues = new Dialogues(name, friendList);
@@ -76,6 +78,7 @@ public class User {
         return friendList;
     }
     public void sendMessage(Message message) throws IOException {
+        dialogues.updateDialogue(message);
         String receiver = message.receiver;
         String content = message.getContent();
         long datetime = message.getDate().getTime();
@@ -113,10 +116,10 @@ public class User {
                         Date date = new Date(datetime);
 
                         Message message = new Message(name, sender, content, date);
-                        dialogues.updateDialogue(message, sender);
+                        dialogues.updateDialogue(message);
                         //notice(sender);
                     }
-                } catch (IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
