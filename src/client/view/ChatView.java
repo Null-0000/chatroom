@@ -28,9 +28,10 @@ public class ChatView extends Stage {
     private WebEngine webEngine;
 
      */
+    private ChatViewController controller;
     public ChatView(String chatTo, ListProperty<Message> messageList) throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        ChatViewController controller = new ChatViewController(chatTo);
+        controller = new ChatViewController(chatTo);
         controller.synchroniseMessages(messageList);
         loader.setController(controller);
         loader.setLocation(this.getClass().getResource(Resource.ChatViewResource));
@@ -40,38 +41,13 @@ public class ChatView extends Stage {
 
         VBox vBox = (VBox) root.getChildren().get(0);
         ((Label) vBox.getChildren().get(0)).setText(chatTo);
-        /*
-        webEngine = ((WebView) vBox.getChildren().get(1)).getEngine();
-        webEngine.getLoadWorker().stateProperty().addListener((
-                (obs, ov, nv)->{
-                    System.out.println(nv);
-                    if (nv == Worker.State.SUCCEEDED)
-                        document = webEngine.getDocument();
-                }
-                ));
-        webEngine.load(getClass().getResource("fxml/WebView.html").toExternalForm());
 
-         */
         Scene scene = new Scene(root);
         this.setScene(scene);
     }
-    /*public void updateWebView(Message message, boolean left){
-        Element appendMessageHead = document.createElement("p");
-        Element appendMessageContent = document.createElement("p");
-        appendMessageHead.setTextContent(message.getHead());
-        if (left) {
-            appendMessageContent.setTextContent(message.getContent());
-            appendMessageHead.setAttribute("align", "LEFT");
-            appendMessageContent.setAttribute("align", "LEFT");
-        } else {
-            appendMessageContent.setTextContent(message.getContent());
-            appendMessageHead.setAttribute("align", "RIGHT");
-            appendMessageContent.setAttribute("align", "RIGHT");
-        }
-        document.getElementsByTagName("div").item(0).appendChild(appendMessageHead);
-        document.getElementsByTagName("div").item(0).appendChild(appendMessageContent);
-        webEngine.reload();
+
+    public void loadLocalMessages(ListProperty<Message> messageList) {
+        controller.loadMessages(messageList);
     }
 
-     */
 }

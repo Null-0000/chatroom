@@ -2,6 +2,8 @@ package client.view;
 
 import client.launcher.Resource;
 import client.model.User;
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -12,7 +14,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import old_version.user.Dialogues;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,5 +38,14 @@ public class MainView extends Stage {
 
         this.setScene(new Scene(anchorPane));
 
+        setOnCloseRequest((e)->{
+            try {
+                User.getInstance().exit();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            Platform.exit();
+            System.exit(0);
+        });
     }
 }

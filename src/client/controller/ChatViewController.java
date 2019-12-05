@@ -85,4 +85,11 @@ public class ChatViewController implements Initializable {
         divItem.appendChild(appendMessageHead);
         divItem.appendChild(appendMessageContent);
     }
+
+    public void loadMessages(ListProperty<Message> messageList){
+        for (Message message: messageList){
+            boolean isLeft = message.sender.equals(chatTo);
+            updateWebView(message, isLeft);
+        }
+    }
 }

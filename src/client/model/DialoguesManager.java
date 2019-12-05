@@ -6,13 +6,15 @@ import javafx.scene.control.Alert;
 import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DialoguesManager {
     private String userName;
     private File file;
     public DialoguesManager(String userName) throws IOException {
         this.userName = userName;
-        file = new File("src/client/data/" + userName + ".dat");
+        file = new File("src/client/data/" + userName);
     }
     public boolean fileExist(){
         return file.exists();
@@ -23,13 +25,25 @@ public class DialoguesManager {
      * @author Furyton
      * @since 11.27
      */
-    public MapProperty<String, Dialogue> initMyDialogues() throws IOException {
-        MapProperty<String, Dialogue> dialogueMap = null;
+    public Map<String, Dialogue> initMyDialogues() throws IOException {
+        Map<String, Dialogue> dialogueMap = new HashMap<>();
+        for (String friendFileName: file.list()){
+            String friend = friendFileName.substring(0, friendFileName.length() - 4);
+            InputStream is = new FileInputStream(file.getPath() + "/" + friendFileName);
+            ObjectInputStream ois = new ObjectInputStream(is);
+            try {
+                Dialogue dialogue = (Dialogue) ois.readObject();
+                dialogue.setChatView();
+                dialogueMap.put(friend, dialogue);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            ois.close();
+            is.close();
+        }
+        return dialogueMap;
 
-        FileInputStream fileInputStream = new FileInputStream(file);
-        ObjectInputStream input;
-
-        if(fileInputStream.available() != 0){
+/*        if(fileInputStream.available() != 0){
             input = new ObjectInputStream(fileInputStream);
 
             try {
@@ -48,15 +62,19 @@ public class DialoguesManager {
         fileInputStream.close();
 
         return dialogueMap;
+ */
     }
-    public void updateMyDialogues(MapProperty<String, Dialogue> dialogueMap) throws IOException {
-        if (fileExist())
-            file.delete();
-        file.createNewFile();
-        OutputStream outputStream = new FileOutputStream(file);
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-        objectOutputStream.writeObject(dialogueMap);
-        outputStream.close();
-        objectOutputStream.close();
+    public void updateMyDialogues(Map<String, Dialogue> dialogueMap) throws IOException {
+        if (!fileExist()){
+            file.mkdir();
+        }
+        for (String friend: dialogueMap.keySet()) {
+            File friendFile = new File(file.getPath() + "/" + friend + ".dat");
+            OutputStream outputStream = new FileOutputStream(friendFile);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+            objectOutputStream.writeObject(dialogueMap.get(friend));
+            outputStream.close();
+            objectOutputStream.close();
+        }
     }
 }

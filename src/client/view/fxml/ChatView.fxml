@@ -12,7 +12,7 @@
         <VBox spacing="10" alignment="CENTER">
             <padding><Insets top="5" bottom="5" left="5" right="5"/></padding>
             <Label fx:id="chatToLabel"></Label>
-            <WebView fx:id="webView" ></WebView>
+            <WebView fx:id="webView" prefHeight="400"></WebView>
             <TextArea fx:id="textArea"></TextArea>
             <HBox alignment="BOTTOM_RIGHT" AnchorPane.bottomAnchor="10">
                 <Button fx:id="sendButton" onAction="#sendMessage">Send</Button>

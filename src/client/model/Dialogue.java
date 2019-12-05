@@ -1,17 +1,22 @@
 package client.model;
 
 import client.view.ChatView;
-import client.view.StageM;
+
+import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.ListPropertyBase;
+
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import old_version.views.MyStage;
+import javafx.scene.control.Alert;
+
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -19,63 +24,42 @@ import java.util.Date;
  */
 
 public class Dialogue implements Serializable {
-    private ListProperty<Message> messageList;
-    private String friendName;
+    private transient ListProperty<Message> messageList;
+    private transient String friendName;
 
-    private ChatView chatView;
-
+    private transient ChatView chatView;
 
     public Dialogue(String friendName, String userName) throws IOException {
         this.friendName = friendName;
         ObservableList<Message> observableList = FXCollections.observableArrayList();
         this.messageList = new SimpleListProperty<>(observableList);
-        chatView = new ChatView(friendName, messageList);
-
-        //StageM.getManager().addStage(userName + " to " + friendName, chatView);
-        /*
-        messageList.addListener((obs, ov, nv)->{
-            Message newMessage =  nv.get(nv.size() - 1);
-            if (newMessage.sender.equals(friendName))
-                chatView.updateWebView(newMessage, false);
-            else {
-                chatView.updateWebView(newMessage, true);
-            }
-        });
-
-         */
+        setChatView();
     }
 
+    public void setChatView() throws IOException {
+        chatView = new ChatView(friendName, messageList);
+        Platform.runLater(()->Platform.runLater(()->chatView.loadLocalMessages(messageList)));
+        /**这是一段神奇的代码，千万不要动他！！！！！！！！！！*/
+    }
     public void updateMessage(Message message) {
         messageList.add(message);
-
-//        chattingFrame.updateDialogField(message);
-        /*if(message.sender.equals(friendName)){
-            if(isGoingOn()){
-                chattingFrame.updateDialogField(message);
-                }
-           }
-         */
-//        messageArrayList.sort(Message::compareTo);
     }
-//    private boolean isGoingOn(){
-//        return chattingFrame.isVisible();
-//    }
     public ListProperty<Message> getMessageList() {
         return messageList;
     }
-    public ListProperty<Message> getPeriodMessage(Date date) {
-        if (messageList.isEmpty()) return null;
-        for (int i = messageList.size() - 1; i >= 0; i--) {
-            if (messageList.get(i).compareTo(date) < 0) {
-                return (ListProperty<Message>) messageList.subList(i, messageList.size() - 1);
-            }
-        }
-        return null;
-    }
+
     public void show(){
         chatView.show();
     }
-//    public void setChattingFrameVisible() {
-//        chattingFrame.setVisible(true);
-//    }
+
+    private void writeObject(ObjectOutputStream oos) throws IOException {
+        oos.defaultWriteObject();
+        oos.writeObject(messageList.toArray());
+        oos.writeUTF(friendName);
+    }
+    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ArrayList list = new ArrayList(Arrays.asList((Object[]) ois.readObject()));
+        messageList = new SimpleListProperty<>(FXCollections.observableArrayList(list));
+        friendName = ois.readUTF();
+    }
 }

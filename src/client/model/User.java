@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +28,7 @@ public class User {
     private int ID;
     private ArrayList<String> friendList;
     private DialoguesManager manager;
-    private MapProperty<String, Dialogue> dialogueMap;
+    private Map<String, Dialogue> dialogueMap;
     private Socket mySocket;
 
     private static User instance = new User();
@@ -48,13 +49,11 @@ public class User {
         manager = new DialoguesManager(name);
         Dialogue dialogue;
         if (!manager.fileExist()) {
-            ObservableMap<String, Dialogue> observableMap = FXCollections.observableHashMap();
+            dialogueMap = new HashMap<>();
             for (String friend: friendList){
                 dialogue = new Dialogue(friend, name);
-                observableMap.put(friend, dialogue);
+                dialogueMap.put(friend, dialogue);
             }
-            dialogueMap = new SimpleMapProperty<>(observableMap);
-            dialogueMap.setValue(observableMap);
         }
         else {
             /**从本地读取信息*/
@@ -102,9 +101,6 @@ public class User {
 
     public Dialogue getDialogueFrom(String friendName){
         return dialogueMap.get(friendName);
-    }
-    public MapProperty<String, Dialogue> dialogueMapProperty(){
-        return dialogueMap;
     }
 
     public ArrayList<String> getFriendList() {
