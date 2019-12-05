@@ -24,7 +24,12 @@ public class Message implements Comparable<Message>, Serializable {
     }
     @Override
     public String toString() {
-        return "\n" + getFormattedDate()+ " " + sender + ":" + "\n\t" + content + "\n";
+        return String.format("{receiver:%s,sender:%s,content:%s,date:%s}",receiver,
+                sender,content,date);
+    }
+    public String toHTML(boolean isLeft){
+        if (isLeft) return String.format("<p align=\'LEFT\'>%s  %s:<br>&nbsp&nbsp%s</p>", getFormattedDate(), sender, content);
+        else return String.format("<p align=\'RIGHT\'>%s  %s:<br>%s&nbsp&nbsp</p>", getFormattedDate(), sender, content);
     }
     @Override
     public int compareTo(Message o) {

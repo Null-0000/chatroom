@@ -1,21 +1,16 @@
 package client.controller;
 
-import client.model.Dialogue;
 import client.model.Message;
 import client.model.User;
+import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
-import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import javafx.scene.web.HTMLEditor;
 
 
 import java.io.IOException;
@@ -24,12 +19,13 @@ import java.util.Date;
 import java.util.ResourceBundle;
 
 public class ChatViewController implements Initializable {
-    @FXML private WebView webView;
+    @FXML private HTMLEditor htmlEditor;
     @FXML private TextArea textArea;
     @FXML private Label chatToLabel;
+    private final String HTMLHEAD = "<html><head><style>p{font-size:25px;}</style></head><body>";
+    private final String HTMLTAIL = "</body></html>";
+    private String htmlText = "";
     private String chatTo;
-    private Document document;
-    private Node divItem;
     public ChatViewController(String chatTo){
         this.chatTo = chatTo;
     }
@@ -41,7 +37,7 @@ public class ChatViewController implements Initializable {
             alert.setContentText("warning: can not send an empty message!");
             return;
         }
-        synchronized (webView){
+        synchronized (htmlEditor){
             Date now = new Date();
             Message message = new Message(chatTo, User.getInstance().getName(), content, now);
             User.getInstance().sendMessage(message);
@@ -49,47 +45,35 @@ public class ChatViewController implements Initializable {
     }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        WebEngine engine = webView.getEngine();
-        engine.getLoadWorker().stateProperty().addListener((obs, o, n)->{
-            if (n == Worker.State.SUCCEEDED){
-                document = engine.getDocument();
-                divItem = document.getElementsByTagName("div").item(0);
-                System.out.println(divItem);
+        htmlEditor.setVisible(false);
+        Platform.runLater(()->{
+            Node[] nodes = htmlEditor.lookupAll(".tool-bar").toArray(new Node[0]);
+            for (Node node: nodes){
+                node.setVisible(false);
+                node.setManaged(false);
             }
+            htmlEditor.setVisible(true);
         });
-        engine.load(getClass().getResource("../view/fxml/WebView.html").toExternalForm());
+        htmlEditor.setDisable(true);
     }
     public void synchroniseMessages(ListProperty<Message> messageList){
         messageList.addListener((obs, ov, nv) ->{
             Message newMessage = nv.get(nv.size() - 1);
             if (newMessage.sender.equals(chatTo)){
-                updateWebView(newMessage, true);
+                htmlText += newMessage.toHTML(true);
             } else {
-                updateWebView(newMessage, false);
+                htmlText += newMessage.toHTML(false);
             }
+            Platform.runLater(()->htmlEditor.setHtmlText(HTMLHEAD + htmlText + HTMLTAIL));
+            /**while you are updating the component out of FX application thread, you will get an
+             * IllegalStateException and then use PlatForm.runLater to solve it.*/
         });
     }
-    private void updateWebView(Message message, boolean left){
-        Element appendMessageHead = document.createElement("p");
-        Element appendMessageContent = document.createElement("p");
-        appendMessageHead.setTextContent(message.getHead());
-        if (left) {
-            appendMessageContent.setTextContent(message.getContent());
-            appendMessageHead.setAttribute("align", "LEFT");
-            appendMessageContent.setAttribute("align", "LEFT");
-        } else {
-            appendMessageContent.setTextContent(message.getContent());
-            appendMessageHead.setAttribute("align", "RIGHT");
-            appendMessageContent.setAttribute("align", "RIGHT");
-        }
-        divItem.appendChild(appendMessageHead);
-        divItem.appendChild(appendMessageContent);
-    }
-
     public void loadMessages(ListProperty<Message> messageList){
         for (Message message: messageList){
             boolean isLeft = message.sender.equals(chatTo);
-            updateWebView(message, isLeft);
+            htmlText += message.toHTML(isLeft);
         }
+        htmlEditor.setHtmlText(HTMLHEAD + htmlText + HTMLTAIL);
     }
 }

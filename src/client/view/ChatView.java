@@ -3,6 +3,7 @@ package client.view;
 import client.controller.ChatViewController;
 import client.launcher.Resource;
 import client.model.Message;
+import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXMLLoader;
@@ -24,10 +25,6 @@ import org.w3c.dom.Element;
 import java.io.IOException;
 
 public class ChatView extends Stage {
-    /*private Document document;
-    private WebEngine webEngine;
-
-     */
     private ChatViewController controller;
     public ChatView(String chatTo, ListProperty<Message> messageList) throws IOException {
         FXMLLoader loader = new FXMLLoader();

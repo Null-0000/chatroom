@@ -42,27 +42,6 @@ public class DialoguesManager {
             is.close();
         }
         return dialogueMap;
-
-/*        if(fileInputStream.available() != 0){
-            input = new ObjectInputStream(fileInputStream);
-
-            try {
-                dialogueMap = (MapProperty<String, Dialogue>) input.readObject();
-            } catch (ClassCastException | InvalidClassException | ClassNotFoundException e){
-                JOptionPane.showMessageDialog(null, "warning: loading file error, deleting.....",
-                        "alert", JOptionPane.ERROR_MESSAGE);
-
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Error");
-                alert.setHeaderText("warning: loading file error, deleting.....");
-
-                file.delete();
-            }
-        }
-        fileInputStream.close();
-
-        return dialogueMap;
- */
     }
     public void updateMyDialogues(Map<String, Dialogue> dialogueMap) throws IOException {
         if (!fileExist()){

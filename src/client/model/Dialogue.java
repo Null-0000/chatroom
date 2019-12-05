@@ -8,7 +8,6 @@ import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
 
 
 import java.io.IOException;
@@ -17,7 +16,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 
 /**
  * dialogue between user and one friend
@@ -38,8 +36,9 @@ public class Dialogue implements Serializable {
 
     public void setChatView() throws IOException {
         chatView = new ChatView(friendName, messageList);
-        Platform.runLater(()->Platform.runLater(()->chatView.loadLocalMessages(messageList)));
-        /**这是一段神奇的代码，千万不要动他！！！！！！！！！！*/
+        chatView.loadLocalMessages(messageList);
+        /*Platform.runLater(()-> Platform.runLater(()-> chatView.loadLocalMessages(messageList)));
+        /**这是一段神奇的代码，出bug的话只要一直加runLater即可，不到得已千万不要动他！！！！！！！！！！*/
     }
     public void updateMessage(Message message) {
         messageList.add(message);
