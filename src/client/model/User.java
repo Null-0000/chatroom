@@ -1,7 +1,8 @@
 package client.model;
 
 import client.controller.Connector;
-import javafx.scene.control.Alert;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +22,7 @@ public class User {
     private String name;
     private String signature;
     private int ID;
-    private ArrayList<String> friendList;
+    private ObservableList<String> friendList;
     private DialoguesManager manager;
     private Map<String, Dialogue> dialogues;
     private Socket mySocket;
@@ -38,7 +39,7 @@ public class User {
         this.ID = ID;
         this.name = name;
         this.signature = signature;
-        this.friendList = friendList;
+        this.friendList = FXCollections.observableArrayList(friendList);
     }
     public void initialise() throws IOException {
         manager = new DialoguesManager(name);
@@ -52,12 +53,22 @@ public class User {
         this.inputStream = mySocket.getInputStream();
         this.outputStream = mySocket.getOutputStream();
 
-        new ReceiveMessageThread().start();
+        ReceiveMessageThread thread = new ReceiveMessageThread();
+        thread.start();
+
+//        ShowDialog.showMessage("END");
     }
 
     public void addFriend(String friendName){
         friendList.add(friendName);
-        //此处为主界面更新好友列表
+        try {
+            Dialogue d = new Dialogue(friendName, name);
+            d.setChatView();
+            dialogues.put(friendName, d);
+        } catch (IOException e) {
+            e.printStackTrace();
+            ShowDialog.showMessage(e.getMessage());
+        }
     }
     public String getName(){
         return name;
@@ -84,13 +95,14 @@ public class User {
             date = new Date(Long.parseLong(m.group(3)));
             Message message = new Message(name, sender, content, date);
             dialogues.get(sender).updateMessage(message);
+            ShowDialog.showMessage(sender + " " + content + " " + "收到离线消息");
         }
     }
     public Dialogue getDialogueFrom(String friendName){
         return dialogues.get(friendName);
     }
 
-    public ArrayList<String> getFriendList() {
+    public ObservableList<String> getFriendList() {
         return friendList;
     }
     public void sendMessage(Message message) throws IOException {
@@ -130,6 +142,7 @@ public class User {
 
                         Message message = new Message(name, sender, content, date);
                         dialogues.get(sender).updateMessage(message);
+                        ShowDialog.showMessage("收到一条消息");
                         //notice(sender);
                     }
                 } catch (SocketException e){

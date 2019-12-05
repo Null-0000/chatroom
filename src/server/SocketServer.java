@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 class SocketServer {
     private final int PORT = 5432;
@@ -17,7 +18,8 @@ class SocketServer {
         manager = new UserDataBaseManager();
         socketMap = new HashMap<>();
         int count = 0;
-        System.out.println("-------服务器启动--------");
+        System.out.println("-------Server Running--------");
+        new exitThread().start();
         while (true){
             Socket socket = server.accept();
             ServerThread thread = new ServerThread(socket, manager, socketMap);
@@ -25,6 +27,17 @@ class SocketServer {
             thread.start();
             System.out.println("有一个线程运行结束");
         }
+    }
+    private class exitThread extends Thread {
+        Scanner scan = new Scanner(System.in);
 
+        @Override
+        public void run() {
+            while(true){
+                if(scan.nextLine().equals("exit".toLowerCase())){
+                    System.exit(0);
+                }
+            }
+        }
     }
 }

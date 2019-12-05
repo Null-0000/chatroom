@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
+<GridPane
+        stylesheets="@../fxml/css/SuperView.css"
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="client.controller.AddFriendViewController"
+        prefHeight="300.0" prefWidth="600.0"
+        alignment="CENTER" hgap="10" vgap="10">
+    <padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
+    <Text fx:id="AddFriendTitle" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2" styleClass="font-title">Make new friends here</Text>
+    <Label GridPane.columnIndex="0" GridPane.rowIndex="1">your friend's name</Label>
+    <TextField fx:id="friendNameField" GridPane.columnIndex="1" GridPane.rowIndex="1" onAction="#keyAction" promptText="请输入好友的昵称"></TextField>
+
+    <HBox GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="BOTTOM_RIGHT" spacing="10">
+        <Button onAction="#SearchButtonAction" styleClass="btn-basic:hover,btn-radius-large">Search</Button>
+    </HBox>
+
+
+</GridPane>

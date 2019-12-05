@@ -18,4 +18,6 @@ public class Resource {
     public static String MainViewID = "MainViewID";
     public static String MainViewResource = "/client/view/fxml/MainView.fxml";
 
+    public static String AddFriendView = "AddFriendView";
+    public static String AddFriendViewResource = "/client/view/fxml/AddFriendView.fxml";
 }

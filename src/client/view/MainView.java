@@ -4,6 +4,7 @@ import client.launcher.Resource;
 import client.model.User;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -15,6 +16,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -24,7 +26,7 @@ public class MainView extends Stage {
         int id = user.getID();
         String name = user.getName();
         String signature = user.getSignature();
-        ArrayList<String> friends = user.getFriendList();
+        ObservableList<String> friends = user.getFriendList();
         AnchorPane anchorPane = FXMLLoader.load(getClass().getResource(Resource.MainViewResource));
         VBox vBox = (VBox) anchorPane.getChildren().get(0);
         GridPane gridPane = (GridPane) vBox.getChildren().get(0);
@@ -32,9 +34,8 @@ public class MainView extends Stage {
         ((Label)gridPane.getChildren().get(1)).setText(""+name);
         ((Label)gridPane.getChildren().get(2)).setText(""+signature);
 
-        ObservableList<String> friList = FXCollections.observableArrayList(friends);
         ListView<String> listView = (ListView<String>) vBox.getChildren().get(1);
-        listView.setItems(friList);
+        listView.setItems(friends);
 
         setScene(new Scene(anchorPane));
 

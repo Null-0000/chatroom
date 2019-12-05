@@ -1,10 +1,9 @@
 package client.controller;
 
 import client.model.Message;
+import client.model.MyList;
 import client.model.ShowDialog;
 import client.model.User;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -43,7 +42,7 @@ public class ChatViewController implements Initializable{
         synchronized (webView){
             Date now = new Date();
             Message message = new Message(chatTo, User.getInstance().getName(), content, now);
-            updateWebView(message, false);
+//            updateWebView(message, false);
             try {
                 User.getInstance().sendMessage(message);
             } catch (IOException e) {
@@ -52,17 +51,26 @@ public class ChatViewController implements Initializable{
             }
         }
     }
-    public void synchroniseMessages(ObservableList<Message> messageList){
-        messageList.addListener((ListChangeListener<Message>) c ->{
-            ObservableList<Message> newList = (ObservableList<Message>) c.getList();
+    public void synchroniseMessages(MyList myList){
+        myList.addPropertyChangeListener(evt -> {
+            List<Message> newList = (List<Message>) evt.getNewValue();
             Message newMessage = newList.get(newList.size() - 1);
-
             if (newMessage.sender.equals(chatTo)){
-                updateWebView(newMessage, false);
-            } else if (newMessage.sender.equals(User.getInstance().getName())){
                 updateWebView(newMessage, true);
+            } else {
+                updateWebView(newMessage, false);
             }
         });
+//        pcs.addPropertyChangeListener((ListChangeListener<Message>) c ->{
+//            ObservableList<Message> newList = (ObservableList<Message>) c.getList();
+//            Message newMessage = newList.get(newList.size() - 1);
+//
+//            if (newMessage.sender.equals(chatTo)){
+//                updateWebView(newMessage, false);
+//            } else if (newMessage.sender.equals(User.getInstance().getName())){
+//                updateWebView(newMessage, true);
+//            }
+//        });
     }
     public void loadLocalMessages(List<Message> messageList) {
 //        ShowDialog.showMessage("你的消息记录已经加载完毕");
@@ -72,20 +80,22 @@ public class ChatViewController implements Initializable{
         }
     }
     private void updateWebView(Message message, boolean left) {
-        Element appendMessageHead = document.createElement("p");
-        Element appendMessageContent = document.createElement("p");
-        appendMessageHead.setTextContent(message.getHead());
-        if (left) {
-            appendMessageContent.setTextContent(message.getContent());
-            appendMessageHead.setAttribute("align", "LEFT");
-            appendMessageContent.setAttribute("align", "LEFT");
-        } else {
-            appendMessageContent.setTextContent(message.getContent());
-            appendMessageHead.setAttribute("align", "RIGHT");
-            appendMessageContent.setAttribute("align", "RIGHT");
-        }
-        document.getElementsByTagName("div").item(0).appendChild(appendMessageHead);
-        document.getElementsByTagName("div").item(0).appendChild(appendMessageContent);
+
+            Element appendMessageHead = document.createElement("p");
+            Element appendMessageContent = document.createElement("p");
+            appendMessageHead.setTextContent(message.getHead());
+            if (left) {
+                appendMessageContent.setTextContent(message.getContent());
+                appendMessageHead.setAttribute("align", "LEFT");
+                appendMessageContent.setAttribute("align", "LEFT");
+            } else {
+                appendMessageContent.setTextContent(message.getContent());
+                appendMessageHead.setAttribute("align", "RIGHT");
+                appendMessageContent.setAttribute("align", "RIGHT");
+            }
+            document.getElementsByTagName("div").item(0).appendChild(appendMessageHead);
+            document.getElementsByTagName("div").item(0).appendChild(appendMessageContent);
+
     }
 
     public void keyAction(KeyEvent keyEvent) {

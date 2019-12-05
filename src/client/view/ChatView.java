@@ -3,6 +3,7 @@ package client.view;
 import client.controller.ChatViewController;
 import client.launcher.Resource;
 import client.model.Message;
+import client.model.MyList;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
@@ -24,21 +25,20 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.util.List;
 
 public class ChatView extends Stage {
-
     private ChatViewController controller;
-    List<Message> messageList;
+    MyList<Message> messageList;
 
-    public ChatView(String chatTo, List<Message> messageList) throws IOException {
+    public ChatView(String chatTo, MyList<Message> messageList) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         controller = new ChatViewController(chatTo);
         this.messageList = messageList;
-        ObservableList<Message> messages = FXCollections.observableArrayList(this.messageList);
 
-        controller.synchroniseMessages(messages);
+        controller.synchroniseMessages(this.messageList);
         loader.setController(controller);
         loader.setLocation(this.getClass().getResource(Resource.ChatViewResource));
         setTitle("chatting chamber");

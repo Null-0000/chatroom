@@ -92,7 +92,6 @@ public class Connector {
 
         if(result.equals("not found")) return false;
         else if(result.equals("added")){
-            User.getInstance().addFriend(info);
             return true;
         }
         return false;

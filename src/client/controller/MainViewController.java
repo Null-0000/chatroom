@@ -1,7 +1,9 @@
 package client.controller;
 
+import client.launcher.Resource;
 import client.model.Dialogue;
 import client.model.User;
+import client.view.StageM;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -18,7 +20,7 @@ public class MainViewController implements Initializable {
     @FXML private ListView<String> friList;
 
     @FXML public void addFriend(){
-
+        StageM.getManager().show(Resource.AddFriendView);
     }
     @Override
     public void initialize(URL location, ResourceBundle resources) {

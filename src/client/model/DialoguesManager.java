@@ -10,7 +10,7 @@ public class DialoguesManager {
     private String fileName;
     private String directory = "src/client/data";
     private File file;
-    public DialoguesManager(String userName) throws IOException {
+    public DialoguesManager(String userName) {
         this.userName = userName;
         fileName = this.userName + ".dat";
         file = new File(directory + "/" + fileName);
@@ -23,6 +23,7 @@ public class DialoguesManager {
                 file.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
+                ShowDialog.showAlert("创建用户数据文件错误");
             }
         }
     }
@@ -53,15 +54,18 @@ public class DialoguesManager {
         }
         fileInputStream.close();
 
-        if(myDialogues == null) return getNewMap();
-        else{
-            for(String friend: User.getInstance().getFriendList()){
-                Dialogue d = myDialogues.get(friend);
-                if(d != null && d.getChatView()==null){
-                    d.setChatView();
-                }
-            }
+        if(myDialogues == null) myDialogues = getNewMap();
+        for(String friend: User.getInstance().getFriendList()){
+            Dialogue d = myDialogues.get(friend);
+            if(d == null) myDialogues.put(friend, new Dialogue(friend, User.getInstance().getName()));
+            d.setChatView();
         }
+//        for(String friend: User.getInstance().getFriendList()){
+//            Dialogue d = myDialogues.get(friend);
+//            if(d != null){
+//                d.loadLocalDialogues();
+//            }
+//        }
 
         return myDialogues;
     }

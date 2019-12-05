@@ -1,13 +1,11 @@
 package client.model;
 
 import client.view.ChatView;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.SimpleListProperty;
 
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,14 +13,15 @@ import java.util.List;
  */
 
 public class Dialogue implements Serializable {
-    private List<Message> messageList = new ArrayList<>();
+    private MyList<Message> messageList;
     private String friendName;
 
     transient private ChatView chatView;
 
     public Dialogue(String friendName, String userName) throws IOException {
         this.friendName = friendName;
-        chatView = new ChatView(friendName, messageList);
+//       messageList = new ArrayList<>();
+        messageList = new MyList<>(new ArrayList());
     }
 
     public void updateMessage(Message message) {
@@ -37,23 +36,32 @@ public class Dialogue implements Serializable {
     }
     public void setChatView(){
         try {
+            if(messageList == null) messageList = new MyList<>(new ArrayList());
             chatView = new ChatView(friendName, messageList);
         } catch (IOException e) {
+            ShowDialog.showAlert("加载" + friendName + "聊天界面错误01");
             e.printStackTrace();
         }
     }
-
-    //    public ListProperty<Message> getPeriodMessage(Date date) {
-//        if (messageList.isEmpty()) return null;
-//        for (int i = messageList.size() - 1; i >= 0; i--) {
-//            if (messageList.get(i).compareTo(date) < 0) {
-//                return (ListProperty<Message>) messageList.subList(i, messageList.size() - 1);
-//            }
-//        }
-//        return null;
-//    }
-    public void show() {
-        chatView.show();
+    public void loadLocalDialogues(){
+//        ShowDialog.showMessage("loadLocalDialogues");
+        if(chatView == null){
+            ShowDialog.showAlert("加载" + friendName + "本地消息错误");
+            return;
+        }
         chatView.loadLocalMessages();
+    }
+
+    transient boolean hasLoadLocalDialogues = false;
+    public void show() {
+        if(chatView == null){
+            ShowDialog.showAlert("加载" + friendName + "聊天界面错误02");
+            return;
+        }
+        if(!hasLoadLocalDialogues){
+            loadLocalDialogues();
+            hasLoadLocalDialogues = true;
+        }
+        chatView.show();
     }
 }
