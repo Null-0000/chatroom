@@ -22,7 +22,7 @@ public class ChatViewController implements Initializable {
     @FXML private HTMLEditor htmlEditor;
     @FXML private TextArea textArea;
     @FXML private Label chatToLabel;
-    private final String HTMLHEAD = "<html><head><style>p{font-size:25px;}</style></head><body>";
+    private final String HTMLHEAD = "<html><head><style>xmp{font-size:25px;}</style></head><body>";
     private final String HTMLTAIL = "</body></html>";
     private String htmlText = "";
     private String chatTo;

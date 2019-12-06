@@ -28,8 +28,10 @@ public class Message implements Comparable<Message>, Serializable {
                 sender,content,date);
     }
     public String toHTML(boolean isLeft){
-        if (isLeft) return String.format("<p align=\'LEFT\'>%s  %s:<br>&nbsp&nbsp%s</p>", getFormattedDate(), sender, content);
-        else return String.format("<p align=\'RIGHT\'>%s  %s:<br>%s&nbsp&nbsp</p>", getFormattedDate(), sender, content);
+        if (isLeft) return String.format("<p><xmp align=\'LEFT\'>%s%s:</xmp></p>" +
+                "<p><xmp align=\'LEFT\'>    %s</xmp></p>", getFormattedDate(), sender, content);
+        else return String.format("<p><xmp align=\'RIGHT\'>%s%s:</xmp></p>" +
+                "<p><xmp align=\'RIGHT\'>%s    </xmp></p>", getFormattedDate(), sender, content);
     }
     @Override
     public int compareTo(Message o) {
