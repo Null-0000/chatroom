@@ -14,6 +14,8 @@ import javafx.scene.control.Label;
 
 import javafx.scene.layout.AnchorPane;
 
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -34,10 +36,9 @@ public class ChatView extends Stage {
         loader.setLocation(this.getClass().getResource(Resource.ChatViewResource));
         setTitle("chatting chamber");
 
-        AnchorPane root = loader.load();
+        BorderPane root = loader.load();
 
-        VBox vBox = (VBox) root.getChildren().get(0);
-        ((Label) vBox.getChildren().get(0)).setText(chatTo);
+        ((Label)(root.getChildren().get(0))).setText(chatTo);
 
         Scene scene = new Scene(root);
         this.setScene(scene);

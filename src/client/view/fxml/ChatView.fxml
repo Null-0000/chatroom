@@ -4,22 +4,22 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.web.WebView?>
 <?import java.net.URL?>
 <?import javafx.scene.web.HTMLEditor?>
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml">
-    <children>
-        <VBox spacing="10" alignment="CENTER">
-            <padding><Insets top="5" bottom="5" left="5" right="5"/></padding>
-            <Label fx:id="chatToLabel"></Label>
-            <HTMLEditor fx:id="htmlEditor" prefHeight="400"></HTMLEditor>
-            <TextArea fx:id="textArea"></TextArea>
-            <HBox alignment="BOTTOM_RIGHT" AnchorPane.bottomAnchor="10">
-                <Button fx:id="sendButton" onAction="#sendMessage">Send</Button>
-            </HBox>
-        </VBox></children>
+<?import javafx.scene.web.WebView?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            maxHeight="600" maxWidth="600">
+    <top><Label fx:id="chatToLabel" BorderPane.alignment="CENTER"></Label></top>
+    <left><WebView fx:id="dialogView" maxHeight="400"></WebView></left>
+    <bottom>
+        <VBox alignment="BOTTOM_RIGHT">
+            <TextArea fx:id="typeArea"></TextArea>
+            <Button fx:id="sendButton" onAction="#sendMessage">Send</Button>
+        </VBox>
+    </bottom>
+    <right><WebView fx:id="show" minWidth="200"></WebView></right>
     <stylesheets>
         <URL value="@css/ChatView.css"></URL>
     </stylesheets>
-</AnchorPane>
+</BorderPane>

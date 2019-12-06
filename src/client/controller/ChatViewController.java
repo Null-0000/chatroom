@@ -4,14 +4,22 @@ import client.model.Message;
 import client.model.User;
 import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.web.HTMLEditor;
 
+import javafx.scene.control.TextArea;
+
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+import uk.ac.ed.ph.snuggletex.SnuggleEngine;
+import uk.ac.ed.ph.snuggletex.SnuggleInput;
+import uk.ac.ed.ph.snuggletex.SnuggleSession;
 
 import java.io.IOException;
 import java.net.URL;
@@ -19,25 +27,32 @@ import java.util.Date;
 import java.util.ResourceBundle;
 
 public class ChatViewController implements Initializable {
-    @FXML private HTMLEditor htmlEditor;
-    @FXML private TextArea textArea;
     @FXML private Label chatToLabel;
-    private final String HTMLHEAD = "<html><head><style>xmp{font-size:25px;}</style></head><body>";
+    @FXML private WebView dialogView;
+    @FXML private WebView show;
+    private WebEngine webEngine1;
+    private WebEngine webEngine2;
+    @FXML private TextArea typeArea;
+    private final String HTMLHEAD = "<html><head><style>math{display:\"inline\";}p{margin:4 auto}</style></head><body>";
     private final String HTMLTAIL = "</body></html>";
+    private SnuggleEngine engine = new SnuggleEngine();
+    private SnuggleSession session = engine.createSession();
+    private SnuggleInput input;
     private String htmlText = "";
     private String chatTo;
+    private int lt, rt;
     public ChatViewController(String chatTo){
         this.chatTo = chatTo;
     }
     @FXML private void sendMessage() throws IOException {
-        String content = textArea.getText();
-        textArea.setText("");
+        String content = translate(typeArea.getText());
+        typeArea.setText("");
         if(content.equals("")) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText("warning: can not send an empty message!");
             return;
         }
-        synchronized (htmlEditor){
+        synchronized (dialogView){
             Date now = new Date();
             Message message = new Message(chatTo, User.getInstance().getName(), content, now);
             User.getInstance().sendMessage(message);
@@ -45,16 +60,48 @@ public class ChatViewController implements Initializable {
     }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        htmlEditor.setVisible(false);
+        typeArea.setWrapText(true);
+        //隐藏TextArea的滚动条
+        webEngine1 = dialogView.getEngine();
+        webEngine2 = show.getEngine();
+        webEngine1.getLoadWorker().stateProperty().addListener((obs, ov, nv)->{
+            if (nv == Worker.State.SUCCEEDED){
+                webEngine1.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+            }
+        });
+        typeArea.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                SnuggleSession session = engine.createSession();
+                SnuggleInput input;
+                int lt=0; int rt=0;
+                while (rt<newValue.length()){
+                    if (newValue.charAt(rt) == '\n' || rt==newValue.length() - 1){
+                        input = new SnuggleInput(newValue.substring(lt, rt + 1));
+                        try {
+                            session.parseInput(input);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        lt = rt + 1;
+                    }
+                    rt++;
+                }
+                String block = session.buildXMLString();
+                webEngine2.loadContent(block);
+            }
+        });
+
+        show.setVisible(false);
         Platform.runLater(()->{
-            Node[] nodes = htmlEditor.lookupAll(".tool-bar").toArray(new Node[0]);
-            for (Node node: nodes){
+            Node[] nodess = show.lookupAll(".tool-bar").toArray(new Node[0]);
+            for (Node node: nodess){
                 node.setVisible(false);
                 node.setManaged(false);
             }
-            htmlEditor.setVisible(true);
+            show.setVisible(true);
         });
-        htmlEditor.setDisable(true);
+        show.setDisable(true);
     }
     public void synchroniseMessages(ListProperty<Message> messageList){
         messageList.addListener((obs, ov, nv) ->{
@@ -64,9 +111,10 @@ public class ChatViewController implements Initializable {
             } else {
                 htmlText += newMessage.toHTML(false);
             }
-            Platform.runLater(()->htmlEditor.setHtmlText(HTMLHEAD + htmlText + HTMLTAIL));
+            Platform.runLater(()-> webEngine1.loadContent(HTMLHEAD + htmlText + HTMLTAIL));
             /**while you are updating the component out of FX application thread, you will get an
              * IllegalStateException and then use PlatForm.runLater to solve it.*/
+
         });
     }
     public void loadMessages(ListProperty<Message> messageList){
@@ -74,6 +122,19 @@ public class ChatViewController implements Initializable {
             boolean isLeft = message.sender.equals(chatTo);
             htmlText += message.toHTML(isLeft);
         }
-        htmlEditor.setHtmlText(HTMLHEAD + htmlText + HTMLTAIL);
+        webEngine1.loadContent(HTMLHEAD + htmlText + HTMLTAIL);
+    }
+    private String translate(int lt, int rt) throws IOException {
+        String area = typeArea.getText().substring(lt, rt);
+        return translate(area);
+    }
+    private String translate(String s) throws IOException {
+        input = new SnuggleInput(s);
+        session.parseInput(input);
+        String out = session.buildXMLString();
+        out = out.replaceAll(" display=\"block\"", "");
+        input = null;
+        session.reset();
+        return out;
     }
 }

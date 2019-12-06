@@ -19,7 +19,7 @@ public class Message implements Comparable<Message>, Serializable {
         return date;
     }
     private String getFormattedDate(){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH-mm-ss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
         return simpleDateFormat.format(date);
     }
     @Override
@@ -28,10 +28,14 @@ public class Message implements Comparable<Message>, Serializable {
                 sender,content,date);
     }
     public String toHTML(boolean isLeft){
-        if (isLeft) return String.format("<p><xmp align=\'LEFT\'>%s%s:</xmp></p>" +
-                "<p><xmp align=\'LEFT\'>    %s</xmp></p>", getFormattedDate(), sender, content);
-        else return String.format("<p><xmp align=\'RIGHT\'>%s%s:</xmp></p>" +
-                "<p><xmp align=\'RIGHT\'>%s    </xmp></p>", getFormattedDate(), sender, content);
+        if (isLeft) return "<div align=\'LEFT\'><p>" + getFormattedDate() + sender +
+                ":</p><p style=\"width: 70%;border-color: black;border-radius: 1em; " +
+                "background-color: aliceblue; font-size: medium; position: relative; left: 2%\" >"+
+                content +"</p></div>";
+        else return "<div align=\'RIGHT\'><p>" + getFormattedDate() + sender +
+                ":</p><p style=\"width: 70%;border-color: black;border-radius: 1em; " +
+                "background-color: aliceblue; font-size: medium; position: relative; right: 2%\" >"+
+                content +"</p></div>";
     }
     @Override
     public int compareTo(Message o) {
