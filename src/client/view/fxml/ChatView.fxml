@@ -8,7 +8,7 @@
 <?import javafx.scene.web.WebView?>
 <GridPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            prefHeight="600" prefWidth="1000">
+            prefHeight="600" prefWidth="1000" hgap="5" vgap="5">
     <HBox  GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="CENTER">
     <Label fx:id="chatToLabel"></Label>
     </HBox>
@@ -17,7 +17,11 @@
     <HBox alignment="BOTTOM_RIGHT" GridPane.columnIndex="0" GridPane.rowIndex="3">
         <Button fx:id="sendButton" onAction="#sendMessage">Send</Button>
     </HBox>
-    <WebView fx:id="show" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.rowSpan="4"></WebView>
+    <TabPane  GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.rowSpan="4" >
+        <Tab text="view">
+            <WebView fx:id="show"></WebView>
+        </Tab>
+    </TabPane>
     <stylesheets>
         <URL value="@css/ChatView.css"></URL>
     </stylesheets>
