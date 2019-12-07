@@ -1,0 +1,40 @@
+math {
+    display: "inline";
+}
+div {
+
+}
+div.rt_para {
+
+}
+div.lt_para {
+
+}
+p {
+    margin: 8 auto;
+}
+p.content{
+    padding: 10px;
+    display: inline;
+    background-color: aliceblue;
+    border-color: black;
+    border-style: wave;
+    border-radius: 50px;
+    border-with: 1px;
+}
+div.rt_para p.content {
+    position: relative;
+    right: 10%;
+}
+div.lt_para p.content {
+    position: relative;
+    left: 10%;
+}
+
+
+
+
+
+
+
+

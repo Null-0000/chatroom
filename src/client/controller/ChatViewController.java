@@ -33,7 +33,9 @@ public class ChatViewController implements Initializable {
     private WebEngine webEngine1;
     private WebEngine webEngine2;
     @FXML private TextArea typeArea;
-    private final String HTMLHEAD = "<html><head><style>math{display:\"inline\";}p{margin:4 auto}</style></head><body>";
+    //private final String HTMLHEAD = "<html><head><style>math{display:\"inline\";}p{margin:4 auto}</style></head><body>";
+    private final String HTMLHEAD = "<html><head><link rel=\'stylesheet\' " +
+            "href=\'" + getClass().getResource("ChatView.css") + "\'></head><body>";
     private final String HTMLTAIL = "</body></html>";
     private SnuggleEngine engine = new SnuggleEngine();
     private SnuggleSession session = engine.createSession();
@@ -69,6 +71,7 @@ public class ChatViewController implements Initializable {
                 webEngine1.executeScript("window.scrollTo(0, document.body.scrollHeight);");
             }
         });
+
         typeArea.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -123,6 +126,7 @@ public class ChatViewController implements Initializable {
             htmlText += message.toHTML(isLeft);
         }
         webEngine1.loadContent(HTMLHEAD + htmlText + HTMLTAIL);
+        System.out.println(htmlText);
     }
     private String translate(int lt, int rt) throws IOException {
         String area = typeArea.getText().substring(lt, rt);

@@ -3,23 +3,22 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.geometry.Insets?>
 <?import java.net.URL?>
-<?import javafx.scene.web.HTMLEditor?>
+
 <?import javafx.scene.web.WebView?>
-<BorderPane xmlns="http://javafx.com/javafx"
+<GridPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            maxHeight="600" maxWidth="600">
-    <top><Label fx:id="chatToLabel" BorderPane.alignment="CENTER"></Label></top>
-    <left><WebView fx:id="dialogView" maxHeight="400"></WebView></left>
-    <bottom>
-        <VBox alignment="BOTTOM_RIGHT">
-            <TextArea fx:id="typeArea"></TextArea>
-            <Button fx:id="sendButton" onAction="#sendMessage">Send</Button>
-        </VBox>
-    </bottom>
-    <right><WebView fx:id="show" minWidth="200"></WebView></right>
+            prefHeight="600" prefWidth="1000">
+    <HBox  GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="CENTER">
+    <Label fx:id="chatToLabel"></Label>
+    </HBox>
+    <WebView fx:id="dialogView" GridPane.columnIndex="0" GridPane.rowIndex="1"></WebView>
+    <TextArea fx:id="typeArea" GridPane.columnIndex="0" GridPane.rowIndex="2"></TextArea>
+    <HBox alignment="BOTTOM_RIGHT" GridPane.columnIndex="0" GridPane.rowIndex="3">
+        <Button fx:id="sendButton" onAction="#sendMessage">Send</Button>
+    </HBox>
+    <WebView fx:id="show" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.rowSpan="4"></WebView>
     <stylesheets>
         <URL value="@css/ChatView.css"></URL>
     </stylesheets>
-</BorderPane>
+</GridPane>
