@@ -13,7 +13,8 @@
     <Label fx:id="chatToLabel"></Label>
     </HBox>
     <WebView fx:id="dialogView" GridPane.columnIndex="0" GridPane.rowIndex="1"></WebView>
-    <TextArea fx:id="typeArea" GridPane.columnIndex="0" GridPane.rowIndex="2"></TextArea>
+    <TextArea fx:id="typeArea" GridPane.columnIndex="0" GridPane.rowIndex="2"
+    onKeyPressed="#editFormula"></TextArea>
     <HBox alignment="BOTTOM_RIGHT" GridPane.columnIndex="0" GridPane.rowIndex="3">
         <Button fx:id="sendButton" onAction="#sendMessage">Send</Button>
     </HBox>

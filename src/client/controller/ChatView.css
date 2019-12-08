@@ -2,7 +2,11 @@ math {
     display: "inline";
 }
 div {
-
+    /*overflow-x :hidden;
+    width: 50%*/
+    word-wrap: break-word;
+    break-word: break-all;
+    overflow: hidden;
 }
 div.rt_para {
 
@@ -14,21 +18,14 @@ p {
     margin: 8 auto;
 }
 p.content{
-    padding: 10px;
-    display: inline;
+    padding: 2px;
+    display: block;
+    width: 80%;
     background-color: aliceblue;
     border-color: black;
     border-style: wave;
     border-radius: 50px;
     border-with: 1px;
-}
-div.rt_para p.content {
-    position: relative;
-    right: 10%;
-}
-div.lt_para p.content {
-    position: relative;
-    left: 10%;
 }
 
 

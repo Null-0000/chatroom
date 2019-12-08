@@ -13,8 +13,11 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
@@ -35,7 +38,8 @@ public class ChatViewController implements Initializable {
     @FXML private TextArea typeArea;
     //private final String HTMLHEAD = "<html><head><style>math{display:\"inline\";}p{margin:4 auto}</style></head><body>";
     private final String HTMLHEAD = "<html><head><link rel=\'stylesheet\' " +
-            "href=\'" + getClass().getResource("ChatView.css") + "\'></head><body>";
+            "href=\'" + getClass().getResource("ChatView.css") + "\'></head>" +
+            "<body>";
     private final String HTMLTAIL = "</body></html>";
     private SnuggleEngine engine = new SnuggleEngine();
     private SnuggleSession session = engine.createSession();
@@ -60,6 +64,11 @@ public class ChatViewController implements Initializable {
             User.getInstance().sendMessage(message);
         }
     }
+    @FXML private void editFormula(KeyEvent e) throws IOException {
+        if (e.isAltDown() && e.getCode()== KeyCode.EQUALS){
+            System.out.println(translate(typeArea.getText()));
+        }
+    }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         typeArea.setWrapText(true);
@@ -75,23 +84,11 @@ public class ChatViewController implements Initializable {
         typeArea.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                SnuggleSession session = engine.createSession();
-                SnuggleInput input;
-                int lt=0; int rt=0;
-                while (rt<newValue.length()){
-                    if (newValue.charAt(rt) == '\n' || rt==newValue.length() - 1){
-                        input = new SnuggleInput(newValue.substring(lt, rt + 1));
-                        try {
-                            session.parseInput(input);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        lt = rt + 1;
-                    }
-                    rt++;
+                try {
+                    webEngine2.loadContent(translate(newValue));
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                String block = session.buildXMLString();
-                webEngine2.loadContent(block);
             }
         });
 
@@ -115,6 +112,7 @@ public class ChatViewController implements Initializable {
                 htmlText += newMessage.toHTML(false);
             }
             Platform.runLater(()-> webEngine1.loadContent(HTMLHEAD + htmlText + HTMLTAIL));
+            System.out.println(HTMLHEAD + htmlText + HTMLTAIL);
             /**while you are updating the component out of FX application thread, you will get an
              * IllegalStateException and then use PlatForm.runLater to solve it.*/
 

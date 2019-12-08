@@ -28,9 +28,9 @@ public class Message implements Comparable<Message>, Serializable {
                 sender,content,date);
     }
     public String toHTML(boolean isLeft){
-        if (isLeft) return "<div class=\'lt_para\' align=\'LEFT\'><p>" + getFormattedDate() + sender +
+        if (isLeft) return "<div class=\'lt_para\' align=\'LEFT\'><p>" + getFormattedDate() + "&nbsp;" + sender +
                 ":</p><p class=\'content\'>"+ content +"</p></div>";
-        else return "<div class=\'rt_para\' align=\'RIGHT\'><p class=\'head\'>" + getFormattedDate() + sender +
+        else return "<div class=\'rt_para\' align=\'RIGHT\'><p class=\'head\'>" + getFormattedDate() + "&nbsp;" + sender +
                 ":</p><p class=\'content\'>"+ content +"</p></div>";
     }
     @Override
