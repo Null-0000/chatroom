@@ -9,17 +9,18 @@
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="client.controller.MainViewController"
-            prefHeight="400.0" prefWidth="400.0">
+            prefHeight="400.0" prefWidth="600.0"
+            stylesheets="@../fxml/css/SuperView.css">
 <children>
     <VBox>
         <GridPane>
-            <Label fx:id="id" GridPane.columnIndex="1" GridPane.rowIndex="0"></Label>
-            <Label fx:id="name" GridPane.columnIndex="1" GridPane.rowIndex="1"></Label>
-            <Label fx:id="sig" GridPane.columnIndex="1" GridPane.rowIndex="2"></Label>
+            <Label fx:id="id" GridPane.columnIndex="1" GridPane.rowIndex="0">ID</Label>
+            <Label fx:id="name" GridPane.columnIndex="1" GridPane.rowIndex="1">Name</Label>
+            <Label fx:id="sig" GridPane.columnIndex="1" GridPane.rowIndex="2">Signature</Label>
         </GridPane>
         <ListView fx:id="friList"></ListView>
         <HBox>
-            <Button fx:id="addFriend" onAction="#addFriend"></Button>
+            <Button fx:id="addFriend" onAction="#addFriend">addNewFriend</Button>
         </HBox>
     </VBox>
 

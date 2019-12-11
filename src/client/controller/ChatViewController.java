@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.model.Message;
+import client.model.ShowDialog;
 import client.model.User;
 import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
@@ -13,7 +14,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 
-import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 
 import javafx.scene.input.KeyCode;
@@ -36,7 +36,6 @@ public class ChatViewController implements Initializable {
     private WebEngine webEngine1;
     private WebEngine webEngine2;
     @FXML private TextArea typeArea;
-    //private final String HTMLHEAD = "<html><head><style>math{display:\"inline\";}p{margin:4 auto}</style></head><body>";
     private final String HTMLHEAD = "<html><head><link rel=\'stylesheet\' " +
             "href=\'" + getClass().getResource("ChatView.css") + "\'></head>" +
             "<body>";
@@ -50,23 +49,20 @@ public class ChatViewController implements Initializable {
     public ChatViewController(String chatTo){
         this.chatTo = chatTo;
     }
-    @FXML private void sendMessage() throws IOException {
-        String content = translate(typeArea.getText());
+    @FXML public void sendMessage() throws IOException {
+
+        String text = typeArea.getText();
         typeArea.setText("");
-        if(content.equals("")) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("warning: can not send an empty message!");
+//        ShowDialog.showMessage("Here is the message: " + typeArea.getText() + ".  " + typeArea.getText().equals(""));
+        if(text.equals("")) {
+            ShowDialog.showWarning("warning: can not send an empty message!");
             return;
         }
+        String content = translate(text);
         synchronized (dialogView){
             Date now = new Date();
             Message message = new Message(chatTo, User.getInstance().getName(), content, now);
             User.getInstance().sendMessage(message);
-        }
-    }
-    @FXML private void editFormula(KeyEvent e) throws IOException {
-        if (e.isAltDown() && e.getCode()== KeyCode.EQUALS){
-            System.out.println(translate(typeArea.getText()));
         }
     }
     @Override
@@ -102,6 +98,17 @@ public class ChatViewController implements Initializable {
             show.setVisible(true);
         });
         show.setDisable(true);
+        typeArea.setOnKeyPressed(e -> {
+            if(e.getCode() == KeyCode.ENTER){
+                e.consume();
+                try {
+                    if(e.isControlDown()) sendMessage();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
     }
     public void synchroniseMessages(ListProperty<Message> messageList){
         messageList.addListener((obs, ov, nv) ->{
@@ -112,7 +119,7 @@ public class ChatViewController implements Initializable {
                 htmlText += newMessage.toHTML(false);
             }
             Platform.runLater(()-> webEngine1.loadContent(HTMLHEAD + htmlText + HTMLTAIL));
-            System.out.println(HTMLHEAD + htmlText + HTMLTAIL);
+//            System.out.println(HTMLHEAD + htmlText + HTMLTAIL);
             /**while you are updating the component out of FX application thread, you will get an
              * IllegalStateException and then use PlatForm.runLater to solve it.*/
 
@@ -124,7 +131,7 @@ public class ChatViewController implements Initializable {
             htmlText += message.toHTML(isLeft);
         }
         webEngine1.loadContent(HTMLHEAD + htmlText + HTMLTAIL);
-        System.out.println(htmlText);
+//        System.out.println(htmlText);
     }
     private String translate(int lt, int rt) throws IOException {
         String area = typeArea.getText().substring(lt, rt);

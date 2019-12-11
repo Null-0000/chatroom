@@ -1,9 +1,6 @@
 package client.launcher;
 
-import client.view.LoginView;
-import client.view.MainView;
-import client.view.RegisterView;
-import client.view.StageM;
+import client.view.*;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -20,10 +17,11 @@ public class Launcher extends Application {
     public void start(Stage primaryStage) throws IOException {
         LoginView loginView = new LoginView();
         RegisterView registerView = new RegisterView();
+        AddFriendView addFriendView = new AddFriendView();
 
-        loginView.isShowing();
         StageM.getManager().addStage(Resource.LoginViewID, loginView);
         StageM.getManager().addStage(Resource.RegisterID, registerView);
+        StageM.getManager().addStage(Resource.AddFriendView, addFriendView);
 
         StageM.getManager().show(Resource.LoginViewID);
     }

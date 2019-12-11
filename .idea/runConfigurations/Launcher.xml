@@ -2,7 +2,7 @@
   <configuration default="false" name="Launcher" type="Application" factoryName="Application" singleton="false" nameIsGenerated="true">
     <option name="MAIN_CLASS_NAME" value="client.launcher.Launcher" />
     <module name="chatroom" />
-    <option name="VM_PARAMETERS" value="--module-path &quot;C:\Users\Q\Downloads\openjfx-13.0.1_windows-x64_bin-sdk\javafx-sdk-13.0.1\lib&quot; --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.web,javafx.graphics" />
+    <option name="VM_PARAMETERS" value="--module-path &quot;C:\Users\Furyton\Documents\Workspace\openjfx-11.0.2_windows-x64_bin-sdk\javafx-sdk-11.0.2\lib&quot; --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.web,javafx.graphics" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="client.view.*" />

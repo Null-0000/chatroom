@@ -85,6 +85,7 @@ public class Connector {
         String message = "BHEAD make friend EHEAD Binfo " + info + " Einfo Bname " +
                 User.getInstance().getName() + " Ename";
         outputStream.write(message.getBytes(StandardCharsets.UTF_8));
+        socket.shutdownOutput();
         byte[] bytes = new byte[1024];
         int len = inputStream.read(bytes);
         if (len == -1) throw new IOException();
@@ -92,7 +93,7 @@ public class Connector {
 
         if(result.equals("not found")) return false;
         else if(result.equals("added")){
-            User.getInstance().addFriend(info);
+//            User.getInstance().addFriend(info);
             return true;
         }
         return false;

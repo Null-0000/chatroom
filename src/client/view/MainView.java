@@ -47,5 +47,8 @@ public class MainView extends Stage {
             Platform.exit();
             System.exit(0);
         });
+        setOnShowing((e) -> {
+            this.requestFocus();
+        });
     }
 }

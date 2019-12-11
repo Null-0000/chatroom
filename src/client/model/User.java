@@ -1,12 +1,6 @@
 package client.model;
 
 import client.controller.Connector;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.MapProperty;
-import javafx.beans.property.SimpleMapProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,18 +41,9 @@ public class User {
     }
     public void initialise() throws IOException {
         manager = new DialoguesManager(name);
-        Dialogue dialogue;
-        if (!manager.fileExist()) {
-            dialogueMap = new HashMap<>();
-            for (String friend: friendList){
-                dialogue = new Dialogue(friend, name);
-                dialogueMap.put(friend, dialogue);
-            }
-        }
-        else {
-            /**从本地读取信息*/
-            dialogueMap = manager.initMyDialogues();
-        }
+
+        dialogueMap = manager.initMyDialogues();
+
         loadRemoteData();
 
         this.mySocket = Connector.getInstance().connectToRemote(name);
