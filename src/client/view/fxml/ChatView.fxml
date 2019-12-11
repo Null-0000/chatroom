@@ -7,18 +7,23 @@
 
 <?import javafx.scene.web.WebView?>
 <GridPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            prefHeight="600" prefWidth="1000" hgap="5" vgap="5">
+          xmlns:fx="http://javafx.com/fxml"
+          prefHeight="600" prefWidth="1000" hgap="5" vgap="5">
     <HBox  GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="CENTER">
     <Label fx:id="chatToLabel"></Label>
     </HBox>
     <WebView fx:id="dialogView" GridPane.columnIndex="0" GridPane.rowIndex="1"></WebView>
-    <TextArea fx:id="typeArea" GridPane.columnIndex="0" GridPane.rowIndex="2"
-    onKeyPressed="#editFormula"></TextArea>
-    <HBox alignment="BOTTOM_RIGHT" GridPane.columnIndex="0" GridPane.rowIndex="3">
+    <ToolBar GridPane.columnIndex="0" GridPane.rowIndex="2" orientation="HORIZONTAL">
+        <FlowPane alignment="BASELINE_RIGHT">
+            <ToggleButton fx:id="viewButton" text="view"></ToggleButton>
+        </FlowPane>
+    </ToolBar>
+    <TextArea fx:id="typeArea" GridPane.columnIndex="0" GridPane.rowIndex="3"
+    onKeyPressed="#editFormula" prefHeight="380"></TextArea>
+    <HBox alignment="BOTTOM_RIGHT" GridPane.columnIndex="0" GridPane.rowIndex="4">
         <Button fx:id="sendButton" onAction="#sendMessage">Send</Button>
     </HBox>
-    <TabPane  GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.rowSpan="4" >
+    <TabPane  GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.rowSpan="5">
         <Tab text="view">
             <WebView fx:id="show"></WebView>
         </Tab>

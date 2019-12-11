@@ -7,13 +7,14 @@ import javafx.beans.property.ListProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
+
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 
-import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 
 import javafx.scene.input.KeyCode;
@@ -28,15 +29,16 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ChatViewController implements Initializable {
     @FXML private Label chatToLabel;
     @FXML private WebView dialogView;
     @FXML private WebView show;
+    @FXML private TextArea typeArea;
     private WebEngine webEngine1;
     private WebEngine webEngine2;
-    @FXML private TextArea typeArea;
-    //private final String HTMLHEAD = "<html><head><style>math{display:\"inline\";}p{margin:4 auto}</style></head><body>";
     private final String HTMLHEAD = "<html><head><link rel=\'stylesheet\' " +
             "href=\'" + getClass().getResource("ChatView.css") + "\'></head>" +
             "<body>";
@@ -46,12 +48,11 @@ public class ChatViewController implements Initializable {
     private SnuggleInput input;
     private String htmlText = "";
     private String chatTo;
-    private int lt, rt;
     public ChatViewController(String chatTo){
         this.chatTo = chatTo;
     }
     @FXML private void sendMessage() throws IOException {
-        String content = translate(typeArea.getText());
+        String content = translate();
         typeArea.setText("");
         if(content.equals("")) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -66,7 +67,7 @@ public class ChatViewController implements Initializable {
     }
     @FXML private void editFormula(KeyEvent e) throws IOException {
         if (e.isAltDown() && e.getCode()== KeyCode.EQUALS){
-            System.out.println(translate(typeArea.getText()));
+            System.out.println(translate());
         }
     }
     @Override
@@ -85,7 +86,7 @@ public class ChatViewController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 try {
-                    webEngine2.loadContent(translate(newValue));
+                    webEngine2.loadContent(translate());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -112,10 +113,8 @@ public class ChatViewController implements Initializable {
                 htmlText += newMessage.toHTML(false);
             }
             Platform.runLater(()-> webEngine1.loadContent(HTMLHEAD + htmlText + HTMLTAIL));
-            System.out.println(HTMLHEAD + htmlText + HTMLTAIL);
             /**while you are updating the component out of FX application thread, you will get an
              * IllegalStateException and then use PlatForm.runLater to solve it.*/
-
         });
     }
     public void loadMessages(ListProperty<Message> messageList){
@@ -126,10 +125,6 @@ public class ChatViewController implements Initializable {
         webEngine1.loadContent(HTMLHEAD + htmlText + HTMLTAIL);
         System.out.println(htmlText);
     }
-    private String translate(int lt, int rt) throws IOException {
-        String area = typeArea.getText().substring(lt, rt);
-        return translate(area);
-    }
     private String translate(String s) throws IOException {
         input = new SnuggleInput(s);
         session.parseInput(input);
@@ -138,5 +133,20 @@ public class ChatViewController implements Initializable {
         input = null;
         session.reset();
         return out;
+    }
+    private String translate() throws IOException {
+        String text = typeArea.getText();
+        Pattern p = Pattern.compile("\\$\\$.*?\\$\\$");
+        Matcher m = p.matcher(text);
+        String result = "";
+        int lt = 0, rt = 0;
+        while (m.find()){
+            rt = m.start();
+            result += text.substring(lt, rt);
+            lt = m.end();
+            result += translate(text.substring(rt, lt));
+        }
+        result += text.substring(lt);
+        return result;
     }
 }
