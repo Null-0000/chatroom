@@ -5,7 +5,7 @@
     <option name="VM_PARAMETERS" value="--module-path &quot;C:\Users\Furyton\Documents\Workspace\openjfx-11.0.2_windows-x64_bin-sdk\javafx-sdk-11.0.2\lib&quot; --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.web,javafx.graphics" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="client.view.*" />
+        <option name="PATTERN" value="client.launcher.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
