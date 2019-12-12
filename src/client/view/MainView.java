@@ -8,35 +8,44 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import javax.swing.text.AbstractDocument;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainView extends Stage {
 
     public MainView(User user) throws IOException {
-        int id = user.getID();
-        String name = user.getName();
-        String signature = user.getSignature();
-        ArrayList<String> friends = user.getFriendList();
-        AnchorPane anchorPane = FXMLLoader.load(this.getClass().getResource(Resource.MainViewResource));
-        VBox vBox = (VBox) anchorPane.getChildren().get(0);
-        GridPane gridPane = (GridPane) vBox.getChildren().get(0);
-        ((Label)gridPane.getChildren().get(0)).setText(""+id);
-        ((Label)gridPane.getChildren().get(1)).setText(""+name);
-        ((Label)gridPane.getChildren().get(2)).setText(""+signature);
 
-        ObservableList<String> friList = FXCollections.observableArrayList(friends);
-        ListView<String> listView = (ListView<String>) vBox.getChildren().get(1);
-        listView.setItems(friList);
+        SplitPane root= FXMLLoader.load(this.getClass().getResource(Resource.MainViewResource));
 
-        this.setScene(new Scene(anchorPane));
+        ObservableList items = root.getItems();
+        GridPane userInfoGridPane = (GridPane) items.get(0);
+        TabPane tabPane = (TabPane) items.get(1);
+        ObservableList tabs = tabPane.getTabs();
+        ((Tab)tabs.get(0)).getContent().lookup("friendListView");
+
+        ((Label)userInfoGridPane.getChildren().get(5)).setText(String.valueOf(user.getID()));
+        ((Label)userInfoGridPane.getChildren().get(5)).setTooltip(new Tooltip(String.valueOf(user.getID())));
+
+        ((Label)userInfoGridPane.getChildren().get(4)).setText(user.getName());
+        ((Label)userInfoGridPane.getChildren().get(4)).setTooltip(new Tooltip(user.getName()));
+
+        ((Label)userInfoGridPane.getChildren().get(7)).setText(user.getSignature());
+        ((Label)userInfoGridPane.getChildren().get(7)).setTooltip(new Tooltip(user.getSignature()));
+
+        ((ImageView)userInfoGridPane.getChildren().get(0)).setImage(new Image(String.valueOf(this.getClass().getResource("images/userIcon.jpeg"))));
+
+        setScene(new Scene(root));
 
         setOnCloseRequest((e)->{
             try {
@@ -50,5 +59,8 @@ public class MainView extends Stage {
         setOnShowing((e) -> {
             this.requestFocus();
         });
+        setTitle("Chatting Room");
+        getIcons().add(new Image(String.valueOf(this.getClass().getResource("images/AppIcon.png"))));
     }
+
 }

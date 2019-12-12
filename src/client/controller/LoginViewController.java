@@ -52,11 +52,12 @@ public class LoginViewController {
             try {
                 User.getInstance().initialise();
                 StageM.getManager().addStage(Resource.MainViewID, new MainView(User.getInstance()));
+                StageM.getManager().shift(Resource.LoginViewID, Resource.MainViewID);
             } catch (IOException e) {
                 e.printStackTrace();
                 showAlert("载入服务端用户信息错误");
             }
-            StageM.getManager().shift(Resource.LoginViewID, Resource.MainViewID);
+
         }
         else showAlert("ID不存在或密码错误");
     }

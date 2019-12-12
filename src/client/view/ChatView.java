@@ -13,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 
@@ -41,6 +42,7 @@ public class ChatView extends Stage {
 
         Scene scene = new Scene(root);
         this.setScene(scene);
+        getIcons().add(new Image(String.valueOf(this.getClass().getResource("images/AppIcon.png"))));
     }
 
     public void loadLocalMessages(ListProperty<Message> messageList) {

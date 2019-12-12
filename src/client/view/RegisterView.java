@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
@@ -27,5 +28,7 @@ public class RegisterView extends Stage {
 
         this.setScene(new Scene(root, 700, 400));
         this.setOnCloseRequest(e -> StageM.getManager().show(Resource.LoginViewID));
+        setResizable(false);
+        getIcons().add(new Image(String.valueOf(this.getClass().getResource("images/AppIcon.png"))));
     }
 }

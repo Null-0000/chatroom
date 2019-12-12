@@ -2,13 +2,11 @@
     -fx-background-image:url("../../images/background02.jpg");
 }
 .label {
-    -fx-font-size:20px;
     -fx-font-weight:bold;
     -fx-font-fill:#333333;
     -fx-effect:dropshadow(gaussian,rgba(255,255,255,0.5),0,0,0,1);
 }
 #registerTitle {
-    -fx-font-size:60px;
     -fx-font-family:"Comic Sans MS";
     -fx-font-weight:bold;
     -fx-font-fill:#818181;
@@ -16,7 +14,6 @@
 }
 .button {
     -fx-text-fill:white;
-    -fx-font-size:18px;
     -fx-font-family:"Arial Narrow";
     -fx-font-weight:bold;
     -fx-background-color:linear-gradient(#61a2b1, #2A5058);
