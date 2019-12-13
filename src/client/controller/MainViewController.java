@@ -27,6 +27,8 @@ public class MainViewController implements Initializable {
                 (obs, ov, nv) -> {
                     Dialogue dialogue = User.getInstance().getDialogueFrom(nv);
                     dialogue.show();
+                    //第二次打开ChatView的时候才生效（滚至底部）
+                    dialogue.getChatView().getController().scrollToBottom();
                 }
         );
     }

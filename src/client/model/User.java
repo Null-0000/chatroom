@@ -1,6 +1,7 @@
 package client.model;
 
 import client.controller.Connector;
+import javafx.application.Platform;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -119,6 +120,9 @@ public class User {
         @Override
         public void run() {
             System.out.println("开始接收信息");
+            for (Dialogue dialogue : dialogueMap.values()) {
+                dialogue.synchronizeMessage();
+            }
             int len;
             byte[] bytes = new byte[1024];
             while (true) {

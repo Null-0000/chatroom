@@ -21,6 +21,9 @@
         <Tab text="view">
             <WebView fx:id="show"></WebView>
         </Tab>
+        <Tab text="emoji">
+            <TilePane fx:id="emojiView" vgap="5" hgap="5"></TilePane>
+        </Tab>
     </TabPane>
     <stylesheets>
         <URL value="@css/ChatView.css"></URL>

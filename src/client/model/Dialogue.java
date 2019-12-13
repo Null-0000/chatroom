@@ -33,12 +33,13 @@ public class Dialogue implements Serializable {
         this.messageList = new SimpleListProperty<>(observableList);
         setChatView();
     }
+    public void synchronizeMessage(){
+        chatView.synchronizeMessage(messageList);
+    }
 
     public void setChatView() throws IOException {
         chatView = new ChatView(friendName, messageList);
-        chatView.loadLocalMessages(messageList);
-        /*Platform.runLater(()-> Platform.runLater(()-> chatView.loadLocalMessages(messageList)));
-        /**这是一段神奇的代码，出bug的话只要一直加runLater即可，不到得已千万不要动他！！！！！！！！！！*/
+        //chatView不能被序列化，故每次读取本地文件后需要重新new哟个chatView
     }
     public void updateMessage(Message message) {
         messageList.add(message);
@@ -50,7 +51,9 @@ public class Dialogue implements Serializable {
     public void show(){
         chatView.show();
     }
-
+    public ChatView getChatView(){
+        return chatView;
+    }
     private void writeObject(ObjectOutputStream oos) throws IOException {
         oos.defaultWriteObject();
         oos.writeObject(messageList.toArray());
