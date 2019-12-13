@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.launcher.Resource;
+import client.model.ShowDialog;
 import client.model.User;
 import client.view.MainView;
 import client.view.StageM;
@@ -12,9 +13,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.IOException;
+import java.util.logging.SocketHandler;
 
 public class LoginViewController {
     @FXML
@@ -26,18 +29,18 @@ public class LoginViewController {
     @FXML
     protected void loginButtonAction(ActionEvent event){
         if(IDField.getText().isEmpty()){
-            showAlert("请输入你的ID");
+            ShowDialog.showAlert("请输入你的ID");
             return;
         }
         if(passwordField.getText().isEmpty()){
-            showAlert("请输入密码");
+            ShowDialog.showAlert("请输入密码");
             return;
         }
 
         int ID; String password = passwordField.getText();
         if (NumberUtils.isDigits(IDField.getText())) ID = Integer.parseInt(IDField.getText());
         else {
-            showAlert("您输入的ID不合法，请重新输入");
+            ShowDialog.showAlert("您输入的ID不合法，请重新输入");
             return;
         }
         boolean isAccessible = false;
@@ -45,8 +48,10 @@ public class LoginViewController {
             isAccessible = Connector.getInstance().loadUserInfo(ID, password);
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("服务器连接错误");
+            ShowDialog.showAlert("服务器连接错误");
             return;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         if(isAccessible){
             try {
@@ -55,23 +60,15 @@ public class LoginViewController {
                 StageM.getManager().shift(Resource.LoginViewID, Resource.MainViewID);
             } catch (IOException e) {
                 e.printStackTrace();
-                showAlert("载入服务端用户信息错误");
+                ShowDialog.showAlert("载入服务端用户信息错误");
             }
 
         }
-        else showAlert("ID不存在或密码错误");
+        else ShowDialog.showAlert("ID不存在或密码错误");
     }
     @FXML
     protected void registerButtonAction(){
         StageM.getManager().shift(Resource.LoginViewID, Resource.RegisterID);
-    }
-
-    private void showAlert(String message){
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setContentText(null);
-        alert.setHeaderText(message);
-        alert.show();
     }
 
     public void paneKeyAction(KeyEvent keyEvent) throws IOException {

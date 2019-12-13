@@ -32,7 +32,7 @@ public class MainView extends Stage {
         GridPane userInfoGridPane = (GridPane) items.get(0);
         TabPane tabPane = (TabPane) items.get(1);
         ObservableList tabs = tabPane.getTabs();
-        ((Tab)tabs.get(0)).getContent().lookup("friendListView");
+        ((Tab)tabs.get(0)).getContent().lookup("#friendListView");
 
         ((Label)userInfoGridPane.getChildren().get(5)).setText(String.valueOf(user.getID()));
         ((Label)userInfoGridPane.getChildren().get(5)).setTooltip(new Tooltip(String.valueOf(user.getID())));

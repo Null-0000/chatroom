@@ -1,91 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<GridPane alignment="CENTER" hgap="5.0" onKeyPressed="#paneKeyAction" prefHeight="350.0" prefWidth="500.0" stylesheets="@../fxml/css/SuperView.css" vgap="10.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.RegisterViewController">
-    <padding><Insets bottom="10" left="25" right="25" top="25" /></padding>
-    <Text fx:id="registerTitle" fontSmoothingType="LCD" smooth="false" text="Register" wrappingWidth="104.203125">
-      <font>
-         <Font name="Courier New Bold Italic" size="26.0" />
-      </font>
-      <fill>
-         <LinearGradient endX="1.0" endY="1.0">
-            <stops>
-               <Stop>
-                  <color>
-                     <Color />
-                  </color>
-               </Stop>
-               <Stop offset="1.0">
-                  <color>
-                     <Color red="1.0" green="1.0" blue="1.0" />
-                  </color>
-               </Stop>
-            </stops>
-         </LinearGradient>
-      </fill></Text>
-    <TextField fx:id="userName" promptText="请输入你的昵称" GridPane.columnIndex="4" GridPane.columnSpan="15" GridPane.rowIndex="4" />
-    <PasswordField fx:id="userPassword" promptText="请输入你的密码" GridPane.columnIndex="4" GridPane.columnSpan="15" GridPane.rowIndex="5" />
-    <PasswordField fx:id="userPasswordConfirm" promptText="请再次输入你的密码" GridPane.columnIndex="4" GridPane.columnSpan="15" GridPane.rowIndex="6" />
-    <TextField fx:id="userSignature" promptText="请输入你的个性签名" GridPane.columnIndex="4" GridPane.columnSpan="15" GridPane.rowIndex="7" />
-
-    <HBox alignment="BOTTOM_RIGHT" spacing="10" GridPane.columnIndex="6" GridPane.columnSpan="5" GridPane.rowIndex="8" />
-   <Text fx:id="registerTitle1" fontSmoothingType="LCD" layoutX="37.0" layoutY="114.0" smooth="false" text="name" GridPane.columnIndex="3" GridPane.rowIndex="4">
-      <font>
-         <Font name="Courier New Bold Italic" size="15.0" />
-      </font>
-   </Text>
-   <Text fx:id="registerTitle11" fontSmoothingType="LCD" layoutX="193.0" layoutY="151.0" smooth="false" text="password" GridPane.columnIndex="3" GridPane.rowIndex="5">
-      <font>
-         <Font name="Courier New Bold Italic" size="15.0" />
-      </font>
-   </Text>
-   <Text fx:id="registerTitle111" fontSmoothingType="LCD" layoutX="193.0" layoutY="188.0" smooth="false" text="confirm" GridPane.columnIndex="3" GridPane.rowIndex="6">
-      <font>
-         <Font name="Courier New Bold Italic" size="15.0" />
-      </font>
-   </Text>
-   <Text fx:id="registerTitle1111" fontSmoothingType="LCD" layoutX="193.0" layoutY="224.0" smooth="false" text="signature" GridPane.columnIndex="3" GridPane.rowIndex="7">
-      <font>
-         <Font name="Courier New Bold Italic" size="15.0" />
-      </font>
-   </Text>
-   <columnConstraints>
-      <ColumnConstraints minWidth="10.0" prefWidth="100.0" />
-      <ColumnConstraints maxWidth="69.99999999999999" minWidth="10.0" prefWidth="39.999999999999986" />
-      <ColumnConstraints maxWidth="116.99999999999999" minWidth="10.0" prefWidth="70.33333333333334" />
-      <ColumnConstraints maxWidth="180.66665140787762" minWidth="65.33333333333331" prefWidth="99.33333333333331" />
-      <ColumnConstraints maxWidth="60.0" minWidth="0.0" prefWidth="24.333333333333314" />
-      <ColumnConstraints maxWidth="60.0" minWidth="10.0" prefWidth="40.333333333333314" />
-      <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
-   </columnConstraints>
-   <rowConstraints>
-      <RowConstraints minHeight="10.0" prefHeight="30.0" />
-      <RowConstraints maxHeight="24.0" minHeight="5.999992370605469" prefHeight="12.999992370605469" />
-      <RowConstraints maxHeight="24.0" minHeight="5.999992370605469" prefHeight="12.999992370605469" />
-      <RowConstraints maxHeight="24.00000762939453" minHeight="6.0" prefHeight="17.00000762939453" />
-      <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
-   </rowConstraints>
-
-</GridPane>
+<Pane fx:controller="client.controller.RegisterViewController" onKeyPressed="#paneKeyAction" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="450.0" stylesheets="@css/SuperView.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label fx:id="registerTitle" layoutX="24.0" layoutY="14.0" prefHeight="35.0" prefWidth="103.0" text="Register">
+         <font>
+            <Font size="24.0" />
+         </font></Label>
+      <ImageView fx:id="selectedIcon" fitHeight="150.0" fitWidth="150.0" layoutX="15.0" layoutY="60.0" pickOnBounds="true" preserveRatio="true" />
+      <Button layoutX="48.0" layoutY="210.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="58.0" stylesheets="@css/SuperView.css" text="change" onAction="#chooseFile">
+         <styleClass>
+            <String fx:value="btn-radius-large" />
+            <String fx:value="gray-theme" />
+         </styleClass>
+         <font>
+            <Font size="10.0" />
+         </font></Button>
+      <Label fx:id="nameL" layoutX="210.0" layoutY="70.0" text="name" />
+      <Label fx:id="passwordL" layoutX="210.0" layoutY="110.0" text="password" />
+      <Label fx:id="confirmL" layoutX="210.0" layoutY="150.0" text="confirm" />
+      <Label fx:id="signatureL" layoutX="210.0" layoutY="190.0" text="signature" />
+      <TextField fx:id="userName" layoutX="285.0" layoutY="65.0" promptText="请输入昵称"/>
+      <PasswordField fx:id="userPassword" layoutX="285.0" layoutY="106.0" promptText="请输入密码"/>
+      <PasswordField fx:id="userPasswordConfirm" layoutX="285.0" layoutY="146.0" promptText="请输入再次输入密码"/>
+      <TextField fx:id="userSignature" layoutX="285.0" layoutY="186.0" promptText="请输入个性签名"/>
+      <Button fx:id="submit" onAction="#submitButton" alignment="CENTER" contentDisplay="CENTER" layoutX="175.0" layoutY="233.0" mnemonicParsing="false" prefHeight="15.0" prefWidth="92.0" stylesheets="@css/SuperView.css" text="submit">
+         <styleClass>
+            <String fx:value="btn-radius-large" />
+            <String fx:value="btn-basic" />
+            <String fx:value="warm-theme" />
+         </styleClass>
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Button>
+   </children>
+</Pane>

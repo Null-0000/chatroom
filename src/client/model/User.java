@@ -1,6 +1,7 @@
 package client.model;
 
 import client.controller.Connector;
+import client.kit.UserInfoPackage;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,7 +10,6 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,11 +33,11 @@ public class User {
         return instance;
     }
 
-    public void setField(int ID, String name, String signature, ArrayList<String> friendList){
-        this.ID = ID;
-        this.name = name;
-        this.signature = signature;
-        this.friendList = friendList;
+    public void setField(UserInfoPackage u){
+        this.ID = u.ID;
+        this.name = u.name;
+        this.signature = u.signature;
+        this.friendList = u.friendList;
     }
     public void initialise() throws IOException {
         manager = new DialoguesManager(name);

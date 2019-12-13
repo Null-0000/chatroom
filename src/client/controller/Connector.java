@@ -1,5 +1,7 @@
 package client.controller;
 
+import client.kit.ClassConverter;
+import client.kit.UserInfoPackage;
 import client.model.User;
 
 import java.io.IOException;
@@ -28,37 +30,26 @@ public class Connector {
         return instance;
     }
 
-    public boolean loadUserInfo(int ID, String password) throws IOException {
-        String inMessage, outMessage;
-        ArrayList<String> friends = new ArrayList<>();
+    public boolean loadUserInfo(int ID, String password) throws Exception {
         Socket socket = new Socket(HOST, PORT);
 
         OutputStream outputStream = socket.getOutputStream();
-        outMessage = "BHEAD load user info EHEAD BID " + ID + " EID Bpassword " + password + " Epassword ";
-        outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
+
+        outputStream.write(ClassConverter.getBytesFromObject(new UserInfoPackage(ID, password)));
+
         socket.shutdownOutput();
 
         byte[] bytes = new byte[1024];
         InputStream inputStream = socket.getInputStream();
         int len = inputStream.read(bytes);
-        inMessage = new String(bytes, 0, len);
-        if (inMessage.equals("error")) return false;
-        Pattern p = Pattern.compile("Bname (.*) Ename Bsig (.*) Esig Bfriends (.*) Efriends");
-        Matcher m = p.matcher(inMessage);
-        if (m.find()) {
-            String name = m.group(1);
-            String sig = (m.group(2).equals("null")) ? null : m.group(2);
-            if (!m.group(3).equals("null")) {
-                Scanner scan = new Scanner(m.group(3));
-                while (scan.hasNext()) friends.add(scan.next());
-            }
-            socket.close();
-            outputStream.close();
-            inputStream.close();
-            User.getInstance().setField(ID, name, sig, friends);
+
+        UserInfoPackage userInfoPackage = (UserInfoPackage)ClassConverter.getObjectFromBytes(bytes);
+
+        if(userInfoPackage.ID == -1) return false;
+        else{
+            User.getInstance().setField(userInfoPackage);
             return true;
         }
-        return false;
     }
     public String register(String name, String password, String sig) throws IOException {
         Socket socket = new Socket(HOST, PORT);

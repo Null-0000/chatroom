@@ -1,14 +1,18 @@
 package client.controller;
 
+import client.model.ShowDialog;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 
-import java.io.IOException;
+import java.io.*;
 
 public class RegisterViewController {
     @FXML
@@ -21,19 +25,21 @@ public class RegisterViewController {
     private TextField userPasswordConfirm;
     @FXML
     private TextField userSignature;
+    @FXML
+    private ImageView selectedIcon;
 
     @FXML
     protected void submitButton(ActionEvent event){
         if(userName.getText().isEmpty()) {
-            showAlert("昵称不能为空");
+            ShowDialog.showAlert("昵称不能为空");
             return;
         }
         if(userPassword.getText().isEmpty()) {
-            showAlert("请设置密码");
+            ShowDialog.showAlert("请设置密码");
             return;
         }
         if(userPasswordConfirm.getText().isEmpty()){
-            showAlert("请再次输入密码");
+            ShowDialog.showAlert("请再次输入密码");
             return;
         }
         String name = userName.getText();
@@ -42,33 +48,20 @@ public class RegisterViewController {
         String signature = userSignature.getText();
 
         if(!password.equals(passwordConfirm)){
-            showAlert("两次输入的密码不同,请重新输入");
+            ShowDialog.showAlert("两次输入的密码不同,请重新输入");
             userPasswordConfirm.setText("");
             return;
         }
         try {
             int ID = Integer.parseInt(Connector.getInstance().register(name, password, signature));
-            showMessage("你获得的ID为" + ID);
+            ShowDialog.showMessage("你获得的ID为" + ID);
         } catch (NumberFormatException e){
             e.printStackTrace();
-            showAlert("服务器分配ID错误");
+            ShowDialog.showAlert("服务器分配ID错误");
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Unknown Error");
+            ShowDialog.showAlert("Unknown Error");
         }
-    }
-    private void showMessage(String message){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information");
-        alert.setHeaderText(message);
-        alert.showAndWait();
-    }
-    private void showAlert(String message){
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setContentText(null);
-        alert.setHeaderText(message);
-        alert.showAndWait();
     }
 
     @FXML
@@ -76,5 +69,24 @@ public class RegisterViewController {
         if(keyEvent.getCode() == KeyCode.ENTER){
             submitButton(new ActionEvent());
         }
+    }
+
+    private FileChooser fileChooser = new FileChooser();
+
+    public void chooseFile(ActionEvent actionEvent) throws IOException {
+        configureFileChooser(fileChooser);
+        File file = fileChooser.showOpenDialog(null);
+        FileInputStream fileInputStream = new FileInputStream(file);
+        selectedIcon.setImage(new Image(fileInputStream));
+        fileInputStream.close();
+    }
+    private static void configureFileChooser(final FileChooser fileChooser) {
+        fileChooser.setTitle("View Pictures");
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("All Images", "*.*"),
+                new FileChooser.ExtensionFilter("JPG", "*.jpg"),
+                new FileChooser.ExtensionFilter("PNG", "*.png")
+        );
     }
 }

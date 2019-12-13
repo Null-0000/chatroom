@@ -23,7 +23,7 @@ public class LoginView extends Stage {
         root.setOnMouseClicked(event -> {
             root.requestFocus();
         });
-        Scene scene = new Scene(root, 500, 500);
+        Scene scene = new Scene(root);
         this.setScene(scene);
         setResizable(false);
         getIcons().add(new Image(String.valueOf(this.getClass().getResource("images/AppIcon.png"))));
