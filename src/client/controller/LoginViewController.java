@@ -58,7 +58,7 @@ public class LoginViewController {
                 User.getInstance().initialise();
                 StageM.getManager().addStage(Resource.MainViewID, new MainView(User.getInstance()));
                 StageM.getManager().shift(Resource.LoginViewID, Resource.MainViewID);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 ShowDialog.showAlert("载入服务端用户信息错误");
             }

@@ -49,7 +49,7 @@ public class ChatViewController implements Initializable {
     public ChatViewController(String chatTo){
         this.chatTo = chatTo;
     }
-    @FXML public void sendMessage() throws IOException {
+    @FXML public void sendMessage() throws Exception {
 
         String text = typeArea.getText();
         typeArea.setText("");
@@ -103,7 +103,7 @@ public class ChatViewController implements Initializable {
                 e.consume();
                 try {
                     if(e.isControlDown()) sendMessage();
-                } catch (IOException ex) {
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }

@@ -1,4 +1,4 @@
-package client.kit;
+package kit;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -25,13 +25,11 @@ public class ClassConverter {
         if(object == null) {
             return null;
         }
-        if(object instanceof String){
-            return ((String) object).getBytes(StandardCharsets.UTF_8);
-        }
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
         objectOutputStream.writeObject(object);
+        objectOutputStream.close();
 
         return byteArrayOutputStream.toByteArray();
     }

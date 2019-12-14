@@ -7,8 +7,8 @@ import java.util.Date;
 public class Message implements Comparable<Message>, Serializable {
     public String receiver;
     public String sender;
-    private String content;
-    private Date date;
+    public String content;
+    public Date date;
     public Message(String receiver, String sender, String content, Date date){
         this.receiver = receiver;
         this.sender = sender;

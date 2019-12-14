@@ -45,6 +45,8 @@ public class AddFriendViewController {
         } catch (IOException e) {
             ShowDialog.showAlert(e.getMessage());
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

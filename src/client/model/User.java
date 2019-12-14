@@ -1,20 +1,14 @@
 package client.model;
 
 import client.controller.Connector;
-import client.kit.UserInfoPackage;
+import kit.ClassConverter;
+import kit.DataPackage;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static client.model.RegexFunctions.selectBy;
 
 public class User {
     private String name;
@@ -33,38 +27,29 @@ public class User {
         return instance;
     }
 
-    public void setField(UserInfoPackage u){
+    public void setField(DataPackage u){
         this.ID = u.ID;
         this.name = u.name;
         this.signature = u.signature;
         this.friendList = u.friendList;
     }
-    public void initialise() throws IOException {
+    public void initialise() throws Exception {
         manager = new DialoguesManager(name);
 
         dialogueMap = manager.initMyDialogues();
 
         loadRemoteData();
 
-        this.mySocket = Connector.getInstance().connectToRemote(name);
+        this.mySocket = Connector.getInstance().connectToRemote();
         this.inputStream = mySocket.getInputStream();
         this.outputStream = mySocket.getOutputStream();
 
         receiveMessages();
     }
-    public void loadRemoteData() throws IOException {
-        String inMessage = Connector.getInstance().loadDialogueData();
-        Pattern p = Pattern.compile("Bsender (.*?) Esender Bcontent (.*?) Econtent Bdatetime (.*?) Edatetime");
-        Matcher m = p.matcher(inMessage);
-        String sender;
-        String content;
-        Date date;
-        while (m.find()){
-            sender = m.group(1);
-            content = m.group(2);
-            date = new Date(Long.parseLong(m.group(3)));
-            Message message = new Message(name, sender, content, date);
-            dialogueMap.get(sender).updateMessage(message);
+    public void loadRemoteData() throws Exception {
+        ArrayList<Message> messages = Connector.getInstance().loadDialogueData();
+        for(Message message : messages){
+            dialogueMap.get(message.sender).updateMessage(message);
         }
     }
 
@@ -91,23 +76,23 @@ public class User {
     public ArrayList<String> getFriendList() {
         return friendList;
     }
-    public void sendMessage(Message message) throws IOException {
-        //dialogues.updateDialogue(message);
+    public void sendMessage(Message message) throws Exception {
         String receiver = message.receiver;
         dialogueMap.get(receiver).updateMessage(message);
-        String content = message.getContent();
-        long datetime = message.getDate().getTime();
-        String outMessage = "BHEAD send message EHEAD Bsender " + name + " Esender Breceiver " + receiver +
-                " Ereceiver Bcontent " + content + " Econtent Bdatetime " + datetime + " Edatetime";
-        outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
+
+        DataPackage dataPackage = new DataPackage(message);
+        dataPackage.setOperateType("sendMessage");
+        outputStream.write(ClassConverter.getBytesFromObject(dataPackage));
     }
     private void receiveMessages() {
         ReceiveMessageThread receiveMessageThread = new ReceiveMessageThread();
         receiveMessageThread.start();
     }
 
-    public void exit() throws IOException {
-        outputStream.write("exit".getBytes(StandardCharsets.UTF_8));
+    public void exit() throws Exception {
+        DataPackage dataPackage = new DataPackage();
+        dataPackage.setOperateType("exit");
+        outputStream.write(ClassConverter.getBytesFromObject(dataPackage));
         /**登出时储存文件*/
         manager.updateMyDialogues(dialogueMap);
         inputStream.close();
@@ -125,17 +110,11 @@ public class User {
                 try {
                     len = inputStream.read(bytes);
                     if (len != -1) {
-                        String inMessage = new String(bytes, 0, len);
-                        String sender = selectBy(inMessage, "Bsender (.*?) Esender");
-                        String content = selectBy(inMessage, "Bcontent (.*?) Econtent");
-                        long datetime = Long.parseLong(selectBy(inMessage, "Bdatetime (.*?) Edatetime"));
-                        Date date = new Date(datetime);
-
-                        Message message = new Message(name, sender, content, date);
-                        dialogueMap.get(sender).updateMessage(message);
-                        //notice(sender);
+                        DataPackage receive = (DataPackage) ClassConverter.getObjectFromBytes(bytes);
+                        Message message = receive.message;
+                        dialogueMap.get(message.sender).updateMessage(message);
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

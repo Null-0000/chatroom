@@ -11,6 +11,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
+import kit.DataPackage;
 
 import java.io.*;
 
@@ -53,14 +54,12 @@ public class RegisterViewController {
             return;
         }
         try {
-            int ID = Integer.parseInt(Connector.getInstance().register(name, password, signature));
+//            int ID = Integer.parseInt(Connector.getInstance().register(name, password, signature));
+            int ID = Connector.getInstance().register(new DataPackage(name, password, signature));
             ShowDialog.showMessage("你获得的ID为" + ID);
-        } catch (NumberFormatException e){
+        } catch (Exception e){
             e.printStackTrace();
             ShowDialog.showAlert("服务器分配ID错误");
-        } catch (IOException e) {
-            e.printStackTrace();
-            ShowDialog.showAlert("Unknown Error");
         }
     }
 
@@ -76,9 +75,11 @@ public class RegisterViewController {
     public void chooseFile(ActionEvent actionEvent) throws IOException {
         configureFileChooser(fileChooser);
         File file = fileChooser.showOpenDialog(null);
-        FileInputStream fileInputStream = new FileInputStream(file);
-        selectedIcon.setImage(new Image(fileInputStream));
-        fileInputStream.close();
+        if(file != null) {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            selectedIcon.setImage(new Image(fileInputStream));
+            fileInputStream.close();
+        }
     }
     private static void configureFileChooser(final FileChooser fileChooser) {
         fileChooser.setTitle("View Pictures");
@@ -86,7 +87,8 @@ public class RegisterViewController {
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("All Images", "*.*"),
                 new FileChooser.ExtensionFilter("JPG", "*.jpg"),
-                new FileChooser.ExtensionFilter("PNG", "*.png")
+                new FileChooser.ExtensionFilter("PNG", "*.png"),
+                new FileChooser.ExtensionFilter("JPEG","*.jpeg")
         );
     }
 }

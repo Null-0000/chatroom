@@ -50,7 +50,7 @@ public class MainView extends Stage {
         setOnCloseRequest((e)->{
             try {
                 User.getInstance().exit();
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
             Platform.exit();

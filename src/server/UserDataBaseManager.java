@@ -1,6 +1,12 @@
 package server;
 
+import client.model.Message;
+import kit.DataPackage;
+
+import javax.xml.crypto.Data;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class UserDataBaseManager {
     private final String driver = "com.mysql.cj.jdbc.Driver";
@@ -15,10 +21,10 @@ public class UserDataBaseManager {
         conn = DriverManager.getConnection(url, user, pass);
         stmt = conn.createStatement();
     }
-    public int register(String name, String password, String sig) throws SQLException {
+    public int register(DataPackage dataPackage) throws SQLException {
         addCurrentUsersAmount();
         int ID = getCurrentID();
-        String cmd = String.format("insert into users_info(ID, name, signature, password) values(%d,\'%s\',\'%s\',\'%s\')", ID, name, sig, password);
+        String cmd = String.format("insert into users_info(ID, name, signature, password) values(%d,\'%s\',\'%s\',\'%s\')", ID, dataPackage.name, dataPackage.signature, dataPackage.password);
         stmt.executeUpdate(cmd);
         return ID;
     }
@@ -94,20 +100,18 @@ public class UserDataBaseManager {
         return name;
     }
 
-    public void storeMessage(String sender, String receiver, String content, long datetime) throws SQLException {
-        stmt.executeUpdate("INSERT INTO messages(sender,receiver,content,datetime) VALUES(\'" + sender + "\',\'" +
-                receiver + "\',\'" + content + "\',\'" + new Timestamp(datetime) + "\')");
+    public void storeMessage(Message message) throws SQLException {
+        stmt.executeUpdate("INSERT INTO messages(sender,receiver,content,datetime) VALUES(\'" + message.sender + "\',\'" +
+                message.receiver + "\',\'" + message.content + "\',\'" + new Timestamp(message.date.getTime()) + "\')");
     }
-    public String loadDialogues(String name) throws SQLException {
+    public DataPackage loadDialogues(String name) throws SQLException {
         ResultSet rs = stmt.executeQuery("SELECT * FROM messages WHERE receiver=\'" + name + "\'");
-        String dialogues = "";
+        ArrayList<Message> dialogues = new ArrayList<>();
         while (rs.next()){
-            dialogues += "Bsender " + rs.getString(1) + " Esender Bcontent " +
-                    rs.getString(3) + " Econtent Bdatetime " + rs.getTimestamp(4).getTime() +
-                    " Edatetime";
+            dialogues.add(new Message(name, rs.getString(1), rs.getString(3), new Date(rs.getTimestamp(4).getTime())));
         }
         stmt.executeUpdate("DELETE FROM messages WHERE receiver=\'" + name + "\'");
-        return dialogues;
+        return new DataPackage(dialogues);
     }
 
 

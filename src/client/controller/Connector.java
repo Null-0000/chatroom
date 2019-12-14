@@ -1,24 +1,15 @@
 package client.controller;
 
-import client.kit.ClassConverter;
-import client.kit.UserInfoPackage;
+import client.model.Message;
+import kit.ClassConverter;
+import kit.DataPackage;
 import client.model.User;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-/**
- * 用于与服务器通信
- * sendMessage,loadDialogues,loadUserInfo,receiveMessage
- * Connector.getInstance().sendMessage(XXX).
- */
 
 public class Connector {
     private final String HOST = "127.0.0.1";
@@ -34,82 +25,84 @@ public class Connector {
         Socket socket = new Socket(HOST, PORT);
 
         OutputStream outputStream = socket.getOutputStream();
-
-        outputStream.write(ClassConverter.getBytesFromObject(new UserInfoPackage(ID, password)));
-
+        DataPackage dataPackage = new DataPackage(ID, password);
+        dataPackage.setOperateType("loadUserInfo");
+        outputStream.write(ClassConverter.getBytesFromObject(dataPackage));
+        outputStream.flush();
         socket.shutdownOutput();
 
         byte[] bytes = new byte[1024];
         InputStream inputStream = socket.getInputStream();
         int len = inputStream.read(bytes);
 
-        UserInfoPackage userInfoPackage = (UserInfoPackage)ClassConverter.getObjectFromBytes(bytes);
+        DataPackage receive = (DataPackage)ClassConverter.getObjectFromBytes(bytes);
 
-        if(userInfoPackage.ID == -1) return false;
+        if(receive.ID == -1) return false;
         else{
-            User.getInstance().setField(userInfoPackage);
+            User.getInstance().setField(receive);
             return true;
         }
     }
-    public String register(String name, String password, String sig) throws IOException {
+    public int register(DataPackage dataPackage) throws Exception {
         Socket socket = new Socket(HOST, PORT);
 
         OutputStream outputStream = socket.getOutputStream();
-        String message = "BHEAD register EHEAD Bname " + name + " Ename Bpassword " +
-                password + " Epassword Bsig " + sig + " Esig";
-        outputStream.write(message.getBytes(StandardCharsets.UTF_8));
+
+        dataPackage.setOperateType("register");
+        outputStream.write(ClassConverter.getBytesFromObject(dataPackage));
 
         InputStream inputStream = socket.getInputStream();
         byte[] bytes = new byte[1024];
         int len = inputStream.read(bytes);
-        String ID = new String(bytes, 0, len);
+        DataPackage receiveData = (DataPackage) ClassConverter.getObjectFromBytes(bytes);
         socket.close();
         outputStream.close();
         inputStream.close();
-        return ID;
+        return receiveData.ID;
     }
-    public boolean makeFriendWith(String info) throws IOException {
+    public boolean makeFriendWith(String info) throws Exception {
         Socket socket = new Socket(HOST, PORT);
         InputStream inputStream = socket.getInputStream();
         OutputStream outputStream = socket.getOutputStream();
 
-        String message = "BHEAD make friend EHEAD Binfo " + info + " Einfo Bname " +
-                User.getInstance().getName() + " Ename";
-        outputStream.write(message.getBytes(StandardCharsets.UTF_8));
+        DataPackage dataPackage = new DataPackage(info);
+        dataPackage.setOperateType("makeFriendWith");
+        dataPackage.operator = User.getInstance().getName();
+        outputStream.write(ClassConverter.getBytesFromObject(dataPackage));
         socket.shutdownOutput();
         byte[] bytes = new byte[1024];
         int len = inputStream.read(bytes);
         if (len == -1) throw new IOException();
-        String result = new String(bytes, 0, len);
 
-        if(result.equals("not found")) return false;
-        else if(result.equals("added")){
-//            User.getInstance().addFriend(info);
-            return true;
-        }
-        return false;
+        DataPackage receive = (DataPackage)ClassConverter.getObjectFromBytes(bytes);
+
+        if(receive.ID == -1) return false;
+        else return true;
     }
 
-    public Socket connectToRemote(String name) throws IOException {
+    public Socket connectToRemote() throws Exception {
         Socket socket = new Socket(HOST, PORT);
         OutputStream outputStream = socket.getOutputStream();
-        String outMessage = "BHEAD connect EHEAD Bname " + name + " Ename";
-        outputStream.write(outMessage.getBytes());
+        DataPackage dataPackage = new DataPackage(User.getInstance().getID(), User.getInstance().getName());
+        dataPackage.setOperateType("connect");
+        outputStream.write(ClassConverter.getBytesFromObject(dataPackage));
         return socket;
     }
-    public String loadDialogueData() throws IOException {
+    public ArrayList<Message> loadDialogueData() throws Exception {
         Socket socket = new Socket(HOST, PORT);
         OutputStream outputStream = socket.getOutputStream();
-        String outMessage = "BHEAD load dialogues EHEAD Bname " + User.getInstance().getName() + " Ename";
-        outputStream.write(outMessage.getBytes(StandardCharsets.UTF_8));
+
+        DataPackage dataPackage = new DataPackage(User.getInstance().getID(), User.getInstance().getName());
+        dataPackage.setOperateType("loadDialogueData");
+        outputStream.write(ClassConverter.getBytesFromObject(dataPackage));
 
         InputStream inputStream = socket.getInputStream();
         int len;
         byte[] bytes = new byte[1024];
-        String inMessage = "";
-        while ((len = inputStream.read(bytes)) != -1) {
-            inMessage += new String(bytes, 0, len);
-        }
-        return inMessage;
+        len = inputStream.read(bytes);
+
+        DataPackage receive = (DataPackage) ClassConverter.getObjectFromBytes(bytes);
+
+        return receive.messages;
     }
 }
