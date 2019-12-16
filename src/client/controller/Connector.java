@@ -75,6 +75,7 @@ public class Connector {
         if (len == -1) throw new IOException();
 
         DataPackage receive = (DataPackage)ClassConverter.getObjectFromBytes(bytes);
+        User.getInstance().addFriend(receive.name);
 
         if(receive.ID == -1) return false;
         else return true;
@@ -83,18 +84,21 @@ public class Connector {
     public Socket connectToRemote() throws Exception {
         Socket socket = new Socket(HOST, PORT);
         OutputStream outputStream = socket.getOutputStream();
-        DataPackage dataPackage = new DataPackage(User.getInstance().getID(), User.getInstance().getName());
+        DataPackage dataPackage = new DataPackage(User.getInstance().getName(), User.getInstance().getID());
         dataPackage.setOperateType("connect");
         outputStream.write(ClassConverter.getBytesFromObject(dataPackage));
+        outputStream.flush();
         return socket;
     }
     public ArrayList<Message> loadDialogueData() throws Exception {
         Socket socket = new Socket(HOST, PORT);
         OutputStream outputStream = socket.getOutputStream();
 
-        DataPackage dataPackage = new DataPackage(User.getInstance().getID(), User.getInstance().getName());
+        DataPackage dataPackage = new DataPackage(User.getInstance().getName(), User.getInstance().getID());
         dataPackage.setOperateType("loadDialogueData");
         outputStream.write(ClassConverter.getBytesFromObject(dataPackage));
+        outputStream.flush();
+        socket.shutdownOutput();
 
         InputStream inputStream = socket.getInputStream();
         int len;

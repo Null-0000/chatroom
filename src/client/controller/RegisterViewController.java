@@ -29,6 +29,8 @@ public class RegisterViewController {
     @FXML
     private ImageView selectedIcon;
 
+    private String IconUrl = "src/client/view/images/defaultUserIcon.jpeg";
+
     @FXML
     protected void submitButton(ActionEvent event){
         if(userName.getText().isEmpty()) {
@@ -55,7 +57,14 @@ public class RegisterViewController {
         }
         try {
 //            int ID = Integer.parseInt(Connector.getInstance().register(name, password, signature));
-            int ID = Connector.getInstance().register(new DataPackage(name, password, signature));
+
+            ShowDialog.showMessage("your image url is: " + IconUrl);
+            File file= new File(IconUrl);
+            FileInputStream fileInputStream = new FileInputStream(file);
+//            selectedIcon.setImage(new Image(fileInputStream));
+            byte[] iconByte = new byte[1024];
+            fileInputStream.read(iconByte);
+            int ID = Connector.getInstance().register(new DataPackage(name, password, signature, iconByte));
             ShowDialog.showMessage("你获得的ID为" + ID);
         } catch (Exception e){
             e.printStackTrace();
@@ -76,6 +85,7 @@ public class RegisterViewController {
         configureFileChooser(fileChooser);
         File file = fileChooser.showOpenDialog(null);
         if(file != null) {
+            IconUrl = file.getPath();
             FileInputStream fileInputStream = new FileInputStream(file);
             selectedIcon.setImage(new Image(fileInputStream));
             fileInputStream.close();

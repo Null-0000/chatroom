@@ -13,7 +13,6 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ServerThread extends Thread {
@@ -38,7 +37,6 @@ public class ServerThread extends Thread {
             byte[] bytes = new byte[1024];
             len = inputStream.read(bytes);
             DataPackage receive = (DataPackage) ClassConverter.getObjectFromBytes(bytes);
-            DataPackage sends = disposeInMessage(receive);
             //注意：在这里使用ClassConverter，那么client所发的所有内容必须都要经过ClassConverter才能识别
 
             if(receive == null){
@@ -48,6 +46,7 @@ public class ServerThread extends Thread {
                 outputStream.close();
                 return;
             }
+            DataPackage sends = disposeInMessage(receive);
             outputStream.write(ClassConverter.getBytesFromObject(sends));
             outputStream.flush();
             socket.close();
@@ -83,7 +82,8 @@ public class ServerThread extends Thread {
             System.out.println("正在查找用户的对话信息");
             output = loadDialogues(inMessage);//ArrayList<Message>
             System.out.println("查找用户的对话信息完毕" );
-        } else if(inMessage.operateType.equals("exit")){
+        }
+        else if(inMessage.operateType.equals("exit")){
             output = new DataPackage(-1);
         }
 
@@ -120,9 +120,7 @@ public class ServerThread extends Thread {
         return new DataPackage(-1);
     }
     private DataPackage makeFriend(DataPackage message) throws SQLException {
-        String result = manager.makeFriend(message.name, message.operator);
-//        return result;
-        return null;
+        return manager.makeFriend(message.name, message.operator);
     }
     private DataPackage sendUserInfo(DataPackage userInfo) {
         int ID = userInfo.ID;

@@ -74,7 +74,7 @@ public class UserDataBaseManager {
         result[1] = sig;
         return result;
     }
-    public String makeFriend(String info, String byName) throws SQLException {
+    public DataPackage makeFriend(String info, String byName) throws SQLException {
         String name;
         ResultSet rs = stmt.executeQuery("SELECT name FROM users_info WHERE name=\'" + info + "\'");
         if (rs.next()) {
@@ -84,20 +84,18 @@ public class UserDataBaseManager {
             if (rs.next()) {
                 name = rs.getString(1);
             } else {
-                return "not found";
+                return new DataPackage(-1);
             }
         }
-        if (name.equals(byName))
-            return "same";
-        ResultSet rs1 = stmt.executeQuery("select friend_name from friend_map where name=\'" + byName + "\'");
-        while (rs1.next())
-            if (rs1.getString(1).equals(name)) return "added";
 
         stmt.executeUpdate("INSERT INTO friend_map(name,friend_name) " +
                 "VALUES(\'" + name + "\',\'" + byName + "\')");
         stmt.executeUpdate("INSERT INTO friend_map(name,friend_name) " +
                 "VALUES(\'" + byName + "\',\'" + name + "\')");
-        return name;
+
+        int ID = 0;
+
+        return new DataPackage(name, ID);
     }
 
     public void storeMessage(Message message) throws SQLException {

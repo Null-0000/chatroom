@@ -35,6 +35,10 @@ public class DataPackage implements Serializable {
         this.ID = ID;
         this.password = password;
     }
+    public DataPackage(String name, int ID){
+        this.ID = ID;
+        this.name  = name;
+    }
     public DataPackage(int ID){//get ID
         this.ID = ID;
     }
@@ -50,10 +54,11 @@ public class DataPackage implements Serializable {
         this.message = message;
     }
 
-    public DataPackage(String name, String password, String signature) {//register
+    public DataPackage(String name, String password, String signature, byte[] myIconBytes) {//register
         this.name = name;
         this.password = password;
         this.signature = signature;
+        this.myIconBytes = myIconBytes;
     }
 
     public void setOperateType(String operateType){
