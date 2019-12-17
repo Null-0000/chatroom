@@ -19,6 +19,9 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import javax.swing.text.AbstractDocument;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -43,7 +46,11 @@ public class MainView extends Stage {
         ((Label)userInfoGridPane.getChildren().get(7)).setText(user.getSignature());
         ((Label)userInfoGridPane.getChildren().get(7)).setTooltip(new Tooltip(user.getSignature()));
 
-        ((ImageView)userInfoGridPane.getChildren().get(0)).setImage(new Image(String.valueOf(this.getClass().getResource("images/userIcon.jpeg"))));
+        File userIcon = new File("src/client/data/" + user.getName() + ".png");
+        FileOutputStream fileOutputStream = new FileOutputStream(userIcon);
+        fileOutputStream.write(user.getMyIconBytes());
+
+        ((ImageView)userInfoGridPane.getChildren().get(0)).setImage(new Image(new FileInputStream(userIcon)));
 
         setScene(new Scene(root));
 

@@ -1,6 +1,6 @@
 package server;
 
-import client.model.Message;
+import kit.Message;
 import kit.ClassConverter;
 import kit.DataPackage;
 
@@ -27,7 +27,7 @@ public class ServerThread extends Thread {
         try {
             inputStream =  socket.getInputStream();
             outputStream = socket.getOutputStream();
-            byte[] bytes = new byte[1024];
+            byte[] bytes = new byte[1024 * 65];
             inputStream.read(bytes);
             DataPackage receive = (DataPackage) ClassConverter.getObjectFromBytes(bytes);
             //注意：在这里使用ClassConverter，那么client所发的所有内容必须都要经过ClassConverter才能识别
@@ -89,7 +89,7 @@ public class ServerThread extends Thread {
 
         socketMap.put(name, socket);
         int len;
-        byte[] bytes = new byte[1024];
+        byte[] bytes = new byte[1024 * 33];
         DataPackage dataPackage;
         while (true){
             if ((len = inputStream.read(bytes)) != -1){
@@ -119,18 +119,13 @@ public class ServerThread extends Thread {
         System.out.println("接受到ID=" + ID);
         String password = userInfo.password;
         System.out.println("接受到密码=" + password);
-        String[] selected = manager.selectByIDAndPassword(ID, password);
+        DataPackage proceeded = manager.selectByIDAndPassword(ID, password);
         DataPackage tmp = new DataPackage(-1);
-        if(selected == null){
+        if(proceeded == null){
             System.out.println("ID与密码不匹配");
             return tmp;
         }
-        ArrayList<String> friendList = new ArrayList<>();
-        for(int i = 2; i < selected.length; i++){
-            friendList.add(selected[i]);
-        }
-        tmp = new DataPackage(ID, selected[0], selected[1], friendList, null);
-        return tmp;
+        return proceeded;
     }
     private DataPackage register(DataPackage info) throws SQLException {
         int ID = manager.register(info);

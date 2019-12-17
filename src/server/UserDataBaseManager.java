@@ -1,9 +1,8 @@
 package server;
 
-import client.model.Message;
+import kit.Message;
 import kit.DataPackage;
 
-import javax.xml.crypto.Data;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,8 +13,8 @@ import java.util.Date;
 public class UserDataBaseManager {
     private final String driver = "com.mysql.cj.jdbc.Driver";
     private final String url = "jdbc:mysql://localhost:3306/chat_room?serverTimezone=Asia/Shanghai";
-    private final String user = "henry";
-    private final String pass = "mxylfbcz4321";
+    private final String user = "root";
+    private final String pass = "123456";
     private Connection conn;
     private Statement stmt;
 
@@ -27,8 +26,15 @@ public class UserDataBaseManager {
     public int register(DataPackage dataPackage) throws SQLException {
         addCurrentUsersAmount();
         int ID = getCurrentID();
-        String cmd = String.format("insert into users_info(ID, name, signature, password) values(%d,\'%s\',\'%s\',\'%s\')", ID, dataPackage.name, dataPackage.signature, dataPackage.password);
-        stmt.executeUpdate(cmd);
+        byte[] icon = dataPackage.myIconBytes;
+        PreparedStatement pstmt = conn.prepareStatement(
+                "INSERT INTO users_info(ID, name, signature, password, icon) VALUES(?, ?, ?, ?, ?)");
+        pstmt.setInt(1, ID);
+        pstmt.setString(2, dataPackage.name);
+        pstmt.setString(3, dataPackage.signature);
+        pstmt.setString(4, dataPackage.password);
+        pstmt.setBlob(5, new ByteArrayInputStream(icon));
+        pstmt.executeUpdate();
         return ID;
     }
     private int getCurrentID() throws SQLException {
@@ -44,38 +50,39 @@ public class UserDataBaseManager {
         if (rs.next())
             stmt.executeUpdate("UPDATE global_info SET users=" + (rs.getInt(1) + 1) + " WHERE users=" + rs.getInt(1));
     }
-    public String[] selectByIDAndPassword(int id, String password) {
+    public DataPackage selectByIDAndPassword(int id, String password) {
         if (id < 0) return null;
-        String[] result;
         ResultSet rs1;
         String name;
         String sig;
+        byte[] icon;
         try {
-            rs1 = stmt.executeQuery("select * from users_info where id=" + id);
+            PreparedStatement pstmt = conn.prepareStatement("select * from users_info where id=" + id);
+            rs1 = pstmt.executeQuery();
             rs1.next();
             if (!rs1.getString(4).equals(password))
                 return null;
             name = rs1.getString(2);
             sig = rs1.getString(3);
-        } catch (SQLException e) {
+            Blob iconBlob = rs1.getBlob(5);
+            icon = new byte[(int) iconBlob.length()];
+            InputStream inputStream = iconBlob.getBinaryStream();
+            inputStream.read(icon);
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
             return null;
         }
         ResultSet rs2;
+        ArrayList<String> friendList = new ArrayList<>();
         try {
             rs2 = stmt.executeQuery("select friend_name from friend_map where name=\'" + name + "\'");
-            rs2.last();
-            result = new String[rs2.getRow() + 2];
-            int cnt = 2;
-            do {
-                result[cnt++] = rs2.getString(1);
-            } while (rs2.previous());
+            while (rs2.next()){
+                friendList.add(rs2.getString(1));
+            }
         } catch (SQLException e) {
-            result = new String[2];
+            e.printStackTrace();
         }
-        result[0] = name;
-        result[1] = sig;
-        return result;
+        return new DataPackage(id, name, sig, friendList, icon);
     }
     public DataPackage makeFriend(String info, String byName) throws SQLException {
         String name;

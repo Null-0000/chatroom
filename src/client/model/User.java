@@ -3,6 +3,7 @@ package client.model;
 import client.controller.Connector;
 import kit.ClassConverter;
 import kit.DataPackage;
+import kit.Message;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,6 +15,7 @@ public class User {
     private String name;
     private String signature;
     private int ID;
+    private byte[] myIconBytes;
     private ArrayList<String> friendList;
     private DialoguesManager manager;
     private Map<String, Dialogue> dialogueMap;
@@ -32,6 +34,7 @@ public class User {
         this.name = u.name;
         this.signature = u.signature;
         this.friendList = u.friendList;
+        this.myIconBytes = u.myIconBytes;
     }
     public void initialise() throws Exception {
         manager = new DialoguesManager(name);
@@ -59,6 +62,9 @@ public class User {
     }
     public String getName(){
         return name;
+    }
+    public byte[] getMyIconBytes(){
+        return myIconBytes;
     }
 
     public String getSignature() {
@@ -108,7 +114,7 @@ public class User {
                 dialogue.synchronizeMessage();
             }
             int len;
-            byte[] bytes = new byte[1024];
+            byte[] bytes = new byte[1024 * 32];
             while (true) {
                 try {
                     len = inputStream.read(bytes);

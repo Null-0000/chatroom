@@ -1,6 +1,6 @@
 package client.controller;
 
-import client.model.Message;
+import kit.Message;
 import kit.ClassConverter;
 import kit.DataPackage;
 import client.model.User;
@@ -31,7 +31,7 @@ public class Connector {
         outputStream.flush();
         socket.shutdownOutput();
 
-        byte[] bytes = new byte[1024];
+        byte[] bytes = new byte[1024 * 65];
         InputStream inputStream = socket.getInputStream();
         int len = inputStream.read(bytes);
 
@@ -50,9 +50,11 @@ public class Connector {
 
         dataPackage.setOperateType("register");
         outputStream.write(ClassConverter.getBytesFromObject(dataPackage));
+        outputStream.flush();
+        socket.shutdownOutput();
 
         InputStream inputStream = socket.getInputStream();
-        byte[] bytes = new byte[1024];
+        byte[] bytes = new byte[1024 * 65];
         int len = inputStream.read(bytes);
         DataPackage receiveData = (DataPackage) ClassConverter.getObjectFromBytes(bytes);
         socket.close();
@@ -70,7 +72,7 @@ public class Connector {
         dataPackage.operator = User.getInstance().getName();
         outputStream.write(ClassConverter.getBytesFromObject(dataPackage));
         socket.shutdownOutput();
-        byte[] bytes = new byte[1024];
+        byte[] bytes = new byte[1024 * 65];
         int len = inputStream.read(bytes);
         if (len == -1) throw new IOException();
 
@@ -102,7 +104,7 @@ public class Connector {
 
         InputStream inputStream = socket.getInputStream();
         int len;
-        byte[] bytes = new byte[1024];
+        byte[] bytes = new byte[1024 * 65];
         len = inputStream.read(bytes);
 
         DataPackage receive = (DataPackage) ClassConverter.getObjectFromBytes(bytes);

@@ -16,12 +16,8 @@ public class Launcher extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         LoginView loginView = new LoginView();
-        RegisterView registerView = new RegisterView();
-        AddFriendView addFriendView = new AddFriendView();
 
         StageM.getManager().addStage(Resource.LoginViewID, loginView);
-        StageM.getManager().addStage(Resource.RegisterID, registerView);
-        StageM.getManager().addStage(Resource.AddFriendView, addFriendView);
 
         StageM.getManager().show(Resource.LoginViewID);
     }

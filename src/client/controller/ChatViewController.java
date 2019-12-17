@@ -1,6 +1,6 @@
 package client.controller;
 
-import client.model.Message;
+import kit.Message;
 import client.model.User;
 
 import javafx.application.Platform;
@@ -24,15 +24,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.ac.ed.ph.snuggletex.DOMOutputOptions;
 import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
@@ -72,17 +69,15 @@ public class ChatViewController implements Initializable {
         }
         synchronized (dialogView){
             Date now = new Date();
-            byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
-            Message message = new Message(chatTo, User.getInstance().getName(), contentBytes, now);
+
+//            here
+//            unfinished
+
+            Message message = new Message(chatTo, User.getInstance().getName(), "String", content.getBytes(), now);
             User.getInstance().sendMessage(message);
         }
     }
-    @FXML private void imageSelect(){
 
-    }
-    @FXML private void audioSelect(){
-
-    }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         typeArea.setWrapText(true);
@@ -195,31 +190,21 @@ public class ChatViewController implements Initializable {
             Element pHead = document.createElement("p");
             pHead.setTextContent(message.getHead());
             div.appendChild(pHead);
-            Element pContent;
-            switch (message.ctype) {
-                case "text":
-                    pContent = document.createElement("p");
-                    pContent.setAttribute("class", "content");
-                    try {
-                        translateAll(new String(message.getContent()), pContent);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    NodeList mathNodeList = pContent.getElementsByTagName("math");
-                    for (int i = 0; i < mathNodeList.getLength(); i++) {
-                        mathNodeList.item(i).getAttributes().getNamedItem("display").setTextContent("inline");
-                    }
-                    break;
-                case "image":
-                    pContent = document.createElement("img");
-                    break;
-                case "audio":
-                    pContent = document.createElement("audio");
-                    break;
-                default:
-                    pContent = null;
-                    break;
+            Element pContent = document.createElement("p");
+            pContent.setAttribute("class", "content");
+            try {
+//                here
+//                unfinished
+                String content = new String(message.getContent());
+                translateAll(content, pContent);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            NodeList mathNodeList = pContent.getElementsByTagName("math");
+            for (int i=0; i<mathNodeList.getLength(); i++){
+                mathNodeList.item(i).getAttributes().getNamedItem("display").setTextContent("inline");
+            }
+
             div.appendChild(pContent);
             body.appendChild(div);
 

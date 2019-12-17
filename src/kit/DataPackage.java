@@ -1,7 +1,5 @@
 package kit;
 
-import client.model.Message;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 

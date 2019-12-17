@@ -7,11 +7,14 @@ import java.util.Date;
 public class Message implements Comparable<Message>, Serializable {
     public String receiver;
     public String sender;
-    private String content;
-    private Date date;
-    public Message(String receiver, String sender, String content, Date date){
+    public String ctype;
+    public byte[] content;
+
+    public Date date;
+    public Message(String receiver, String sender, String ctype, byte[] content, Date date){
         this.receiver = receiver;
         this.sender = sender;
+        this.ctype = ctype;
         this.content = content;
         this.date = date;
     }
@@ -27,7 +30,12 @@ public class Message implements Comparable<Message>, Serializable {
         return String.format("{receiver:%s,sender:%s,content:%s,date:%s}",receiver,
                 sender,content,date);
     }
-
+    public String toHTML(boolean isLeft){
+        if (isLeft) return "<div class=\'lt_para\' align=\'LEFT\'><p>" + getFormattedDate() + "&nbsp;" + sender +
+                ":</p><p class=\'content\'>"+ content +"</p></div>";
+        else return "<div class=\'rt_para\' align=\'RIGHT\'><p class=\'head\'>" + getFormattedDate() + "&nbsp;" + sender +
+                ":</p><p class=\'content\'>"+ content +"</p></div>";
+    }
     @Override
     public int compareTo(Message o) {
         return date.compareTo(o.date);
@@ -37,9 +45,9 @@ public class Message implements Comparable<Message>, Serializable {
     }
 
     public String getHead(){
-        return getFormattedDate() + " " + sender + ":  ";
+        return getFormattedDate() + " " + sender + ":\n";
     }
-    public String getContent(){
+    public byte[] getContent(){
         return content;
     }
 }

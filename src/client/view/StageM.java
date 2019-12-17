@@ -26,6 +26,13 @@ public class StageM {
     public void addStage(String viewID, Stage stage){
         stageMap.put(viewID, stage);
     }
+    public void resetStage(String viewID, Stage stage){
+        if(stageMap.get(viewID) == null){
+            stageMap.put(viewID, stage);
+            return;
+        }
+        stageMap.replace(viewID, stage);
+    }
 
     public Stage getStage(String viewID){
         return stageMap.get(viewID);

@@ -2,27 +2,16 @@ package client.view;
 
 import client.controller.ChatViewController;
 import client.launcher.Resource;
-import client.model.Message;
-import javafx.application.Platform;
+import kit.Message;
 import javafx.beans.property.ListProperty;
-import javafx.concurrent.Worker;
 import javafx.fxml.FXMLLoader;
 
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 
-import javafx.scene.control.TextArea;
-import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 
 import java.io.IOException;
 

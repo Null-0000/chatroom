@@ -2,12 +2,12 @@ package client.model;
 
 import client.view.ChatView;
 
-import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import kit.Message;
 
 
 import java.io.IOException;

@@ -4,6 +4,7 @@ import client.launcher.Resource;
 import client.model.ShowDialog;
 import client.model.User;
 import client.view.MainView;
+import client.view.RegisterView;
 import client.view.StageM;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,6 +18,7 @@ import javafx.stage.FileChooser;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.IOException;
+import java.util.concurrent.locks.StampedLock;
 import java.util.logging.SocketHandler;
 
 public class LoginViewController {
@@ -67,7 +69,8 @@ public class LoginViewController {
         else ShowDialog.showAlert("ID不存在或密码错误");
     }
     @FXML
-    protected void registerButtonAction(){
+    protected void registerButtonAction() throws IOException {
+        StageM.getManager().resetStage(Resource.RegisterID, new RegisterView());
         StageM.getManager().shift(Resource.LoginViewID, Resource.RegisterID);
     }
 

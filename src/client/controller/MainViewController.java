@@ -3,6 +3,7 @@ package client.controller;
 import client.launcher.Resource;
 import client.model.Dialogue;
 import client.model.User;
+import client.view.AddFriendView;
 import client.view.StageM;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -18,6 +19,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -26,7 +28,8 @@ public class MainViewController implements Initializable {
     @FXML private ListView<String> friendListView;
     @FXML private Button addFriendButton;
 
-    @FXML public void addFriend(){
+    @FXML public void addFriend() throws IOException {
+        StageM.getManager().resetStage(Resource.AddFriendView, new AddFriendView());
         StageM.getManager().show(Resource.AddFriendView);
     }
     @Override
@@ -45,7 +48,13 @@ public class MainViewController implements Initializable {
         });*/
         friendListView.getSelectionModel().selectedItemProperty().addListener(new NoticeListItemChangeListener());
         addFriendButton.setTooltip(new Tooltip("添加好友"));
-        addFriendButton.setOnAction(actionEvent -> addFriend());
+        addFriendButton.setOnAction(actionEvent -> {
+            try {
+                addFriend();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
     private class NoticeListItemChangeListener implements ChangeListener<Object> {
 
