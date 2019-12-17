@@ -81,7 +81,7 @@ public class ChatViewController implements Initializable {
         typeArea.setWrapText(true);
         //隐藏TextArea的滚动条
         webEngine1 = dialogView.getEngine();
-
+        webEngine1.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0");
         webEngine1.getLoadWorker().stateProperty().addListener((obs, ov, nv)->{
             System.out.println(nv + chatTo);
             if (nv == Worker.State.SUCCEEDED){
@@ -185,6 +185,7 @@ public class ChatViewController implements Initializable {
         //不加这玩意的话，程序不会报错，但是debug时却发现Element div显示的是java.lang.illegalStateError，发消息时还没事
         //接受的消息没有成功被指定的css渲染？？？？？？加了这玩意后时灵时不灵
             Element div = document.createElement("div");
+            div.setAttribute("class", (message.sender.equals(chatTo)) ? "lt_div" : "rt_div");
             div.setAttribute("align", (message.sender.equals(chatTo)) ? "LEFT" : "RIGHT");
             Element pHead = document.createElement("p");
             pHead.setTextContent(message.getHead());

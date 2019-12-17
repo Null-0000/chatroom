@@ -37,7 +37,7 @@ public class Message implements Comparable<Message>, Serializable {
     }
 
     public String getHead(){
-        return getFormattedDate() + " " + sender + ":\n";
+        return getFormattedDate() + " " + sender + ":  ";
     }
     public String getContent(){
         return content;

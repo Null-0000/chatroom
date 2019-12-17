@@ -95,6 +95,7 @@ public class UserDataBaseManager {
     }
 
     public void storeMessage(String sender, String receiver, String content, long datetime) throws SQLException {
+        content = content.replaceAll("\\\\", "\\\\\\\\");
         stmt.executeUpdate("INSERT INTO messages(sender,receiver,content,datetime) VALUES(\'" + sender + "\',\'" +
                 receiver + "\',\'" + content + "\',\'" + new Timestamp(datetime) + "\')");
     }
