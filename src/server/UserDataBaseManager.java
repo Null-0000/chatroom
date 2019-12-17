@@ -4,6 +4,9 @@ import client.model.Message;
 import kit.DataPackage;
 
 import javax.xml.crypto.Data;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,8 +14,8 @@ import java.util.Date;
 public class UserDataBaseManager {
     private final String driver = "com.mysql.cj.jdbc.Driver";
     private final String url = "jdbc:mysql://localhost:3306/chat_room?serverTimezone=Asia/Shanghai";
-    private final String user = "root";
-    private final String pass = "123456";
+    private final String user = "henry";
+    private final String pass = "mxylfbcz4321";
     private Connection conn;
     private Statement stmt;
 
@@ -97,26 +100,38 @@ public class UserDataBaseManager {
 
         return new DataPackage(name, ID);
     }
-
     public void storeMessage(Message message) throws SQLException {
-        stmt.executeUpdate("INSERT INTO messages(sender,receiver,content,datetime) VALUES(\'" + message.sender + "\',\'" +
-                message.receiver + "\',\'" + message.content + "\',\'" + new Timestamp(message.date.getTime()) + "\')");
+        PreparedStatement pstmt = conn.prepareStatement(
+                "INSERT INTO messages(receiver, sender, ctype, content, datetime) VALUES(?, ?, ?, ?, ?)");
+        pstmt.setString(1, message.receiver);
+        pstmt.setString(2, message.sender);
+        pstmt.setString(3, message.ctype);
+        pstmt.setBlob(4, new ByteArrayInputStream(message.content));
+        pstmt.setTimestamp(5, new Timestamp(message.date.getTime()));
+        pstmt.execute();
     }
     public DataPackage loadDialogues(String name) throws SQLException {
-        ResultSet rs = stmt.executeQuery("SELECT * FROM messages WHERE receiver=\'" + name + "\'");
+        PreparedStatement pstmt = conn.prepareStatement("SELECT  * FROM messages WHERE receiver=?");
+        pstmt.setString(1, name);
+        ResultSet rs = pstmt.executeQuery();
         ArrayList<Message> dialogues = new ArrayList<>();
         while (rs.next()){
-            dialogues.add(new Message(name, rs.getString(1), rs.getString(3), new Date(rs.getTimestamp(4).getTime())));
+            String sender = rs.getString(2);
+            String ctype = rs.getString(3);
+            Blob contentBlob = rs.getBlob(4);
+            byte[] content = new byte[(int) contentBlob.length()];
+            InputStream inputStream = contentBlob.getBinaryStream();
+            try {
+                inputStream.read(content);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Date date = new Date(rs.getTimestamp(5).getTime());
+            dialogues.add(new Message(name, sender, ctype, content, date));
         }
         stmt.executeUpdate("DELETE FROM messages WHERE receiver=\'" + name + "\'");
         return new DataPackage(dialogues);
     }
-
-
-
-
-
-
 
 }
 

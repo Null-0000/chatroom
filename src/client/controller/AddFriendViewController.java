@@ -4,9 +4,9 @@ import client.model.ShowDialog;
 import client.model.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
+
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
+
 import javafx.scene.layout.GridPane;
 
 import java.io.IOException;

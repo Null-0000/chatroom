@@ -31,6 +31,7 @@ import uk.ac.ed.ph.snuggletex.SnuggleSession;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.ResourceBundle;
@@ -71,11 +72,17 @@ public class ChatViewController implements Initializable {
         }
         synchronized (dialogView){
             Date now = new Date();
-            Message message = new Message(chatTo, User.getInstance().getName(), content, now);
+            byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
+            Message message = new Message(chatTo, User.getInstance().getName(), contentBytes, now);
             User.getInstance().sendMessage(message);
         }
     }
+    @FXML private void imageSelect(){
 
+    }
+    @FXML private void audioSelect(){
+
+    }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         typeArea.setWrapText(true);
@@ -188,18 +195,31 @@ public class ChatViewController implements Initializable {
             Element pHead = document.createElement("p");
             pHead.setTextContent(message.getHead());
             div.appendChild(pHead);
-            Element pContent = document.createElement("p");
-            pContent.setAttribute("class", "content");
-            try {
-                translateAll(message.getContent(), pContent);
-            } catch (IOException e) {
-                e.printStackTrace();
+            Element pContent;
+            switch (message.ctype) {
+                case "text":
+                    pContent = document.createElement("p");
+                    pContent.setAttribute("class", "content");
+                    try {
+                        translateAll(new String(message.getContent()), pContent);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    NodeList mathNodeList = pContent.getElementsByTagName("math");
+                    for (int i = 0; i < mathNodeList.getLength(); i++) {
+                        mathNodeList.item(i).getAttributes().getNamedItem("display").setTextContent("inline");
+                    }
+                    break;
+                case "image":
+                    pContent = document.createElement("img");
+                    break;
+                case "audio":
+                    pContent = document.createElement("audio");
+                    break;
+                default:
+                    pContent = null;
+                    break;
             }
-            NodeList mathNodeList = pContent.getElementsByTagName("math");
-            for (int i=0; i<mathNodeList.getLength(); i++){
-                mathNodeList.item(i).getAttributes().getNamedItem("display").setTextContent("inline");
-            }
-
             div.appendChild(pContent);
             body.appendChild(div);
 
