@@ -1,19 +1,15 @@
 package server;
 
 import client.model.Message;
-import javafx.scene.chart.XYChart;
 import kit.ClassConverter;
 import kit.DataPackage;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class ServerThread extends Thread {
     private Socket socket;
@@ -21,7 +17,6 @@ public class ServerThread extends Thread {
     private InputStream inputStream;
     private OutputStream outputStream;
     private UserDataBaseManager manager;
-    private final Pattern headre = Pattern.compile("^BHEAD (.*) EHEAD");
     public ServerThread(Socket socket, UserDataBaseManager manager, Map<String, Socket> socketMap){
         this.socket = socket;
         this.manager = manager;
@@ -32,10 +27,8 @@ public class ServerThread extends Thread {
         try {
             inputStream =  socket.getInputStream();
             outputStream = socket.getOutputStream();
-            int len;
-            String inMessage;
             byte[] bytes = new byte[1024];
-            len = inputStream.read(bytes);
+            inputStream.read(bytes);
             DataPackage receive = (DataPackage) ClassConverter.getObjectFromBytes(bytes);
             //注意：在这里使用ClassConverter，那么client所发的所有内容必须都要经过ClassConverter才能识别
 
@@ -52,7 +45,6 @@ public class ServerThread extends Thread {
             socket.close();
             inputStream.close();
             outputStream.close();
-
         } catch (Exception e) {
             e.printStackTrace();
         }

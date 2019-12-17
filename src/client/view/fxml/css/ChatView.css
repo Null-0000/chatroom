@@ -1,3 +1,6 @@
-p {
-    font-size: 30px;
+#chatToLabel {
+    -fx-font-size: 25px;
+}
+.root {
+    -fx-background-image: url("../../images/background02.jpg");
 }

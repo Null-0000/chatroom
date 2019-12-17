@@ -7,8 +7,8 @@ import java.util.Date;
 public class Message implements Comparable<Message>, Serializable {
     public String receiver;
     public String sender;
-    public String content;
-    public Date date;
+    private String content;
+    private Date date;
     public Message(String receiver, String sender, String content, Date date){
         this.receiver = receiver;
         this.sender = sender;
@@ -27,12 +27,7 @@ public class Message implements Comparable<Message>, Serializable {
         return String.format("{receiver:%s,sender:%s,content:%s,date:%s}",receiver,
                 sender,content,date);
     }
-    public String toHTML(boolean isLeft){
-        if (isLeft) return "<div class=\'lt_para\' align=\'LEFT\'><p>" + getFormattedDate() + "&nbsp;" + sender +
-                ":</p><p class=\'content\'>"+ content +"</p></div>";
-        else return "<div class=\'rt_para\' align=\'RIGHT\'><p class=\'head\'>" + getFormattedDate() + "&nbsp;" + sender +
-                ":</p><p class=\'content\'>"+ content +"</p></div>";
-    }
+
     @Override
     public int compareTo(Message o) {
         return date.compareTo(o.date);
@@ -42,7 +37,7 @@ public class Message implements Comparable<Message>, Serializable {
     }
 
     public String getHead(){
-        return getFormattedDate() + " " + sender + ":\n";
+        return getFormattedDate() + " " + sender + ":  ";
     }
     public String getContent(){
         return content;

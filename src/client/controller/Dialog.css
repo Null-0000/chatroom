@@ -1,0 +1,36 @@
+math {
+
+}
+body {
+    margin-right: 5%;
+    border-width: 4px;
+    border-style: double;
+    border-color: orangered;
+    border-collapse: collapse;
+    border-radius: 25px;
+}
+div {
+    word-wrap: break-word;
+    break-word: break-all;
+    overflow: hidden;
+}
+.lt_div .content {
+    margin-left: 8%;
+}
+.rt_div .content {
+    margin-right: 8%;
+}
+
+p.content{
+    padding: 2px;
+    display: block;
+    width: 80%;
+    background-color: aliceblue;
+    border-color: black;
+    border-style: wave;
+    border-radius: 50px;
+    border-with: 1px;
+}
+
+
+

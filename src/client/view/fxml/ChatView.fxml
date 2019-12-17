@@ -6,20 +6,27 @@
 <?import java.net.URL?>
 
 <?import javafx.scene.web.WebView?>
+<?import javafx.geometry.Insets?>
 <GridPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            prefHeight="600" prefWidth="1000" hgap="5" vgap="5">
+          xmlns:fx="http://javafx.com/fxml"
+          prefHeight="550" prefWidth="800" hgap="5" vgap="5">
+    <padding>
+        <Insets right="10" top="10" left="10" bottom="10"/>
+    </padding>
     <HBox  GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="CENTER">
-    <Label fx:id="chatToLabel"></Label>
+        <Label fx:id="chatToLabel"></Label>
     </HBox>
     <WebView fx:id="dialogView" GridPane.columnIndex="0" GridPane.rowIndex="1"></WebView>
-    <TextArea fx:id="typeArea" GridPane.columnIndex="0" GridPane.rowIndex="2"></TextArea>
+    <TextArea fx:id="typeArea" GridPane.columnIndex="0" GridPane.rowIndex="2" prefHeight="350"></TextArea>
     <HBox alignment="BOTTOM_RIGHT" GridPane.columnIndex="0" GridPane.rowIndex="3">
         <Button fx:id="sendButton" onAction="#sendMessage">Send</Button>
     </HBox>
     <TabPane  GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.rowSpan="4" >
         <Tab text="view">
-            <WebView fx:id="show"></WebView>
+            <WebView fx:id="show" prefWidth="400"></WebView>
+        </Tab>
+        <Tab text="emoji">
+            <TilePane fx:id="emojiView" vgap="5" hgap="5"></TilePane>
         </Tab>
     </TabPane>
     <stylesheets>

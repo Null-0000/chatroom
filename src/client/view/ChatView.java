@@ -30,8 +30,7 @@ public class ChatView extends Stage {
     private ChatViewController controller;
     public ChatView(String chatTo, ListProperty<Message> messageList) throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        controller = new ChatViewController(chatTo);
-        controller.synchroniseMessages(messageList);
+        controller = new ChatViewController(chatTo, messageList);
         loader.setController(controller);
         loader.setLocation(this.getClass().getResource(Resource.ChatViewResource));
         setTitle("chatting chamber");
@@ -42,11 +41,13 @@ public class ChatView extends Stage {
 
         Scene scene = new Scene(root);
         this.setScene(scene);
-        getIcons().add(new Image(String.valueOf(this.getClass().getResource("images/AppIcon.png"))));
+        setResizable(false);
     }
-
-    public void loadLocalMessages(ListProperty<Message> messageList) {
-        controller.loadMessages(messageList);
+    public ChatViewController getController(){
+        return controller;
+    }
+    public void synchronizeMessage(ListProperty<Message> messageList){
+        controller.synchroniseMessages(messageList);
     }
 
 }
