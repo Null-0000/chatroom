@@ -211,4 +211,16 @@ public class ChatViewController implements Initializable {
             scrollToBottom();
         });
     }
+
+
+
+    @FXML
+    private void imageSelect(){
+
+    }
+
+    @FXML
+    private void audioSelect(){
+
+    }
 }

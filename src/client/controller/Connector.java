@@ -5,6 +5,7 @@ import kit.ClassConverter;
 import kit.DataPackage;
 import client.model.User;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,11 +32,15 @@ public class Connector {
         outputStream.flush();
         socket.shutdownOutput();
 
-        byte[] bytes = new byte[1024 * 65];
+        byte[] bytes = new byte[1024];
         InputStream inputStream = socket.getInputStream();
-        int len = inputStream.read(bytes);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        DataPackage receive = (DataPackage)ClassConverter.getObjectFromBytes(bytes);
+        while(inputStream.read(bytes) != -1){
+            byteArrayOutputStream.write(bytes);
+        }
+
+        DataPackage receive = (DataPackage)ClassConverter.getObjectFromBytes(byteArrayOutputStream.toByteArray());
 
         if(receive.ID == -1) return false;
         else{
@@ -54,9 +59,14 @@ public class Connector {
         socket.shutdownOutput();
 
         InputStream inputStream = socket.getInputStream();
-        byte[] bytes = new byte[1024 * 65];
-        int len = inputStream.read(bytes);
-        DataPackage receiveData = (DataPackage) ClassConverter.getObjectFromBytes(bytes);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[] bytes = new byte[1024];
+
+        while(inputStream.read(bytes) != -1){
+            byteArrayOutputStream.write(bytes);
+        }
+
+        DataPackage receiveData = (DataPackage) ClassConverter.getObjectFromBytes(byteArrayOutputStream.toByteArray());
         socket.close();
         outputStream.close();
         inputStream.close();
@@ -72,11 +82,12 @@ public class Connector {
         dataPackage.operator = User.getInstance().getName();
         outputStream.write(ClassConverter.getBytesFromObject(dataPackage));
         socket.shutdownOutput();
-        byte[] bytes = new byte[1024 * 65];
-        int len = inputStream.read(bytes);
-        if (len == -1) throw new IOException();
-
-        DataPackage receive = (DataPackage)ClassConverter.getObjectFromBytes(bytes);
+        byte[] bytes = new byte[1024];
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        while(inputStream.read(bytes) != -1){
+            byteArrayOutputStream.write(bytes);
+        }
+        DataPackage receive = (DataPackage)ClassConverter.getObjectFromBytes(byteArrayOutputStream.toByteArray());
         User.getInstance().addFriend(receive.name);
 
         if(receive.ID == -1) return false;
@@ -103,11 +114,14 @@ public class Connector {
         socket.shutdownOutput();
 
         InputStream inputStream = socket.getInputStream();
-        int len;
-        byte[] bytes = new byte[1024 * 65];
-        len = inputStream.read(bytes);
+        byte[] bytes = new byte[1024];
 
-        DataPackage receive = (DataPackage) ClassConverter.getObjectFromBytes(bytes);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        while(inputStream.read(bytes) != -1){
+            byteArrayOutputStream.write(bytes);
+        }
+
+        DataPackage receive = (DataPackage) ClassConverter.getObjectFromBytes(byteArrayOutputStream.toByteArray());
 
         return receive.messages;
     }

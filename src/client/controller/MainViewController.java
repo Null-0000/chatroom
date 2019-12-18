@@ -34,8 +34,7 @@ public class MainViewController implements Initializable {
     }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        ObservableList<String> friendList = FXCollections.observableArrayList(User.getInstance().getFriendList());
-        friendListView.setItems(friendList);
+        friendListView.setItems(User.getInstance().getFriendList());
 
         /*friendListView.getSelectionModel().selectedItemProperty().addListener(
                 (obs, ov, nv) -> {

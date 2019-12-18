@@ -25,7 +25,7 @@
     <HBox alignment="BOTTOM_RIGHT" GridPane.columnIndex="0" GridPane.rowIndex="4">
         <Button fx:id="sendButton" onAction="#sendMessage">Send</Button>
     </HBox>
-    <TabPane  GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.rowSpan="5" >
+    <TabPane  GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.rowSpan="5" tabClosingPolicy="UNAVAILABLE">
         <Tab text="view">
             <WebView fx:id="show" prefWidth="400"></WebView>
         </Tab>

@@ -62,7 +62,7 @@ public class RegisterViewController {
             File file= new File(IconUrl);
             FileInputStream fileInputStream = new FileInputStream(file);
 //            selectedIcon.setImage(new Image(fileInputStream));
-            byte[] iconByte = new byte[1024 * 60];
+            byte[] iconByte = new byte[(int) (file.length() + 1)];
             fileInputStream.read(iconByte);
             int ID = Connector.getInstance().register(new DataPackage(name, password, signature, iconByte));
             ShowDialog.showMessage("你获得的ID为" + ID);
@@ -91,6 +91,7 @@ public class RegisterViewController {
             fileInputStream.close();
         }
     }
+
     private static void configureFileChooser(final FileChooser fileChooser) {
         fileChooser.setTitle("View Pictures");
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));

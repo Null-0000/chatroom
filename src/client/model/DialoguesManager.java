@@ -40,10 +40,11 @@ public class DialoguesManager {
         Map<String, Dialogue> myDialogues = null;
 
         if(fileInputStream.available() != 0){
-            input = new ObjectInputStream(fileInputStream);
             try {
+                input = new ObjectInputStream(fileInputStream);
+
                 myDialogues = (Map<String, Dialogue>)input.readObject();
-            } catch (ClassCastException | InvalidClassException | ClassNotFoundException e){
+            } catch (Exception e){
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Error");
                 alert.setHeaderText("warning: loading file error, deleting.....");

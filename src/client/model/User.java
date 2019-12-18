@@ -1,6 +1,10 @@
 package client.model;
 
 import client.controller.Connector;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import kit.ClassConverter;
 import kit.DataPackage;
 import kit.Message;
@@ -8,6 +12,7 @@ import kit.Message;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -16,7 +21,7 @@ public class User {
     private String signature;
     private int ID;
     private byte[] myIconBytes;
-    private ArrayList<String> friendList;
+    private ListProperty<String> friendList;
     private DialoguesManager manager;
     private Map<String, Dialogue> dialogueMap;
     private Socket mySocket;
@@ -33,7 +38,8 @@ public class User {
         this.ID = u.ID;
         this.name = u.name;
         this.signature = u.signature;
-        this.friendList = u.friendList;
+        ObservableList<String> observableList = FXCollections.observableArrayList(u.friendList);
+        this.friendList = new SimpleListProperty<>(observableList);
         this.myIconBytes = u.myIconBytes;
     }
     public void initialise() throws Exception {
@@ -79,7 +85,7 @@ public class User {
         return dialogueMap.get(friendName);
     }
 
-    public ArrayList<String> getFriendList() {
+    public ListProperty<String> getFriendList() {
         return friendList;
     }
     public void sendMessage(Message message) throws Exception {
@@ -99,11 +105,10 @@ public class User {
         DataPackage dataPackage = new DataPackage();
         dataPackage.setOperateType("exit");
         outputStream.write(ClassConverter.getBytesFromObject(dataPackage));
+        outputStream.flush();
+        mySocket.shutdownOutput();
         /**登出时储存文件*/
         manager.updateMyDialogues(dialogueMap);
-        inputStream.close();
-        outputStream.close();
-        mySocket.close();
     }
 
     class ReceiveMessageThread extends Thread{
@@ -123,7 +128,11 @@ public class User {
                         Message message = receive.message;
                         dialogueMap.get(message.sender).updateMessage(message);
                     }
-                } catch (Exception e) {
+                } catch (SocketException s) {
+                    System.out.println("Receiving Tread Ends.");
+                    return;
+                }
+                catch (Exception e) {
                     e.printStackTrace();
                 }
             }
