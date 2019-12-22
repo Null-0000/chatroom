@@ -1,6 +1,8 @@
 package client.model;
 
 import javafx.scene.control.Alert;
+import kit.ShowDialog;
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;

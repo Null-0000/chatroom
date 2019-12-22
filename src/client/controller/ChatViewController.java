@@ -1,5 +1,7 @@
 package client.controller;
 
+import client.model.MFileChooser;
+import javafx.scene.layout.GridPane;
 import kit.Message;
 import client.model.User;
 
@@ -28,8 +30,14 @@ import uk.ac.ed.ph.snuggletex.SnuggleEngine;
 import uk.ac.ed.ph.snuggletex.SnuggleInput;
 import uk.ac.ed.ph.snuggletex.SnuggleSession;
 
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.imageio.stream.FileImageInputStream;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
@@ -37,6 +45,7 @@ import java.util.regex.Pattern;
 
 public class ChatViewController implements Initializable {
     private final Font EMOJI_FONT = Font.font("Segoe UI Emoji", 20);
+    @FXML private GridPane root;
     @FXML private Label chatToLabel;
     @FXML private WebView dialogView;
     @FXML private WebView show;
@@ -69,13 +78,63 @@ public class ChatViewController implements Initializable {
         }
         synchronized (dialogView){
             Date now = new Date();
-
-//            here
-//            unfinished
-
-            Message message = new Message(chatTo, User.getInstance().getName(), "String", content.getBytes(), now);
+            byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
+            Message message = new Message(chatTo, User.getInstance().getName(), contentBytes, now);
             User.getInstance().sendMessage(message);
         }
+    }
+
+    @FXML private void emojiSelect() {
+        emojiView.setVisible(true);
+        emojiView.setManaged(true);
+        show.setVisible(false);
+        show.setManaged(false);
+    }
+    @FXML private void imageSelect() throws Exception {
+        File file = MFileChooser.showFileChooser("image", "jpg", "png", "jpeg");
+        if (file == null) return;
+        String ctype = Files.probeContentType(Paths.get(file.getPath()));
+        FileImageInputStream fiis = new FileImageInputStream(file);
+        byte[] content = null;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = fiis.read(buf)) != -1){
+            baos.write(buf, 0, len);
+        }
+        content = baos.toByteArray();
+        Date date = new Date();
+        Message message = new Message(chatTo, User.getInstance().getName(), ctype, content, date);
+        //在html中连接文件时只能从当前目录出发,绝对路径和project下路径都没有效果
+        User.getInstance().sendMessage(message);
+        baos.close();
+        fiis.close();
+    }
+    @FXML private void audioSelect() throws Exception {
+        File file = MFileChooser.showFileChooser("audio", "mp3", "mpeg", "wma", "aac");
+        if (file == null) return;
+        String ctype = Files.probeContentType(Paths.get(file.getPath()));
+        FileImageInputStream fiis = new FileImageInputStream(file);
+        byte[] content = null;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = fiis.read(buf)) != -1){
+            baos.write(buf, 0, len);
+        }
+        content = baos.toByteArray();
+        Date date = new Date();
+        Message message = new Message(chatTo, User.getInstance().getName(), ctype, content, date);
+        //在html中连接文件时只能从当前目录出发,绝对路径和project下路径都没有效果
+        User.getInstance().sendMessage(message);
+        baos.close();
+        fiis.close();
+    }
+    @FXML private void formulaSelect() {
+        show.setVisible(true);
+        show.setManaged(true);
+        emojiView.setVisible(false);
+        emojiView.setManaged(false);
     }
 
     @Override
@@ -90,22 +149,25 @@ public class ChatViewController implements Initializable {
                 document = webEngine1.getDocument();
                 body = document.getElementsByTagName("body").item(0);
                 for (Message message: messageList) {
-                    renderMessage(message);
+                    showMessage(message);
                 }
             }
         });
 
         webEngine1.load(getClass().getResource("Dialog.html").toExternalForm());
+        //webEngine1.load("src/client/controller/Dialog.html");
 
         webEngine2 = show.getEngine();
 
         typeArea.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                try {
-                    webEngine2.loadContent(translate());
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (show.isVisible()) {
+                    try {
+                        webEngine2.loadContent(translate());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -124,7 +186,7 @@ public class ChatViewController implements Initializable {
     public void synchroniseMessages(ListProperty<Message> messageList){
         messageList.addListener((obs, ov, nv) -> {
             Message newMessage = nv.get(nv.size() - 1);
-            renderMessage(newMessage);
+            showMessage(newMessage);
         });
     }
     public void scrollToBottom(){
@@ -180,7 +242,7 @@ public class ChatViewController implements Initializable {
         result += text.substring(lt);
         return result;
     }
-    public void renderMessage(Message message){
+    public void showMessage(Message message){
         Platform.runLater(()-> {
             //不加这玩意的话，程序不会报错，但是debug时却发现Element div显示的是java.lang.illegalStateError，发消息时还没事
             //接受的消息没有成功被指定的css渲染？？？？？？加了这玩意后时灵时不灵
@@ -190,37 +252,59 @@ public class ChatViewController implements Initializable {
             Element pHead = document.createElement("p");
             pHead.setTextContent(message.getHead());
             div.appendChild(pHead);
-            Element pContent = document.createElement("p");
-            pContent.setAttribute("class", "content");
-            try {
-//                here
-//                unfinished
-                String content = new String(message.getContent());
-                translateAll(content, pContent);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            NodeList mathNodeList = pContent.getElementsByTagName("math");
-            for (int i=0; i<mathNodeList.getLength(); i++){
-                mathNodeList.item(i).getAttributes().getNamedItem("display").setTextContent("inline");
-            }
+            Element pContent;
+            switch (message.ctype.replaceAll("/.*", "")) {
+                case "text":
+                    pContent = document.createElement("p");
+                    pContent.setAttribute("class", "content");
+                    try {
+                        translateAll(new String(message.getContent()), pContent);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    NodeList mathNodeList = pContent.getElementsByTagName("math");
+                    for (int i = 0; i < mathNodeList.getLength(); i++) {
+                        mathNodeList.item(i).getAttributes().getNamedItem("display").setTextContent("inline");
+                    }
+                    break;
+                case "image":
+                    //发现渲染
+                    int width = 100;
+                    int height = 100;
 
+                    File file = new File(message.getUrl().replaceAll(
+                            "\\.\\.", "out/production/chatroom/client"));
+                    try {
+                        BufferedImage bufferedImage = ImageIO.read(file);
+                        height = (bufferedImage.getHeight() / bufferedImage.getWidth()) * 100;
+                        //等比例放缩图片
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println(file.exists());
+                    pContent = document.createElement("img");
+                    pContent.setAttribute("width", "" + width);
+                    pContent.setAttribute("height", "" + height);
+                    pContent.setAttribute("class", "content");
+                    pContent.setAttribute("src", message.getUrl());
+                    break;
+                case "audio":
+                    pContent = document.createElement("audio");
+                    pContent.setAttribute("class", "content");
+                    pContent.setAttribute("controls", "controls");
+                    Element source = document.createElement("source");
+                    source.setAttribute("src", message.getUrl());
+                    source.setAttribute("type", message.ctype);
+                    pContent.appendChild(source);
+                    break;
+                default:
+                    pContent = null;
+                    break;
+            }
             div.appendChild(pContent);
             body.appendChild(div);
 
             scrollToBottom();
         });
-    }
-
-
-
-    @FXML
-    private void imageSelect(){
-
-    }
-
-    @FXML
-    private void audioSelect(){
-
     }
 }

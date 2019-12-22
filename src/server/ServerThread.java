@@ -1,8 +1,6 @@
 package server;
 
-import kit.Message;
-import kit.ClassConverter;
-import kit.DataPackage;
+import kit.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -26,18 +24,22 @@ public class ServerThread extends Thread {
     @Override
     public void run() {
         try {
-            inputStream =  socket.getInputStream();
-            outputStream = socket.getOutputStream();
-
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
             byte[] bytes = new byte[1024];
+
+            InputStream inputStream = socket.getInputStream();
+            int length = inputStream.read();
+
+            System.out.println("接受数据长度 " + length);
 
             while(inputStream.read(bytes) != -1){
                 byteArrayOutputStream.write(bytes);
+                if(byteArrayOutputStream.toByteArray().length >= length) break;
             }
 
             DataPackage receive = (DataPackage) ClassConverter.getObjectFromBytes(byteArrayOutputStream.toByteArray());
+
+            byteArrayOutputStream.close();
             //注意：在这里使用ClassConverter，那么client所发的所有内容必须都要经过ClassConverter才能识别
 
             if(receive == null){
@@ -48,11 +50,11 @@ public class ServerThread extends Thread {
                 return;
             }
             DataPackage sends = disposeInMessage(receive);
-            outputStream.write(ClassConverter.getBytesFromObject(sends));
-            outputStream.flush();
+            if(socket == null) return;
+
+            IODealer.send(socket, sends, false);
+
             socket.close();
-            inputStream.close();
-            outputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -96,28 +98,27 @@ public class ServerThread extends Thread {
         String name = inMessage.name;
 
         socketMap.put(name, socket);
-        byte[] bytes = new byte[1024];
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
         DataPackage dataPackage;
         while (true){
-            while(inputStream.read(bytes) != -1) byteArrayOutputStream.write(bytes);
-            dataPackage = (DataPackage)ClassConverter.getObjectFromBytes(byteArrayOutputStream.toByteArray());
+            dataPackage = IODealer.receive(socket);
             if(dataPackage == null) break;
 
             Message message = dataPackage.message;
 
-            Socket socket = socketMap.get(message.receiver);
+            Socket toSocket = socketMap.get(message.receiver);
 
-            if(socket != null){
-                socket.getOutputStream().write(ClassConverter.getBytesFromObject(dataPackage));
+            if(toSocket != null){
+                IODealer.send(toSocket, dataPackage, true);
+                toSocket.close();
             } else {
                 manager.storeMessage(message);
             }
         }
-        outputStream.close();
-        inputStream.close();
+
         socket.close();
         socketMap.remove(name);
+
         return new DataPackage(-1);
     }
     private DataPackage makeFriend(DataPackage message) throws SQLException {

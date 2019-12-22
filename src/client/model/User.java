@@ -7,6 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import kit.ClassConverter;
 import kit.DataPackage;
+import kit.IODealer;
 import kit.Message;
 
 import java.io.InputStream;
@@ -51,7 +52,6 @@ public class User {
 
         this.mySocket = Connector.getInstance().connectToRemote();
         this.inputStream = mySocket.getInputStream();
-        this.outputStream = mySocket.getOutputStream();
 
         receiveMessages();
     }
@@ -94,7 +94,7 @@ public class User {
 
         DataPackage dataPackage = new DataPackage(message);
         dataPackage.setOperateType("sendMessage");
-        outputStream.write(ClassConverter.getBytesFromObject(dataPackage));
+        IODealer.send(mySocket, dataPackage, true);
     }
     private void receiveMessages() {
         ReceiveMessageThread receiveMessageThread = new ReceiveMessageThread();
@@ -104,9 +104,9 @@ public class User {
     public void exit() throws Exception {
         DataPackage dataPackage = new DataPackage();
         dataPackage.setOperateType("exit");
-        outputStream.write(ClassConverter.getBytesFromObject(dataPackage));
-        outputStream.flush();
-        mySocket.shutdownOutput();
+
+        IODealer.send(mySocket, dataPackage, true);
+
         /**登出时储存文件*/
         manager.updateMyDialogues(dialogueMap);
     }
@@ -118,21 +118,13 @@ public class User {
             for (Dialogue dialogue: dialogueMap.values()){
                 dialogue.synchronizeMessage();
             }
-            int len;
-            byte[] bytes = new byte[1024 * 32];
+
             while (true) {
                 try {
-                    len = inputStream.read(bytes);
-                    if (len != -1) {
-                        DataPackage receive = (DataPackage) ClassConverter.getObjectFromBytes(bytes);
-                        Message message = receive.message;
-                        dialogueMap.get(message.sender).updateMessage(message);
-                    }
-                } catch (SocketException s) {
-                    System.out.println("Receiving Tread Ends.");
-                    return;
-                }
-                catch (Exception e) {
+                    DataPackage receive = IODealer.receive(mySocket);
+                    Message message = receive.message;
+                    dialogueMap.get(message.sender).updateMessage(message);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

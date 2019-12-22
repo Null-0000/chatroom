@@ -1,16 +1,15 @@
 package client.controller;
 
-import client.model.ShowDialog;
+import client.model.MFileChooser;
+import kit.ShowDialog;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import javafx.stage.FileChooser;
 import kit.DataPackage;
 
 import java.io.*;
@@ -79,27 +78,13 @@ public class RegisterViewController {
         }
     }
 
-    private FileChooser fileChooser = new FileChooser();
-
     public void chooseFile(ActionEvent actionEvent) throws IOException {
-        configureFileChooser(fileChooser);
-        File file = fileChooser.showOpenDialog(null);
+        File file = MFileChooser.showFileChooser("Select Your Icon", "jpg", "png", "jpeg");
         if(file != null) {
             IconUrl = file.getPath();
             FileInputStream fileInputStream = new FileInputStream(file);
             selectedIcon.setImage(new Image(fileInputStream));
             fileInputStream.close();
         }
-    }
-
-    private static void configureFileChooser(final FileChooser fileChooser) {
-        fileChooser.setTitle("View Pictures");
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("All Images", "*.*"),
-                new FileChooser.ExtensionFilter("JPG", "*.jpg"),
-                new FileChooser.ExtensionFilter("PNG", "*.png"),
-                new FileChooser.ExtensionFilter("JPEG","*.jpeg")
-        );
     }
 }

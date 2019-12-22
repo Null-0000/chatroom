@@ -7,7 +7,9 @@
 
 <?import javafx.scene.web.WebView?>
 <?import javafx.geometry.Insets?>
-<GridPane xmlns="http://javafx.com/javafx"
+
+<GridPane fx:id="root"
+          xmlns="http://javafx.com/javafx"
           xmlns:fx="http://javafx.com/fxml"
           prefHeight="550" prefWidth="800" hgap="5" vgap="5">
     <padding>
@@ -17,22 +19,20 @@
         <Label fx:id="chatToLabel"></Label>
     </HBox>
     <WebView fx:id="dialogView" GridPane.columnIndex="0" GridPane.rowIndex="1"></WebView>
-    <ToolBar fx:id="toolBar" GridPane.columnIndex="0" GridPane.rowIndex="2">
-        <Button onMouseClicked="#imageSelect">image</Button>
-        <Button onMouseClicked="#audioSelect">audio</Button>
+    <ToolBar fx:id="toolBar" GridPane.columnIndex="0" GridPane.rowIndex="3">
+        <Button fx:id="emojiControl" onMouseClicked="#emojiSelect" prefHeight="30" prefWidth="30"></Button>
+        <Button fx:id="imgControl" onMouseClicked="#imageSelect" prefHeight="30" prefWidth="30"></Button>
+        <Button fx:id="audControl" onMouseClicked="#audioSelect" prefHeight="30" prefWidth="30"></Button>
+        <Button fx:id="fmlControl" onMouseClicked="#formulaSelect" prefHeight="30" prefWidth="30"></Button>
     </ToolBar>
-    <TextArea fx:id="typeArea" GridPane.columnIndex="0" GridPane.rowIndex="3" prefHeight="350"></TextArea>
-    <HBox alignment="BOTTOM_RIGHT" GridPane.columnIndex="0" GridPane.rowIndex="4">
+    <TextArea fx:id="typeArea" GridPane.columnIndex="0" GridPane.rowIndex="4" prefHeight="350"></TextArea>
+    <HBox alignment="BOTTOM_RIGHT" GridPane.columnIndex="0" GridPane.rowIndex="5">
         <Button fx:id="sendButton" onAction="#sendMessage">Send</Button>
     </HBox>
-    <TabPane  GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.rowSpan="5" tabClosingPolicy="UNAVAILABLE">
-        <Tab text="view">
-            <WebView fx:id="show" prefWidth="400"></WebView>
-        </Tab>
-        <Tab text="emoji">
-            <TilePane fx:id="emojiView" vgap="5" hgap="5"></TilePane>
-        </Tab>
-    </TabPane>
+    <WebView fx:id="show" prefWidth="400" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.rowSpan="5"
+             visible="false" managed="false"></WebView>
+    <TilePane fx:id="emojiView" vgap="5" hgap="5" prefWidth="400" GridPane.columnIndex="1" GridPane.rowIndex="0"
+              GridPane.rowSpan="5" visible="false" managed="false"></TilePane>
     <stylesheets>
         <URL value="@css/ChatView.css"></URL>
     </stylesheets>

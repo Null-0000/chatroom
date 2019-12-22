@@ -1,6 +1,6 @@
 package client.controller;
 
-import client.model.ShowDialog;
+import kit.ShowDialog;
 import client.model.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -33,7 +33,7 @@ public class AddFriendViewController {
         try {
             if(ShowDialog.showConfirm("确认添加好友", friendName)){
                 if(Connector.getInstance().makeFriendWith(friendName)){
-                    User.getInstance().addFriend(friendName);
+//                    User.getInstance().addFriend(friendName);
                     ShowDialog.showMessage("添加好友成功");
                 } else {
                     ShowDialog.showMessage("好友未找到，请确认好友信息");

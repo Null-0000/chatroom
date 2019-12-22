@@ -21,6 +21,7 @@ import javafx.scene.image.ImageView;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainViewController implements Initializable {
@@ -59,7 +60,13 @@ public class MainViewController implements Initializable {
 
         @Override
         public void changed(ObservableValue<?> observableValue, Object o, Object t1) {
-            Dialogue dialogue = User.getInstance().getDialogueFrom((String) t1);
+            Dialogue dialogue = null;
+            try {
+                dialogue = new Dialogue((String)t1, User.getInstance().getName());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+//            Dialogue dialogue = User.getInstance().getDialogueFrom((String) t1);
             dialogue.show();
         }
     }

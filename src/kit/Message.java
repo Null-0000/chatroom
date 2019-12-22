@@ -9,14 +9,18 @@ public class Message implements Comparable<Message>, Serializable {
     public String sender;
     public String ctype;
     public byte[] content;
-
     public Date date;
-    public Message(String receiver, String sender, String ctype, byte[] content, Date date){
+    private String url;
+    public Message(String receiver, String sender, byte[] content, Date date){
         this.receiver = receiver;
         this.sender = sender;
-        this.ctype = ctype;
+        this.ctype = "text";
         this.content = content;
         this.date = date;
+    }
+    public Message(String receiver, String sender, String ctype, byte[] content, Date date){
+        this(receiver, sender, content, date);
+        this.ctype = ctype;
     }
     public Date getDate(){
         return date;
@@ -29,12 +33,6 @@ public class Message implements Comparable<Message>, Serializable {
     public String toString() {
         return String.format("{receiver:%s,sender:%s,content:%s,date:%s}",receiver,
                 sender,content,date);
-    }
-    public String toHTML(boolean isLeft){
-        if (isLeft) return "<div class=\'lt_para\' align=\'LEFT\'><p>" + getFormattedDate() + "&nbsp;" + sender +
-                ":</p><p class=\'content\'>"+ content +"</p></div>";
-        else return "<div class=\'rt_para\' align=\'RIGHT\'><p class=\'head\'>" + getFormattedDate() + "&nbsp;" + sender +
-                ":</p><p class=\'content\'>"+ content +"</p></div>";
     }
     @Override
     public int compareTo(Message o) {
@@ -49,5 +47,11 @@ public class Message implements Comparable<Message>, Serializable {
     }
     public byte[] getContent(){
         return content;
+    }
+    public void setUrl(String url){
+        this.url = url;
+    }
+    public String getUrl(){
+        return this.url;
     }
 }

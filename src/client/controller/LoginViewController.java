@@ -1,25 +1,21 @@
 package client.controller;
 
 import client.launcher.Resource;
-import client.model.ShowDialog;
+import kit.ShowDialog;
 import client.model.User;
 import client.view.MainView;
 import client.view.RegisterView;
 import client.view.StageM;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import javafx.stage.FileChooser;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.IOException;
-import java.util.concurrent.locks.StampedLock;
-import java.util.logging.SocketHandler;
 
 public class LoginViewController {
     @FXML
@@ -64,7 +60,6 @@ public class LoginViewController {
                 e.printStackTrace();
                 ShowDialog.showAlert("载入服务端用户信息错误");
             }
-
         }
         else ShowDialog.showAlert("ID不存在或密码错误");
     }
