@@ -10,12 +10,11 @@ import javafx.collections.ObservableList;
 import kit.Message;
 
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import javax.imageio.stream.FileImageOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 /**
  * dialogue between user and one friend
@@ -42,6 +41,46 @@ public class Dialogue implements Serializable {
         //chatView不能被序列化，故每次读取本地文件后需要重新new哟个chatView
     }
     public void updateMessage(Message message) {
+        String user = User.getInstance().getName();
+        String to = (message.sender.equals(user))? message.receiver: message.sender;
+        switch (message.ctype.replaceAll("/.*", "")){
+            case "image":
+                File imgDir = new File("out/production/chatroom/client/data/" + User.getInstance().getName() +
+                        "/" + to + "/images");
+                Date imgDate = new Date();
+                String imgSuffix = "." + message.ctype.replaceAll(".*/", "");
+                File imgFile = new File(imgDir.getPath() + "/img" + imgDate.getTime() + imgSuffix);
+                message.setUrl(".." + imgFile.getPath().replaceAll(".*?client", "").replaceAll("\\\\", "/"));
+                try {
+                    imgFile.createNewFile();
+                    FileImageOutputStream fios = new FileImageOutputStream(imgFile);
+                    fios.write(message.content);
+                    fios.flush();
+                    fios.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "audio":
+                File audDir = new File("out/production/chatroom/client/data/" + User.getInstance().getName() +
+                        "/" + to + "/audios");
+                Date audDate = new Date();
+                String audSuffix = "." + message.ctype.replaceAll(".*/", "");
+                File audFile = new File(audDir.getPath() + "/aud" + audDate.getTime() + audSuffix);
+                message.setUrl(".." + audFile.getPath().replaceAll(".*?client", "").replaceAll("\\\\", "/"));
+                try {
+                    audFile.createNewFile();
+                    FileImageOutputStream fios = new FileImageOutputStream(audFile);
+                    fios.write(message.content);
+                    fios.flush();
+                    fios.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            default:
+                break;
+        }
         messageList.add(message);
     }
     public ListProperty<Message> getMessageList() {

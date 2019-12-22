@@ -44,7 +44,7 @@ public class IODealer {
             outputStream.write(datum);
             outputStream.flush();
 
-            if(isClose) socket.shutdownOutput();
+//            if(isClose) socket.shutdownOutput();
         } catch (Exception e) {
             e.printStackTrace();
             ShowDialog.showAlert("sending data error");
@@ -59,11 +59,9 @@ public class IODealer {
             InputStream inputStream = socket.getInputStream();
             byte[] bt = new byte[4];
             int length;
-            while (true){
-                inputStream.read(bt);
-                length = BytesUtil.bytes2Int(bt);
-                if(length != 0) break;
-            }
+            while(inputStream.read(bt) != -1);
+
+            length = BytesUtil.bytes2Int(bt);
 
             System.out.println("接受数据长度 " + length);
 

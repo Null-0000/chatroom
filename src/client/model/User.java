@@ -94,7 +94,7 @@ public class User {
 
         DataPackage dataPackage = new DataPackage(message);
         dataPackage.setOperateType("sendMessage");
-        IODealer.send(mySocket, dataPackage, true);
+        IODealer.send(mySocket, dataPackage, false);
     }
     private void receiveMessages() {
         ReceiveMessageThread receiveMessageThread = new ReceiveMessageThread();

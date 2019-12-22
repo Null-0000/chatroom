@@ -38,7 +38,7 @@ public class ServerThread extends Thread {
             DataPackage sends = disposeInMessage(receive);
             if(socket == null) return;
 
-            IODealer.send(socket, sends, true);
+            IODealer.send(socket, sends, false);
 
             socket.close();
         } catch (Exception e) {
@@ -95,7 +95,7 @@ public class ServerThread extends Thread {
             Socket toSocket = socketMap.get(message.receiver);
 
             if(toSocket != null){
-                IODealer.send(toSocket, dataPackage, true);
+                IODealer.send(toSocket, dataPackage, false);
                 toSocket.close();
             } else {
                 manager.storeMessage(message);

@@ -60,13 +60,15 @@ public class MainViewController implements Initializable {
 
         @Override
         public void changed(ObservableValue<?> observableValue, Object o, Object t1) {
+            /*
             Dialogue dialogue = null;
             try {
                 dialogue = new Dialogue((String)t1, User.getInstance().getName());
             } catch (IOException e) {
                 e.printStackTrace();
             }
-//            Dialogue dialogue = User.getInstance().getDialogueFrom((String) t1);
+            */
+            Dialogue dialogue = User.getInstance().getDialogueFrom((String) t1);
             dialogue.show();
         }
     }
