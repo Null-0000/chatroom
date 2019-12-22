@@ -24,22 +24,8 @@ public class ServerThread extends Thread {
     @Override
     public void run() {
         try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            byte[] bytes = new byte[1024];
+            DataPackage receive = IODealer.receive(socket);
 
-            InputStream inputStream = socket.getInputStream();
-            int length = inputStream.read();
-
-            System.out.println("接受数据长度 " + length);
-
-            while(inputStream.read(bytes) != -1){
-                byteArrayOutputStream.write(bytes);
-                if(byteArrayOutputStream.toByteArray().length >= length) break;
-            }
-
-            DataPackage receive = (DataPackage) ClassConverter.getObjectFromBytes(byteArrayOutputStream.toByteArray());
-
-            byteArrayOutputStream.close();
             //注意：在这里使用ClassConverter，那么client所发的所有内容必须都要经过ClassConverter才能识别
 
             if(receive == null){
@@ -52,7 +38,7 @@ public class ServerThread extends Thread {
             DataPackage sends = disposeInMessage(receive);
             if(socket == null) return;
 
-            IODealer.send(socket, sends, false);
+            IODealer.send(socket, sends, true);
 
             socket.close();
         } catch (Exception e) {

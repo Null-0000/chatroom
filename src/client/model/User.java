@@ -105,7 +105,7 @@ public class User {
         DataPackage dataPackage = new DataPackage();
         dataPackage.setOperateType("exit");
 
-        IODealer.send(mySocket, dataPackage, true);
+        IODealer.send(mySocket, dataPackage, false);
 
         /**登出时储存文件*/
         manager.updateMyDialogues(dialogueMap);
@@ -126,6 +126,7 @@ public class User {
                     dialogueMap.get(message.sender).updateMessage(message);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    break;
                 }
             }
         }
