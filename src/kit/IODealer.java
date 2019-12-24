@@ -1,78 +1,72 @@
 package kit;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
-class BytesUtil {
-    public static int bytes2Int(byte[] bytes) {
-        int result = 0;
-        //将每个byte依次搬运到int相应的位置
-        result = bytes[0] & 0xff;
-        result = result << 8 | bytes[1] & 0xff;
-        result = result << 8 | bytes[2] & 0xff;
-        result = result << 8 | bytes[3] & 0xff;
-        return result;
-    }
 
-    public static byte[] int2Bytes(int num) {
-        byte[] bytes = new byte[4];
-        //通过移位运算，截取低8位的方式，将int保存到byte数组
-        bytes[0] = (byte)(num >>> 24);
-        bytes[1] = (byte)(num >>> 16);
-        bytes[2] = (byte)(num >>> 8);
-        bytes[3] = (byte)num;
-        return bytes;
-    }
-}
 public class IODealer {
     /*
      * 格式：长度+数据  (￣▽￣)"
      */
 
+    private static DataInputStream dataInput;
+    private static DataOutputStream dataOutput;
+    private static byte[] buffer;
+    private static long length;
+    private static int WIDTH = 1024;
+
+    private static void setStream(Socket socket) throws IOException {
+        dataInput = new DataInputStream(socket.getInputStream());
+        dataOutput = new DataOutputStream(socket.getOutputStream());
+    }
     public static void send(Socket socket, DataPackage dataPackage, boolean isClose){
         try {
-            byte[] datum = ClassConverter.getBytesFromObject(dataPackage);
-            OutputStream outputStream = socket.getOutputStream();
+            setStream(socket);
 
-            outputStream.write(BytesUtil.int2Bytes(datum.length));
-            outputStream.flush();
+            buffer = ClassConverter.getBytesFromObject(dataPackage);
 
-            System.out.println("发送数据长度 " + datum.length);
+            dataOutput.writeLong(buffer.length);
 
-            outputStream.write(datum);
-            outputStream.flush();
+            System.out.println("发送数据的长度： " + buffer.length);
 
-//            if(isClose) socket.shutdownOutput();
+            dataOutput.write(buffer);
+
+            if(isClose) {
+                socket.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             ShowDialog.showAlert("sending data error");
         }
     }
 
-    public static DataPackage receive(Socket socket){
+    public static DataPackage receive(Socket socket, boolean isClose){
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        byte[] bytes = new byte[1024];
 
         try {
-            InputStream inputStream = socket.getInputStream();
-            byte[] bt = new byte[4];
-            int length;
-            while(inputStream.read(bt) != -1);
+            setStream(socket);
 
-            length = BytesUtil.bytes2Int(bt);
+            length = dataInput.readLong();
 
-            System.out.println("接受数据长度 " + length);
+            if(length == 0) return null;
 
-            while(inputStream.read(bytes) != -1){
-                byteArrayOutputStream.write(bytes);
-                if(byteArrayOutputStream.toByteArray().length >= length) break;
+            buffer = new byte[WIDTH];
+
+            System.out.println("接受数据的长度： " + length);
+
+            long current = 0;
+
+            while(current < length){
+                int tmp = dataInput.read(buffer);
+                current += tmp;
+                byteArrayOutputStream.write(buffer, 0, tmp);
             }
 
-            bytes = byteArrayOutputStream.toByteArray();
-            byteArrayOutputStream.close();
-            return (DataPackage) ClassConverter.getObjectFromBytes(bytes);
+            if(isClose) {
+                socket.close();
+            }
+
+            return (DataPackage) ClassConverter.getObjectFromBytes(byteArrayOutputStream.toByteArray());
+
         } catch (Exception e) {
             e.printStackTrace();
             ShowDialog.showAlert("receive data error");

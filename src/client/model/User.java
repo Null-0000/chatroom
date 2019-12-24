@@ -121,7 +121,7 @@ public class User {
 
             while (true) {
                 try {
-                    DataPackage receive = IODealer.receive(mySocket);
+                    DataPackage receive = IODealer.receive(mySocket, false);
                     Message message = receive.message;
                     dialogueMap.get(message.sender).updateMessage(message);
                 } catch (Exception e) {

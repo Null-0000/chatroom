@@ -13,8 +13,6 @@ import java.util.Map;
 public class ServerThread extends Thread {
     private Socket socket;
     private Map<String, Socket> socketMap;
-    private InputStream inputStream;
-    private OutputStream outputStream;
     private UserDataBaseManager manager;
     public ServerThread(Socket socket, UserDataBaseManager manager, Map<String, Socket> socketMap){
         this.socket = socket;
@@ -24,23 +22,24 @@ public class ServerThread extends Thread {
     @Override
     public void run() {
         try {
-            DataPackage receive = IODealer.receive(socket);
+            DataPackage receive = IODealer.receive(socket, false);
 
             //注意：在这里使用ClassConverter，那么client所发的所有内容必须都要经过ClassConverter才能识别
 
             if(receive == null){
                 System.out.println("an unknown exception occurs or someone logs out");
                 socket.close();
-                inputStream.close();
-                outputStream.close();
                 return;
             }
             DataPackage sends = disposeInMessage(receive);
+
             if(socket == null) return;
+            if(sends == null){
+                socket.close();
+            }
 
-            IODealer.send(socket, sends, false);
+            IODealer.send(socket, sends, true);
 
-            socket.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -71,9 +70,6 @@ public class ServerThread extends Thread {
             output = loadDialogues(inMessage);//ArrayList<Message>
             System.out.println("查找用户的对话信息完毕" );
         }
-        else if(inMessage.operateType.equals("exit")){
-            output = new DataPackage(-1);
-        }
 
         return output;
     }
@@ -87,8 +83,9 @@ public class ServerThread extends Thread {
 
         DataPackage dataPackage;
         while (true){
-            dataPackage = IODealer.receive(socket);
+            dataPackage = IODealer.receive(socket, false);
             if(dataPackage == null) break;
+            if(dataPackage.operateType.equals("exit")) break;
 
             Message message = dataPackage.message;
 
@@ -96,16 +93,14 @@ public class ServerThread extends Thread {
 
             if(toSocket != null){
                 IODealer.send(toSocket, dataPackage, false);
-                toSocket.close();
             } else {
                 manager.storeMessage(message);
             }
         }
 
-        socket.close();
         socketMap.remove(name);
 
-        return new DataPackage(-1);
+        return null;
     }
     private DataPackage makeFriend(DataPackage message) throws SQLException {
         return manager.makeFriend(message.name, message.operator);

@@ -28,7 +28,7 @@ public class Connector {
 
         IODealer.send(socket, dataPackage, false);
 
-        DataPackage receive = IODealer.receive(socket);
+        DataPackage receive = IODealer.receive(socket, false);
 
         if(receive.ID == -1) return false;
         else{
@@ -43,8 +43,7 @@ public class Connector {
 
         IODealer.send(socket, dataPackage, false);
 
-        DataPackage receiveData = IODealer.receive(socket);
-        socket.close();
+        DataPackage receiveData = IODealer.receive(socket, false);
 
         return receiveData.ID;
     }
@@ -58,7 +57,7 @@ public class Connector {
 
         IODealer.send(socket, dataPackage, false);
 
-        DataPackage receive = IODealer.receive(socket);
+        DataPackage receive = IODealer.receive(socket, false);
 
         User.getInstance().addFriend(receive.name);
 
@@ -83,7 +82,7 @@ public class Connector {
 
         IODealer.send(socket, dataPackage, false);
 
-        DataPackage receive = IODealer.receive(socket);
+        DataPackage receive = IODealer.receive(socket, false);
 
         return receive.messages;
     }
