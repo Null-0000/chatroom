@@ -49,7 +49,6 @@ public class Connector {
     }
     public boolean makeFriendWith(String info) throws Exception {
         Socket socket = new Socket(HOST, PORT);
-        InputStream inputStream = socket.getInputStream();
 
         DataPackage dataPackage = new DataPackage(info);
         dataPackage.setOperateType("makeFriendWith");

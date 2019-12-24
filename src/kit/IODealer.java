@@ -7,20 +7,14 @@ public class IODealer {
     /*
      * 格式：长度+数据  (￣▽￣)"
      */
+    private static final int WIDTH = 1024;
 
-    private static DataInputStream dataInput;
-    private static DataOutputStream dataOutput;
-    private static byte[] buffer;
-    private static long length;
-    private static int WIDTH = 1024;
-
-    private static void setStream(Socket socket) throws IOException {
-        dataInput = new DataInputStream(socket.getInputStream());
-        dataOutput = new DataOutputStream(socket.getOutputStream());
-    }
     public static void send(Socket socket, DataPackage dataPackage, boolean isClose){
+        DataOutputStream dataOutput;
+        byte[] buffer;
+
         try {
-            setStream(socket);
+            dataOutput = new DataOutputStream(socket.getOutputStream());
 
             buffer = ClassConverter.getBytesFromObject(dataPackage);
 
@@ -41,9 +35,12 @@ public class IODealer {
 
     public static DataPackage receive(Socket socket, boolean isClose){
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        DataInputStream dataInput;
+        byte[] buffer;
+        long length;
 
         try {
-            setStream(socket);
+            dataInput = new DataInputStream(socket.getInputStream());
 
             length = dataInput.readLong();
 
@@ -64,7 +61,7 @@ public class IODealer {
             if(isClose) {
                 socket.close();
             }
-
+            System.out.println("接受数据byteArrayOutputStream长度: " + byteArrayOutputStream.toByteArray().length);
             return (DataPackage) ClassConverter.getObjectFromBytes(byteArrayOutputStream.toByteArray());
 
         } catch (Exception e) {
