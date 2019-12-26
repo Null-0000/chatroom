@@ -6,6 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
+<?import java.net.URL?>
 <Pane fx:controller="client.controller.RegisterViewController" onKeyPressed="#paneKeyAction" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="450.0" stylesheets="@css/SuperView.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label fx:id="registerTitle" layoutX="24.0" layoutY="14.0" prefHeight="35.0" prefWidth="103.0" text="Register">
@@ -13,14 +14,8 @@
             <Font size="24.0" />
          </font></Label>
       <ImageView fx:id="selectedIcon" fitHeight="150.0" fitWidth="150.0" layoutX="15.0" layoutY="60.0" pickOnBounds="true" preserveRatio="true" />
-      <Button layoutX="48.0" layoutY="210.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="58.0" stylesheets="@css/SuperView.css" text="change" onAction="#chooseFile">
-         <styleClass>
-            <String fx:value="btn-radius-large" />
-            <String fx:value="gray-theme" />
-         </styleClass>
-         <font>
-            <Font size="10.0" />
-         </font></Button>
+      <Button layoutX="48.0" layoutY="210.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="58.0"
+              text="change" onAction="#chooseFile"></Button>
       <Label fx:id="nameL" layoutX="210.0" layoutY="70.0" text="name" />
       <Label fx:id="passwordL" layoutX="210.0" layoutY="110.0" text="password" />
       <Label fx:id="confirmL" layoutX="210.0" layoutY="150.0" text="confirm" />
@@ -29,15 +24,11 @@
       <PasswordField fx:id="userPassword" layoutX="285.0" layoutY="106.0" promptText="请输入密码"/>
       <PasswordField fx:id="userPasswordConfirm" layoutX="285.0" layoutY="146.0" promptText="请输入再次输入密码"/>
       <TextField fx:id="userSignature" layoutX="285.0" layoutY="186.0" promptText="请输入个性签名"/>
-      <Button fx:id="submit" onAction="#submitButton" alignment="CENTER" contentDisplay="CENTER" layoutX="175.0" layoutY="233.0" mnemonicParsing="false" prefHeight="15.0" prefWidth="92.0" stylesheets="@css/SuperView.css" text="submit">
-         <styleClass>
-            <String fx:value="btn-radius-large" />
-            <String fx:value="btn-basic" />
-            <String fx:value="warm-theme" />
-         </styleClass>
-         <font>
-            <Font size="15.0" />
-         </font>
-      </Button>
+      <Button fx:id="submit" onAction="#submitButton" alignment="CENTER" contentDisplay="CENTER"
+              layoutX="175.0" layoutY="233.0" mnemonicParsing="false"
+              prefHeight="15.0" prefWidth="92.0" text="submit"></Button>
    </children>
+   <stylesheets>
+      <URL value="@css/RegisterView.css"></URL>
+   </stylesheets>
 </Pane>

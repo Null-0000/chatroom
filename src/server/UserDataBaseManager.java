@@ -2,6 +2,7 @@ package server;
 
 import kit.Message;
 import kit.DataPackage;
+import kit.UserInfo;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,15 +14,13 @@ import java.util.Date;
 public class UserDataBaseManager {
     private final String driver = "com.mysql.cj.jdbc.Driver";
     private final String url = "jdbc:mysql://localhost:3306/chat_room?serverTimezone=Asia/Shanghai";
-    private final String user = "root";
-    private final String pass = "123456";
+    private final String user = "henry";
+    private final String pass = "mxylfbcz4321";
     private Connection conn;
-    private Statement stmt;
 
     public UserDataBaseManager() throws ClassNotFoundException, SQLException {
         Class.forName(driver);
         conn = DriverManager.getConnection(url, user, pass);
-        stmt = conn.createStatement();
     }
     public int register(DataPackage dataPackage) throws SQLException {
         addCurrentUsersAmount();
@@ -35,23 +34,29 @@ public class UserDataBaseManager {
         pstmt.setString(4, dataPackage.password);
         pstmt.setBlob(5, new ByteArrayInputStream(icon));
         pstmt.executeUpdate();
+        pstmt.close();
         return ID;
     }
     private int getCurrentID() throws SQLException {
+        Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery("SELECT current_ID FROM global_info");
         int ID = -1;
         if (rs.next())
             ID = rs.getInt(1);
         stmt.executeUpdate("UPDATE global_info SET current_ID=" + (ID + 1) + " WHERE current_ID=" + ID);
+        stmt.close();
         return ID;
     }
     private void addCurrentUsersAmount() throws SQLException {
+        Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery("SELECT users FROM global_info");
         if (rs.next())
             stmt.executeUpdate("UPDATE global_info SET users=" + (rs.getInt(1) + 1) + " WHERE users=" + rs.getInt(1));
+        stmt.close();
     }
-    public DataPackage selectByIDAndPassword(int id, String password) {
+    public DataPackage selectByIDAndPassword(int id, String password) throws SQLException {
         if (id < 0) return null;
+        Statement stmt = conn.createStatement();
         ResultSet rs1;
         String name;
         String sig;
@@ -65,35 +70,51 @@ public class UserDataBaseManager {
             name = rs1.getString(2);
             sig = rs1.getString(3);
             Blob iconBlob = rs1.getBlob(5);
-            icon = new byte[(int) iconBlob.length()];
-            InputStream inputStream = iconBlob.getBinaryStream();
-            inputStream.read(icon);
+            icon = iconBlob.getBinaryStream().readAllBytes();
         } catch (SQLException | IOException e) {
             e.printStackTrace();
             return null;
         }
         ResultSet rs2;
-        ArrayList<String> friendList = new ArrayList<>();
+        ResultSet rs3;
+        ArrayList<UserInfo> friendList = new ArrayList<>();
         try {
             rs2 = stmt.executeQuery("select friend_name from friend_map where name=\'" + name + "\'");
             while (rs2.next()){
-                friendList.add(rs2.getString(1));
+                String friendName = rs2.getString(1);
+                Statement stmt2 = conn.createStatement();
+                rs3 = stmt2.executeQuery("select * from users_info where name=\'" + friendName + "\'" );
+                if (rs3.next()) {
+                    Blob blob = rs3.getBlob(5);
+                    friendList.add(new UserInfo(rs3.getInt(1), friendName, rs3.getString(3),
+                            blob.getBinaryStream().readAllBytes()));
+                }
             }
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
+        stmt.close();
         return new DataPackage(id, name, sig, friendList, icon);
     }
-    public DataPackage makeFriend(String info, String byName) throws SQLException {
+    public DataPackage makeFriend(String info, String byName) throws SQLException, IOException {
+        Statement stmt = conn.createStatement();
         String name;
-        ResultSet rs = stmt.executeQuery("SELECT name FROM users_info WHERE name=\'" + info + "\'");
+        UserInfo userInfo;
+        ResultSet rs = stmt.executeQuery("SELECT * FROM users_info WHERE name=\'" + info + "\'");
         if (rs.next()) {
-            name = info;
+            name = rs.getString(2);
+            Blob blob = rs.getBlob(5);
+            userInfo = new UserInfo(rs.getInt(1), name,
+                    rs.getString(3), blob.getBinaryStream().readAllBytes());
         } else {
-            rs = stmt.executeQuery("SELECT name FROM users_info WHERE ID=" + info);
+            rs = stmt.executeQuery("SELECT * FROM users_info WHERE ID=" + info);
             if (rs.next()) {
-                name = rs.getString(1);
+                name = rs.getString(2);
+                Blob blob = rs.getBlob(5);
+                userInfo = new UserInfo(rs.getInt(1), name,
+                        rs.getString(3), blob.getBinaryStream().readAllBytes());
             } else {
+                stmt.close();
                 return new DataPackage(-1);
             }
         }
@@ -103,9 +124,8 @@ public class UserDataBaseManager {
         stmt.executeUpdate("INSERT INTO friend_map(name,friend_name) " +
                 "VALUES(\'" + byName + "\',\'" + name + "\')");
 
-        int ID = 0;
-
-        return new DataPackage(name, ID);
+        stmt.close();
+        return new DataPackage(userInfo);
     }
     public void storeMessage(Message message) throws SQLException {
         PreparedStatement pstmt = conn.prepareStatement(
@@ -136,7 +156,9 @@ public class UserDataBaseManager {
             Date date = new Date(rs.getTimestamp(5).getTime());
             dialogues.add(new Message(name, sender, ctype, content, date));
         }
+        Statement stmt = conn.createStatement();
         stmt.executeUpdate("DELETE FROM messages WHERE receiver=\'" + name + "\'");
+        stmt.close();
         return new DataPackage(dialogues);
     }
 

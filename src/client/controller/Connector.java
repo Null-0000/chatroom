@@ -1,9 +1,6 @@
 package client.controller;
 
-import kit.IODealer;
-import kit.Message;
-import kit.ClassConverter;
-import kit.DataPackage;
+import kit.*;
 import client.model.User;
 
 import java.io.IOException;
@@ -58,7 +55,7 @@ public class Connector {
 
         DataPackage receive = IODealer.receive(socket, false);
 
-        User.getInstance().addFriend(receive.name);
+        User.getInstance().addFriend(new UserInfo(receive.ID, receive.name, receive.signature, receive.myIconBytes));
 
         if(receive.ID == -1) return false;
         else return true;

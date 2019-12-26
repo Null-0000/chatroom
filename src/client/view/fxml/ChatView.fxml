@@ -20,10 +20,10 @@
     </HBox>
     <WebView fx:id="dialogView" GridPane.columnIndex="0" GridPane.rowIndex="1"></WebView>
     <ToolBar fx:id="toolBar" GridPane.columnIndex="0" GridPane.rowIndex="3">
-        <Button fx:id="emojiControl" onMouseClicked="#emojiSelect" prefHeight="30" prefWidth="30"></Button>
+        <ToggleButton fx:id="emojiControl" prefHeight="30" prefWidth="30"></ToggleButton>
         <Button fx:id="imgControl" onMouseClicked="#imageSelect" prefHeight="30" prefWidth="30"></Button>
         <Button fx:id="audControl" onMouseClicked="#audioSelect" prefHeight="30" prefWidth="30"></Button>
-        <Button fx:id="fmlControl" onMouseClicked="#formulaSelect" prefHeight="30" prefWidth="30"></Button>
+        <ToggleButton fx:id="fmlControl" prefHeight="30" prefWidth="30"></ToggleButton>
     </ToolBar>
     <TextArea fx:id="typeArea" GridPane.columnIndex="0" GridPane.rowIndex="4" prefHeight="350"></TextArea>
     <HBox alignment="BOTTOM_RIGHT" GridPane.columnIndex="0" GridPane.rowIndex="5">

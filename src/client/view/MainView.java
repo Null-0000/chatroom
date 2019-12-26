@@ -46,9 +46,7 @@ public class MainView extends Stage {
         ((Label)userInfoGridPane.getChildren().get(7)).setText(user.getSignature());
         ((Label)userInfoGridPane.getChildren().get(7)).setTooltip(new Tooltip(user.getSignature()));
 
-        File userIcon = new File("src/client/data/" + user.getName() + ".png");
-        FileOutputStream fileOutputStream = new FileOutputStream(userIcon);
-        fileOutputStream.write(user.getMyIconBytes());
+        File userIcon = new File("out/production/chatroom/client/data/" + user.getName() + "/icon.png");
 
         ((ImageView)userInfoGridPane.getChildren().get(0)).setImage(new Image(new FileInputStream(userIcon)));
 

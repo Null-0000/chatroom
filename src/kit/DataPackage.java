@@ -14,14 +14,14 @@ public class DataPackage implements Serializable {
     public String name;
     public String signature;
     public String password;
-    public ArrayList<String> friendList;
+    public ArrayList<UserInfo> friendList;
     public byte[] myIconBytes;
     public ArrayList<Message> messages;
     public Message message;
     public String operator;
 
     public DataPackage(){}
-    public DataPackage(int ID, String name, String signature, ArrayList<String> friendList, byte[] myIconBytes) {//load user info
+    public DataPackage(int ID, String name, String signature, ArrayList<UserInfo> friendList, byte[] myIconBytes) {//load user info
         this.ID = ID;
         this.name = name;
         this.signature = signature;
@@ -36,6 +36,12 @@ public class DataPackage implements Serializable {
     public DataPackage(String name, int ID){
         this.ID = ID;
         this.name  = name;
+    }
+    public DataPackage(UserInfo info){
+        this.ID = info.getID();
+        this.name = info.getName();
+        this.signature = info.getSig();
+        this.myIconBytes = info.getIcon();
     }
     public DataPackage(int ID){//get ID
         this.ID = ID;

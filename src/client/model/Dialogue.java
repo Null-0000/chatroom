@@ -90,6 +90,9 @@ public class Dialogue implements Serializable {
     public void show(){
         chatView.show();
     }
+    public void hide(){
+        chatView.hide();
+    }
     public ChatView getChatView(){
         return chatView;
     }

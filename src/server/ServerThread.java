@@ -2,8 +2,13 @@ package server;
 
 import kit.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class ServerThread extends Thread {
@@ -80,21 +85,15 @@ public class ServerThread extends Thread {
         DataPackage dataPackage;
         while (true){
             dataPackage = IODealer.receive(socket, false);
-
-            System.out.println("服务器收到一个DataPackage");
-
             if(dataPackage == null) break;
             if(dataPackage.operateType.equals("exit")) break;
 
             Message message = dataPackage.message;
 
-            System.out.println(message);
-
             Socket toSocket = socketMap.get(message.receiver);
 
             if(toSocket != null){
                 IODealer.send(toSocket, dataPackage, false);
-                System.out.println("找到receiver，服务器执行发送语句");
             } else {
                 manager.storeMessage(message);
             }
@@ -104,10 +103,10 @@ public class ServerThread extends Thread {
 
         return null;
     }
-    private DataPackage makeFriend(DataPackage message) throws SQLException {
+    private DataPackage makeFriend(DataPackage message) throws SQLException, IOException {
         return manager.makeFriend(message.name, message.operator);
     }
-    private DataPackage sendUserInfo(DataPackage userInfo) {
+    private DataPackage sendUserInfo(DataPackage userInfo) throws SQLException {
         int ID = userInfo.ID;
         System.out.println("接受到ID=" + ID);
         String password = userInfo.password;

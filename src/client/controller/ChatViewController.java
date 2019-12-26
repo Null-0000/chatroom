@@ -1,6 +1,8 @@
 package client.controller;
 
 import client.model.MFileChooser;
+import com.sun.javafx.scene.control.behavior.ToggleButtonBehavior;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import kit.Message;
 import client.model.User;
@@ -13,10 +15,6 @@ import javafx.concurrent.Worker;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-
-import javafx.scene.control.TextArea;
 
 import javafx.scene.layout.TilePane;
 import javafx.scene.text.Font;
@@ -51,6 +49,9 @@ public class ChatViewController implements Initializable {
     @FXML private WebView show;
     @FXML private TextArea typeArea;
     @FXML private TilePane emojiView;
+    @FXML private ToggleButton emojiControl;
+    @FXML private ToggleButton fmlControl;
+
     private ListProperty<Message> messageList;
 
     private WebEngine webEngine1;
@@ -84,12 +85,6 @@ public class ChatViewController implements Initializable {
         }
     }
 
-    @FXML private void emojiSelect() {
-        emojiView.setVisible(true);
-        emojiView.setManaged(true);
-        show.setVisible(false);
-        show.setManaged(false);
-    }
     @FXML private void imageSelect() throws Exception {
         File file = MFileChooser.showFileChooser("image", "jpg", "png", "jpeg");
         if (file == null) return;
@@ -129,12 +124,6 @@ public class ChatViewController implements Initializable {
         User.getInstance().sendMessage(message);
         baos.close();
         fiis.close();
-    }
-    @FXML private void formulaSelect() {
-        show.setVisible(true);
-        show.setManaged(true);
-        emojiView.setVisible(false);
-        emojiView.setManaged(false);
     }
 
     @Override
@@ -182,10 +171,36 @@ public class ChatViewController implements Initializable {
             emojiView.getChildren().add(label);
             //将unicode编码为0x1F600到0x1F644的所有emoji写到一个个的Label上
         }
+
+        ToggleGroup group = new ToggleGroup();
+        emojiControl.setToggleGroup(group);
+        fmlControl.setToggleGroup(group);
+        group.selectedToggleProperty().addListener((obs, ov, nv)->{
+            if (nv == null) {
+                emojiView.setVisible(false);
+                emojiView.setManaged(false);
+                show.setVisible(false);
+                show.setManaged(false);
+            }
+            else if(nv == emojiControl) {
+                show.setVisible(false);
+                show.setManaged(false);
+                emojiView.setVisible(true);
+                emojiView.setManaged(true);
+            }
+            else if (nv == fmlControl){
+                emojiView.setVisible(false);
+                emojiView.setManaged(false);
+                show.setVisible(true);
+                show.setManaged(true);
+            }
+        });
+
     }
     public void synchroniseMessages(ListProperty<Message> messageList){
         messageList.addListener((obs, ov, nv) -> {
             Message newMessage = nv.get(nv.size() - 1);
+
             showMessage(newMessage);
         });
     }

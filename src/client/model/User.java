@@ -5,10 +5,7 @@ import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import kit.ClassConverter;
-import kit.DataPackage;
-import kit.IODealer;
-import kit.Message;
+import kit.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -22,7 +19,7 @@ public class User {
     private String signature;
     private int ID;
     private byte[] myIconBytes;
-    private ListProperty<String> friendList;
+    private ListProperty<UserInfo> friendList;
     private DialoguesManager manager;
     private Map<String, Dialogue> dialogueMap;
     private Socket mySocket;
@@ -39,7 +36,7 @@ public class User {
         this.ID = u.ID;
         this.name = u.name;
         this.signature = u.signature;
-        ObservableList<String> observableList = FXCollections.observableArrayList(u.friendList);
+        ObservableList<UserInfo> observableList = FXCollections.observableArrayList(u.friendList);
         this.friendList = new SimpleListProperty<>(observableList);
         this.myIconBytes = u.myIconBytes;
     }
@@ -62,8 +59,8 @@ public class User {
         }
     }
 
-    public void addFriend(String friendName){
-        friendList.add(friendName);
+    public void addFriend(UserInfo info){
+        friendList.add(info);
         //此处为主界面更新好友列表
     }
     public String getName(){
@@ -85,7 +82,7 @@ public class User {
         return dialogueMap.get(friendName);
     }
 
-    public ListProperty<String> getFriendList() {
+    public ListProperty<UserInfo> getFriendList() {
         return friendList;
     }
     public void sendMessage(Message message) throws Exception {
