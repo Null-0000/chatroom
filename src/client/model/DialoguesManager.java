@@ -107,14 +107,14 @@ public class DialoguesManager {
     private File file;
     public DialoguesManager(String userName) {
         this.userName = userName;
-        directory = "out/production/chatroom/client/data/" + userName;
+        directory = "src/client/data/" + userName;
         fileName = this.userName + ".dat";
         file = new File(directory + "/" + fileName);
 
         //ShowDialog.showMessage("正在构造DialoguesManager\n" + file.exists());
 
         if(!file.exists()){
-            (new File(directory)).mkdir();
+            (new File(directory)).mkdirs();
             try {
                 file.createNewFile();
             } catch (IOException e) {

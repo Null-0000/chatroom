@@ -1,7 +1,7 @@
 package server;
 
 import kit.Message;
-import kit.DataPackage;
+import kit.Data;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -23,16 +23,16 @@ public class UserDataBaseManager {
         conn = DriverManager.getConnection(url, user, pass);
         stmt = conn.createStatement();
     }
-    public int register(DataPackage dataPackage) throws SQLException {
+    public int register(Data data) throws SQLException {
         addCurrentUsersAmount();
         int ID = getCurrentID();
-        byte[] icon = dataPackage.myIconBytes;
+        byte[] icon = data.myIconBytes;
         PreparedStatement pstmt = conn.prepareStatement(
                 "INSERT INTO users_info(ID, name, signature, password, icon) VALUES(?, ?, ?, ?, ?)");
         pstmt.setInt(1, ID);
-        pstmt.setString(2, dataPackage.name);
-        pstmt.setString(3, dataPackage.signature);
-        pstmt.setString(4, dataPackage.password);
+        pstmt.setString(2, data.name);
+        pstmt.setString(3, data.signature);
+        pstmt.setString(4, data.password);
         pstmt.setBlob(5, new ByteArrayInputStream(icon));
         pstmt.executeUpdate();
         return ID;
@@ -50,7 +50,7 @@ public class UserDataBaseManager {
         if (rs.next())
             stmt.executeUpdate("UPDATE global_info SET users=" + (rs.getInt(1) + 1) + " WHERE users=" + rs.getInt(1));
     }
-    public DataPackage selectByIDAndPassword(int id, String password) {
+    public Data selectByIDAndPassword(int id, String password) {
         if (id < 0) return null;
         ResultSet rs1;
         String name;
@@ -82,9 +82,9 @@ public class UserDataBaseManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new DataPackage(id, name, sig, friendList, icon);
+        return new Data(id, name, sig, friendList, icon);
     }
-    public DataPackage makeFriend(String info, String byName) throws SQLException {
+    public Data makeFriend(String info, String byName) throws SQLException {
         String name;
         ResultSet rs = stmt.executeQuery("SELECT name FROM users_info WHERE name=\'" + info + "\'");
         if (rs.next()) {
@@ -94,7 +94,7 @@ public class UserDataBaseManager {
             if (rs.next()) {
                 name = rs.getString(1);
             } else {
-                return new DataPackage(-1);
+                return new Data(-1);
             }
         }
 
@@ -105,7 +105,7 @@ public class UserDataBaseManager {
 
         int ID = 0;
 
-        return new DataPackage(name, ID);
+        return new Data(name, ID);
     }
     public void storeMessage(Message message) throws SQLException {
         PreparedStatement pstmt = conn.prepareStatement(
@@ -117,7 +117,7 @@ public class UserDataBaseManager {
         pstmt.setTimestamp(5, new Timestamp(message.date.getTime()));
         pstmt.execute();
     }
-    public DataPackage loadDialogues(String name) throws SQLException {
+    public Data loadDialogues(String name) throws SQLException {
         PreparedStatement pstmt = conn.prepareStatement("SELECT  * FROM messages WHERE receiver=?");
         pstmt.setString(1, name);
         ResultSet rs = pstmt.executeQuery();
@@ -134,11 +134,35 @@ public class UserDataBaseManager {
                 e.printStackTrace();
             }
             Date date = new Date(rs.getTimestamp(5).getTime());
-            dialogues.add(new Message(name, sender, ctype, content, date));
+            dialogues.add(new Message(name, sender, ctype, content, date, false));
         }
         stmt.executeUpdate("DELETE FROM messages WHERE receiver=\'" + name + "\'");
-        return new DataPackage(dialogues);
+        return new Data(dialogues);
     }
+
+    /**
+     * return whether this operate goes successfully
+     * @param info
+     * @return
+     */
+    public boolean createGroup(Data info) {
+        //unfinished
+        return false;
+    }
+    
+    /**
+     * return whether this operate goes successfully
+     * @param info
+     * @return
+     */
+    public boolean joinGroup(Data info){
+        //name, groupID
+        //更新group members，count
+        //更新用户的group info
+        //unfinished
+        return false;
+    }
+
 
 }
 

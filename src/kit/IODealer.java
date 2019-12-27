@@ -9,14 +9,14 @@ public class IODealer {
      */
     private static final int WIDTH = 1024;
 
-    public static void send(Socket socket, DataPackage dataPackage, boolean isClose){
+    public static void send(Socket socket, Data data, boolean isClose){
         DataOutputStream dataOutput;
         byte[] buffer;
 
         try {
             dataOutput = new DataOutputStream(socket.getOutputStream());
 
-            buffer = ClassConverter.getBytesFromObject(dataPackage);
+            buffer = ClassConverter.getBytesFromObject(data);
 
             dataOutput.writeLong(buffer.length);
 
@@ -33,7 +33,7 @@ public class IODealer {
         }
     }
 
-    public static DataPackage receive(Socket socket, boolean isClose){
+    public static Data receive(Socket socket, boolean isClose){
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         DataInputStream dataInput;
         byte[] buffer;
@@ -62,7 +62,7 @@ public class IODealer {
                 socket.close();
             }
             System.out.println("接受数据byteArrayOutputStream长度: " + byteArrayOutputStream.toByteArray().length);
-            return (DataPackage) ClassConverter.getObjectFromBytes(byteArrayOutputStream.toByteArray());
+            return (Data) ClassConverter.getObjectFromBytes(byteArrayOutputStream.toByteArray());
 
         } catch (Exception e) {
             e.printStackTrace();

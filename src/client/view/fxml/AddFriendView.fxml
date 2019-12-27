@@ -1,25 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.text.Text?>
-<GridPane
-        stylesheets="@../fxml/css/SuperView.css"
-        xmlns="http://javafx.com/javafx"
-        xmlns:fx="http://javafx.com/fxml"
-        fx:controller="client.controller.AddFriendViewController"
-        prefHeight="300.0" prefWidth="600.0"
-        alignment="CENTER" hgap="10" vgap="10">
-    <padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
-    <Text fx:id="AddFriendTitle" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2" styleClass="font-title">Make new friends here</Text>
-    <Label GridPane.columnIndex="0" GridPane.rowIndex="1">your friend's name</Label>
-    <TextField fx:id="friendNameField" GridPane.columnIndex="1" GridPane.rowIndex="1" onAction="#keyAction" promptText="请输入好友的昵称"></TextField>
+<GridPane alignment="CENTER" hgap="10" prefHeight="300.0" prefWidth="600.0" stylesheets="@../fxml/css/SuperView.css" vgap="10" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.AddFriendViewController">
+    <padding><Insets bottom="10" left="25" right="25" top="25" /></padding>
+    <Text fx:id="AddFriendTitle" styleClass="font-title" text="Make new friends here" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0">
+      <font>
+         <Font size="15.0" />
+      </font></Text>
+    <Label text="friend's id" GridPane.columnIndex="0" GridPane.rowIndex="1">your friend's name</Label>
+    <TextField fx:id="friendIDField" onAction="#keyAction" promptText="请输入好友的id" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-    <HBox GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="BOTTOM_RIGHT" spacing="10">
+    <HBox alignment="BOTTOM_RIGHT" spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="6">
         <Button onAction="#SearchButtonAction" styleClass="btn-basic:hover,btn-radius-large">Search</Button>
     </HBox>
+   <Label layoutX="113.0" layoutY="143.0" text="friend's name" GridPane.rowIndex="2" />
+   <TextField fx:id="friendNameField" layoutX="239.0" layoutY="139.0" onAction="#keyAction" promptText="请输入好友的昵称" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+   <Label layoutX="113.0" layoutY="123.0" text="you can choose the way you find your friend" textFill="#b6a0a0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="3" GridPane.rowSpan="2">
+      <font>
+         <Font size="10.0" />
+      </font>
+   </Label>
+   <columnConstraints>
+      <ColumnConstraints />
+      <ColumnConstraints />
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+   </rowConstraints>
 
 
 </GridPane>

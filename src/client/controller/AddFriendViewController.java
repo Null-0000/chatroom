@@ -14,11 +14,14 @@ import java.io.IOException;
 public class AddFriendViewController {
     @FXML private GridPane root;
     @FXML private TextField friendNameField;
+    @FXML private TextField friendIDField;
 
     public void SearchButtonAction(ActionEvent actionEvent) {
         String friendName;
+        int ID = -1;
         friendName = friendNameField.getText();
-        if(friendName == null){
+        ID = Integer.parseInt(friendIDField.getText());
+        if(friendName == null && ID == -1){
             ShowDialog.showWarning("请输入好友的信息");
             return;
         }
@@ -26,7 +29,7 @@ public class AddFriendViewController {
             ShowDialog.showWarning("添加的好友不能为自己");
             return;
         }
-        if(User.getInstance().getFriendList().contains(friendName)){
+        if(friendName != null && User.getInstance().getFriendList().contains(friendName)){
             ShowDialog.showMessage("你已添加" + friendName + "为好友");
             return;
         }

@@ -5,15 +5,13 @@ import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import kit.ClassConverter;
-import kit.DataPackage;
+import kit.Data;
 import kit.IODealer;
 import kit.Message;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -35,11 +33,11 @@ public class User {
         return instance;
     }
 
-    public void setField(DataPackage u){
+    public void setField(Data u){
         this.ID = u.ID;
         this.name = u.name;
         this.signature = u.signature;
-        ObservableList<String> observableList = FXCollections.observableArrayList(u.friendList);
+        ObservableList<String> observableList = FXCollections.observableArrayList(u.list);
         this.friendList = new SimpleListProperty<>(observableList);
         this.myIconBytes = u.myIconBytes;
     }
@@ -92,9 +90,9 @@ public class User {
         String receiver = message.receiver;
         dialogueMap.get(receiver).updateMessage(message);
 
-        DataPackage dataPackage = new DataPackage(message);
-        dataPackage.setOperateType("sendMessage");
-        IODealer.send(mySocket, dataPackage, false);
+        Data data = new Data(message);
+        data.setOperateType("sendMessage");
+        IODealer.send(mySocket, data, false);
     }
     private void receiveMessages() {
         ReceiveMessageThread receiveMessageThread = new ReceiveMessageThread();
@@ -102,10 +100,10 @@ public class User {
     }
 
     public void exit() throws Exception {
-        DataPackage dataPackage = new DataPackage();
-        dataPackage.setOperateType("exit");
+        Data data = new Data();
+        data.setOperateType("exit");
 
-        IODealer.send(mySocket, dataPackage, false);
+        IODealer.send(mySocket, data, false);
 
         /**登出时储存文件*/
         manager.updateMyDialogues(dialogueMap);
@@ -121,7 +119,7 @@ public class User {
 
             while (true) {
                 try {
-                    DataPackage receive = IODealer.receive(mySocket, false);
+                    Data receive = IODealer.receive(mySocket, false);
                     Message message = receive.message;
                     dialogueMap.get(message.sender).updateMessage(message);
                 } catch (Exception e) {

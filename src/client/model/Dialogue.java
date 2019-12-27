@@ -45,7 +45,7 @@ public class Dialogue implements Serializable {
         String to = (message.sender.equals(user))? message.receiver: message.sender;
         switch (message.ctype.replaceAll("/.*", "")){
             case "image":
-                File imgDir = new File("out/production/chatroom/client/data/" + User.getInstance().getName() +
+                File imgDir = new File("src/client/data/" + User.getInstance().getName() +
                         "/" + to + "/images");
                 Date imgDate = new Date();
                 String imgSuffix = "." + message.ctype.replaceAll(".*/", "");
@@ -62,7 +62,7 @@ public class Dialogue implements Serializable {
                 }
                 break;
             case "audio":
-                File audDir = new File("out/production/chatroom/client/data/" + User.getInstance().getName() +
+                File audDir = new File("src/client/data/" + User.getInstance().getName() +
                         "/" + to + "/audios");
                 Date audDate = new Date();
                 String audSuffix = "." + message.ctype.replaceAll(".*/", "");

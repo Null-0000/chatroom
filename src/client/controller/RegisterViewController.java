@@ -10,7 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
-import kit.DataPackage;
+import kit.Data;
 
 import java.io.*;
 
@@ -63,7 +63,7 @@ public class RegisterViewController {
 //            selectedIcon.setImage(new Image(fileInputStream));
             byte[] iconByte = new byte[(int) (file.length() + 1)];
             fileInputStream.read(iconByte);
-            int ID = Connector.getInstance().register(new DataPackage(name, password, signature, iconByte));
+            int ID = Connector.getInstance().register(new Data(name, password, signature, iconByte));
             ShowDialog.showMessage("你获得的ID为" + ID);
         } catch (Exception e){
             e.printStackTrace();
