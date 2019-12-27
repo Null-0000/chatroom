@@ -26,16 +26,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainView extends Stage {
-
+    public static ListView<String> friendListView;
     public MainView(User user) throws IOException {
-
         SplitPane root= FXMLLoader.load(this.getClass().getResource(Resource.MainViewResource));
 
         ObservableList items = root.getItems();
         GridPane userInfoGridPane = (GridPane) items.get(0);
         TabPane tabPane = (TabPane) items.get(1);
         ObservableList tabs = tabPane.getTabs();
-        ((Tab)tabs.get(0)).getContent().lookup("#friendListView");
+        friendListView = (ListView<String>) ((Tab)tabs.get(0)).getContent().lookup("#friendListView");
 
         ((Label)userInfoGridPane.getChildren().get(5)).setText(String.valueOf(user.getID()));
         ((Label)userInfoGridPane.getChildren().get(5)).setTooltip(new Tooltip(String.valueOf(user.getID())));
@@ -69,5 +68,7 @@ public class MainView extends Stage {
         setTitle("Chatting Room");
         getIcons().add(new Image(String.valueOf(this.getClass().getResource("images/AppIcon.png"))));
     }
-
+    public static void clearListSelection(){
+        friendListView.getSelectionModel().clearSelection();
+    }
 }

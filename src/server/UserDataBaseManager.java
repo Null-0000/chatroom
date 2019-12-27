@@ -149,7 +149,7 @@ public class UserDataBaseManager {
         //unfinished
         return false;
     }
-    
+
     /**
      * return whether this operate goes successfully
      * @param info

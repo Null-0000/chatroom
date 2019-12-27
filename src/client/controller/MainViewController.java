@@ -68,6 +68,7 @@ public class MainViewController implements Initializable {
                 e.printStackTrace();
             }
             */
+            if(t1 == null) return;
             Dialogue dialogue = User.getInstance().getDialogueFrom((String) t1);
             dialogue.show();
         }

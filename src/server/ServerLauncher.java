@@ -13,8 +13,6 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
 
 class server extends Thread{
@@ -134,6 +132,8 @@ public class ServerLauncher extends Application {
         userLog.put(user, l);
     }
     public static void addUser(String user){
+        if(userLog.containsKey(user)) return;
+        
         users.getItems().add(user);
         userLog.put(user, "");
         userSelected.put(user, new SimpleBooleanProperty(false));
