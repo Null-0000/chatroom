@@ -68,4 +68,5 @@ public class DataPackage implements Serializable {
     public void setOperateType(String operateType){
         this.operateType = operateType;
     }
+
 }

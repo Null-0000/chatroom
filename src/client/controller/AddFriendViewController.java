@@ -26,7 +26,7 @@ public class AddFriendViewController {
             ShowDialog.showWarning("添加的好友不能为自己");
             return;
         }
-        if(User.getInstance().getFriendList().contains(friendName)){
+        if(User.getInstance().getFriendNames().contains(friendName)){
             ShowDialog.showMessage("你已添加" + friendName + "为好友");
             return;
         }

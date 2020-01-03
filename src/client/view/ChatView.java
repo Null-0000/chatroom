@@ -2,6 +2,7 @@ package client.view;
 
 import client.controller.ChatViewController;
 import client.launcher.Resource;
+import javafx.application.Platform;
 import kit.Message;
 import javafx.beans.property.ListProperty;
 import javafx.fxml.FXMLLoader;
@@ -31,6 +32,12 @@ public class ChatView extends Stage {
         Scene scene = new Scene(root);
         this.setScene(scene);
         setResizable(false);
+
+        setOnCloseRequest((e)->{
+            Platform.runLater(()->{
+                MainView.clearListSelection();
+            });
+        });
     }
     public ChatViewController getController(){
         return controller;

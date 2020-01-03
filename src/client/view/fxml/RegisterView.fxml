@@ -7,7 +7,7 @@
 <?import javafx.scene.text.*?>
 
 <?import java.net.URL?>
-<Pane fx:controller="client.controller.RegisterViewController" onKeyPressed="#paneKeyAction" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="450.0" stylesheets="@css/SuperView.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:controller="client.controller.RegisterViewController" onKeyPressed="#paneKeyAction" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="450.0" stylesheets="@../css/SuperView.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label fx:id="registerTitle" layoutX="24.0" layoutY="14.0" prefHeight="35.0" prefWidth="103.0" text="Register">
          <font>
@@ -29,6 +29,6 @@
               prefHeight="15.0" prefWidth="92.0" text="submit"></Button>
    </children>
    <stylesheets>
-      <URL value="@css/RegisterView.css"></URL>
+      <URL value="@../css/RegisterView.css"></URL>
    </stylesheets>
 </Pane>

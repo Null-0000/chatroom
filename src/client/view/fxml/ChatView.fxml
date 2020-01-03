@@ -34,6 +34,6 @@
     <TilePane fx:id="emojiView" vgap="5" hgap="5" prefWidth="400" GridPane.columnIndex="1" GridPane.rowIndex="0"
               GridPane.rowSpan="5" visible="false" managed="false"></TilePane>
     <stylesheets>
-        <URL value="@css/ChatView.css"></URL>
+        <URL value="@../css/ChatView.css"></URL>
     </stylesheets>
 </GridPane>

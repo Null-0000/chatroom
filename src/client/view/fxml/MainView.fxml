@@ -4,7 +4,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<SplitPane dividerPositions="0.3, 0.9" maxHeight="1000.0" maxWidth="250.0" minHeight="400.0" minWidth="250.0" orientation="VERTICAL" prefHeight="470.0" prefWidth="250.0" stylesheets="@css/MainView.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.MainViewController">
+<SplitPane dividerPositions="0.3, 0.9" maxHeight="1000.0" maxWidth="250.0" minHeight="400.0" minWidth="250.0" orientation="VERTICAL" prefHeight="470.0" prefWidth="250.0" stylesheets="@../css/MainView.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.MainViewController">
   <items>
             <GridPane fx:id="userInfoGridPane" maxHeight="136" maxWidth="237" minHeight="136" minWidth="237" prefHeight="136.0" prefWidth="237.0">
               <columnConstraints>

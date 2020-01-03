@@ -3,6 +3,7 @@ package client.view;
 import client.launcher.Resource;
 import client.model.User;
 
+import client.model.UserCard;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainView extends Stage {
+    private static ListView<UserCard> friendListView;
 
     public MainView(User user) throws IOException {
 
@@ -49,6 +51,7 @@ public class MainView extends Stage {
         File userIcon = new File("out/production/chatroom/client/data/" + user.getName() + "/icon.png");
 
         ((ImageView)userInfoGridPane.getChildren().get(0)).setImage(new Image(new FileInputStream(userIcon)));
+        friendListView = (ListView<UserCard>) ((Tab)tabs.get(0)).getContent().lookup("#friendListView");
 
         setScene(new Scene(root));
 
@@ -68,4 +71,7 @@ public class MainView extends Stage {
         getIcons().add(new Image(String.valueOf(this.getClass().getResource("images/AppIcon.png"))));
     }
 
+    public static void clearListSelection(){
+        friendListView.getSelectionModel().clearSelection();
+    }
 }

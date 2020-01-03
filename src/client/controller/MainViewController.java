@@ -2,6 +2,7 @@ package client.controller;
 
 import client.launcher.Resource;
 import client.model.Dialogue;
+import client.model.Friend;
 import client.model.User;
 import client.model.UserCard;
 import client.view.AddFriendView;
@@ -13,10 +14,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import kit.UserInfo;
@@ -42,12 +40,8 @@ public class MainViewController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         ObservableList<UserCard> friendCards = FXCollections.observableArrayList();
 
-        for (UserInfo info: User.getInstance().getFriendList()){
-            UserCard card = new UserCard(info.getName(), info.getSig(), info.getIconPath());
-            Dialogue dialogue = User.getInstance().getDialogueFrom(info.getName());
-            dialogue.getMessageList().addListener((obv, ov, nv)->{
-                if (!dialogue.getChatView().isShowing()) card.showCircle();
-            });
+        for (Friend friend: User.getInstance().getFriendList()){
+            UserCard card = friend.getUserInfo().getUserCard();
             friendCards.add(card);
         }
 
@@ -66,18 +60,12 @@ public class MainViewController implements Initializable {
     private class NoticeListItemChangeListener implements ChangeListener<Object> {
         @Override
         public void changed(ObservableValue<?> observableValue, Object o, Object t1) {
-            /*
-            Dialogue dialogue = null;
-            try {
-                dialogue = new Dialogue((String)t1, User.getInstance().getName());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            */
             UserCard userCard = (UserCard) t1;
+            if (userCard == null) return;
             Dialogue dialogue = User.getInstance().getDialogueFrom(userCard.getName());
             dialogue.show();
-            userCard.hideCircle();
+            dialogue.getHasNewMessage().set(false);
+
         }
     }
 

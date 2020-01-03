@@ -1,6 +1,6 @@
 /*全局字体样式*/
 .root {
-    -fx-background-image:url("../../images/background02.jpg");
+    -fx-background-image:url("../images/background02.jpg");
 }
 #welcomeText {
     -fx-font-size:60px;

@@ -6,7 +6,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Text?>
 <GridPane
-        stylesheets="@../fxml/css/SuperView.css"
+        stylesheets="@../css/SuperView.css"
         xmlns="http://javafx.com/javafx"
         xmlns:fx="http://javafx.com/fxml"
         fx:controller="client.controller.AddFriendViewController"

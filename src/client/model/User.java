@@ -2,48 +2,53 @@ package client.model;
 
 import client.controller.Connector;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import kit.*;
 
+import java.io.FileReader;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 public class User {
-    private String name;
-    private String signature;
-    private int ID;
-    private byte[] myIconBytes;
-    private ListProperty<UserInfo> friendList;
-    private DialoguesManager manager;
-    private Map<String, Dialogue> dialogueMap;
-    private Socket mySocket;
+    private UserInfo userInfo;
+    private MapProperty<String, Friend> friends;
 
-    private static User instance = new User();
+    private DialoguesManager manager;
+    private Socket mySocket;
     private InputStream inputStream;
     private OutputStream outputStream;
 
-    public static User getInstance(){
+    private static User instance = new User();
+
+    public static User getInstance() {
         return instance;
     }
 
-    public void setField(DataPackage u){
-        this.ID = u.ID;
-        this.name = u.name;
-        this.signature = u.signature;
-        ObservableList<UserInfo> observableList = FXCollections.observableArrayList(u.friendList);
-        this.friendList = new SimpleListProperty<>(observableList);
-        this.myIconBytes = u.myIconBytes;
+    public void setField(DataPackage u) {
+        this.userInfo = new UserInfo(u.ID, u.name, u.signature, u.myIconBytes);
+        //this.friends = new SimpleListProperty<>(observableList);
+        ObservableMap<String, Friend> obsMap = FXCollections.observableHashMap();
+        for (UserInfo userInfo : u.friendList) {
+            Friend friend = new Friend();
+            friend.setUserInfo(userInfo);
+            obsMap.put(userInfo.getName(), friend);
+        }
+        this.friends = new SimpleMapProperty<>(obsMap);
+        manager = new DialoguesManager(userInfo.getName());
     }
-    public void initialise() throws Exception {
-        manager = new DialoguesManager(name);
 
-        dialogueMap = manager.initMyDialogues();
+    public void initialise() throws Exception {
+        manager.initMyDialogues(friends);
 
         loadRemoteData();
 
@@ -52,49 +57,60 @@ public class User {
 
         receiveMessages();
     }
+
     public void loadRemoteData() throws Exception {
         ArrayList<Message> messages = Connector.getInstance().loadDialogueData();
-        for(Message message : messages){
-            dialogueMap.get(message.sender).updateMessage(message);
+        for (Message message : messages) {
+            friends.get(message.sender).getDialogue().updateMessage(message);
         }
     }
 
-    public void addFriend(UserInfo info){
-        friendList.add(info);
+    public void addFriend(UserInfo info) {
+        Friend friend = new Friend();
+        friend.setUserInfo(info);
+        friends.put(info.getName(), friend);
         //此处为主界面更新好友列表
     }
-    public String getName(){
-        return name;
+
+    public String getName() {
+        return userInfo.getName();
     }
-    public byte[] getMyIconBytes(){
-        return myIconBytes;
+
+    public byte[] getMyIconBytes() {
+        return userInfo.getIcon();
     }
 
     public String getSignature() {
-        return signature;
+        return userInfo.getSig();
     }
 
     public int getID() {
-        return ID;
+        return userInfo.getID();
     }
 
-    public Dialogue getDialogueFrom(String friendName){
-        return dialogueMap.get(friendName);
+    public Dialogue getDialogueFrom(String friendName) {
+        return friends.get(friendName).getDialogue();
     }
 
-    public ListProperty<UserInfo> getFriendList() {
-        return friendList;
+    public Collection<Friend> getFriendList() {
+        return friends.values();
     }
+
+    public Collection<String> getFriendNames() {
+        return friends.keySet();
+    }
+
     public void sendMessage(Message message) throws Exception {
         String receiver = message.receiver;
-        dialogueMap.get(receiver).updateMessage(message);
+        friends.get(receiver).getDialogue().updateMessage(message);
 
         DataPackage dataPackage = new DataPackage(message);
         dataPackage.setOperateType("sendMessage");
         IODealer.send(mySocket, dataPackage, false);
     }
+
     private void receiveMessages() {
-        ReceiveMessageThread receiveMessageThread = new ReceiveMessageThread();
+        ReceiveMessageThread receiveMessageThread = new ReceiveMessageThread(friends, mySocket);
         receiveMessageThread.start();
     }
 
@@ -105,27 +121,7 @@ public class User {
         IODealer.send(mySocket, dataPackage, false);
 
         /**登出时储存文件*/
-        manager.updateMyDialogues(dialogueMap);
+        manager.updateMyDialogues(friends);
     }
 
-    class ReceiveMessageThread extends Thread{
-        @Override
-        public void run() {
-            System.out.println("开始接收信息");
-            for (Dialogue dialogue: dialogueMap.values()){
-                dialogue.synchronizeMessage();
-            }
-
-            while (true) {
-                try {
-                    DataPackage receive = IODealer.receive(mySocket, false);
-                    Message message = receive.message;
-                    dialogueMap.get(message.sender).updateMessage(message);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    break;
-                }
-            }
-        }
-    }
 }

@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<GridPane alignment="CENTER" hgap="10" onKeyPressed="#paneKeyAction" prefHeight="300.0" prefWidth="400.0" stylesheets="@../fxml/css/SuperView.css" vgap="10" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.LoginViewController">
+<GridPane alignment="CENTER" hgap="10" onKeyPressed="#paneKeyAction" prefHeight="300.0" prefWidth="400.0" stylesheets="@../css/SuperView.css" vgap="10" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.LoginViewController">
     <padding><Insets bottom="10" left="25" right="25" top="25" /></padding>
     <Text fx:id="welcomeText" styleClass="font-title" text="Welcome" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0">
       <font>

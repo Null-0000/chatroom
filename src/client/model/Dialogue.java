@@ -2,8 +2,10 @@ package client.model;
 
 import client.view.ChatView;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,11 +27,15 @@ public class Dialogue implements Serializable {
     private transient String friendName;
 
     private transient ChatView chatView;
+    private transient BooleanProperty hasNewMessage;
+
 
     public Dialogue(String friendName, String userName) throws IOException {
         this.friendName = friendName;
         ObservableList<Message> observableList = FXCollections.observableArrayList();
         this.messageList = new SimpleListProperty<>(observableList);
+        this.hasNewMessage = new SimpleBooleanProperty(false);
+
         setChatView();
     }
     public void synchronizeMessage(){
@@ -81,6 +87,7 @@ public class Dialogue implements Serializable {
             default:
                 break;
         }
+        if (!chatView.isShowing()) hasNewMessage.set(true);
         messageList.add(message);
     }
     public ListProperty<Message> getMessageList() {
@@ -96,14 +103,17 @@ public class Dialogue implements Serializable {
     public ChatView getChatView(){
         return chatView;
     }
+    public BooleanProperty getHasNewMessage() { return hasNewMessage;}
     private void writeObject(ObjectOutputStream oos) throws IOException {
         oos.defaultWriteObject();
         oos.writeObject(messageList.toArray());
         oos.writeUTF(friendName);
+        oos.writeBoolean(hasNewMessage.get());
     }
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ArrayList list = new ArrayList(Arrays.asList((Object[]) ois.readObject()));
         messageList = new SimpleListProperty<>(FXCollections.observableArrayList(list));
         friendName = ois.readUTF();
+        hasNewMessage = new SimpleBooleanProperty(ois.readBoolean());
     }
 }
