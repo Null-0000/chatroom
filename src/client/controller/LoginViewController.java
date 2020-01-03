@@ -24,18 +24,20 @@ public class LoginViewController {
     private TextField IDField;
     @FXML
     private PasswordField passwordField;
+
     @FXML
-    protected void loginButtonAction(ActionEvent event){
-        if(IDField.getText().isEmpty()){
+    protected void loginButtonAction(ActionEvent event) {
+        if (IDField.getText().isEmpty()) {
             ShowDialog.showAlert("请输入你的ID");
             return;
         }
-        if(passwordField.getText().isEmpty()){
+        if (passwordField.getText().isEmpty()) {
             ShowDialog.showAlert("请输入密码");
             return;
         }
 
-        int ID; String password = passwordField.getText();
+        int ID;
+        String password = passwordField.getText();
         if (NumberUtils.isDigits(IDField.getText())) ID = Integer.parseInt(IDField.getText());
         else {
             ShowDialog.showAlert("您输入的ID不合法，请重新输入");
@@ -51,7 +53,7 @@ public class LoginViewController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if(isAccessible){
+        if (isAccessible) {
             try {
                 User.getInstance().initialise();
                 StageM.getManager().addStage(Resource.MainViewID, new MainView(User.getInstance()));
@@ -60,9 +62,9 @@ public class LoginViewController {
                 e.printStackTrace();
                 ShowDialog.showAlert("载入服务端用户信息错误");
             }
-        }
-        else ShowDialog.showAlert("ID不存在或密码错误");
+        } else ShowDialog.showAlert("ID不存在或密码错误");
     }
+
     @FXML
     protected void registerButtonAction() throws IOException {
         StageM.getManager().resetStage(Resource.RegisterID, new RegisterView());
@@ -70,7 +72,7 @@ public class LoginViewController {
     }
 
     public void paneKeyAction(KeyEvent keyEvent) throws IOException {
-        if(keyEvent.getCode() == KeyCode.ENTER){
+        if (keyEvent.getCode() == KeyCode.ENTER) {
             loginButtonAction(new ActionEvent());
         }
     }

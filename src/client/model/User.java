@@ -1,29 +1,23 @@
 package client.model;
 
 import client.controller.Connector;
-import javafx.beans.property.ListProperty;
 import javafx.beans.property.MapProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import kit.*;
 
-import java.io.FileReader;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
 public class User {
     private UserInfo userInfo;
     private MapProperty<String, Friend> friends;
 
-    private DialoguesManager manager;
+    private DialogManager manager;
     private Socket mySocket;
     private InputStream inputStream;
     private OutputStream outputStream;
@@ -34,7 +28,7 @@ public class User {
         return instance;
     }
 
-    public void setField(DataPackage u) {
+    public void setField(Data u) {
         this.userInfo = new UserInfo(u.ID, u.name, u.signature, u.myIconBytes);
         //this.friends = new SimpleListProperty<>(observableList);
         ObservableMap<String, Friend> obsMap = FXCollections.observableHashMap();
@@ -44,7 +38,7 @@ public class User {
             obsMap.put(userInfo.getName(), friend);
         }
         this.friends = new SimpleMapProperty<>(obsMap);
-        manager = new DialoguesManager(userInfo.getName());
+        manager = new DialogManager(userInfo.getName());
     }
 
     public void initialise() throws Exception {
@@ -61,7 +55,7 @@ public class User {
     public void loadRemoteData() throws Exception {
         ArrayList<Message> messages = Connector.getInstance().loadDialogueData();
         for (Message message : messages) {
-            friends.get(message.sender).getDialogue().updateMessage(message);
+            friends.get(message.sender).getFriDialog().updateMessage(message);
         }
     }
 
@@ -88,8 +82,8 @@ public class User {
         return userInfo.getID();
     }
 
-    public Dialogue getDialogueFrom(String friendName) {
-        return friends.get(friendName).getDialogue();
+    public FriDialog getDialogueFrom(String friendName) {
+        return friends.get(friendName).getFriDialog();
     }
 
     public Collection<Friend> getFriendList() {
@@ -100,13 +94,15 @@ public class User {
         return friends.keySet();
     }
 
+    public MapProperty<String, Friend> getFriends() { return friends; }
+
     public void sendMessage(Message message) throws Exception {
         String receiver = message.receiver;
-        friends.get(receiver).getDialogue().updateMessage(message);
+        friends.get(receiver).getFriDialog().updateMessage(message);
 
-        DataPackage dataPackage = new DataPackage(message);
-        dataPackage.setOperateType("sendMessage");
-        IODealer.send(mySocket, dataPackage, false);
+        Data data = new Data(message);
+        data.setOperateType("sendMessage");
+        IODealer.send(mySocket, data, false);
     }
 
     private void receiveMessages() {
@@ -115,10 +111,10 @@ public class User {
     }
 
     public void exit() throws Exception {
-        DataPackage dataPackage = new DataPackage();
-        dataPackage.setOperateType("exit");
+        Data data = new Data();
+        data.setOperateType("exit");
 
-        IODealer.send(mySocket, dataPackage, false);
+        IODealer.send(mySocket, data, false);
 
         /**登出时储存文件*/
         manager.updateMyDialogues(friends);

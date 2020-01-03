@@ -4,22 +4,22 @@ import kit.UserInfo;
 
 public class Friend {
     private UserInfo userInfo;
-    private Dialogue dialogue;
+    private FriDialog friDialog;
 
     public Friend(){}
-    public Friend(Dialogue dialogue, UserInfo userInfo){
-        this.dialogue = dialogue;
+    public Friend(FriDialog friDialog, UserInfo userInfo){
+        this.friDialog = friDialog;
         this.userInfo = userInfo;
     }
 
-    public void setDialogue(Dialogue dialogue) {
-        this.dialogue = dialogue;
+    public void setFriDialog(FriDialog friDialog) {
+        this.friDialog = friDialog;
     }
     public void setUserInfo(UserInfo userInfo) {
         this.userInfo = userInfo;
     }
     public UserInfo getUserInfo() {return userInfo; }
-    public Dialogue getDialogue() {return dialogue; }
+    public FriDialog getFriDialog() {return friDialog; }
     public String getFriendName() { return userInfo.getName(); }
 
 }

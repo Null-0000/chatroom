@@ -1,17 +1,15 @@
 package client.model;
 
-import client.view.ChatView;
-import javafx.beans.property.ListProperty;
 import javafx.beans.property.MapProperty;
 
 import java.io.*;
 
-public class DialoguesManager {
+public class DialogManager {
     private String userName;
     private String mDirPath;
     private File mDir;
 
-    public DialoguesManager(String userName) {
+    public DialogManager(String userName) {
         this.userName = userName;
         mDirPath = "out/production/chatroom/client/data/" + userName + "/";
         mDir = new File(mDirPath);
@@ -46,27 +44,27 @@ public class DialoguesManager {
             friend.getUserInfo().prepareUserCard();
 
             //读入或初始化dialogue
-            Dialogue dialogue = null;
+            FriDialog friDialog = null;
             if (!friendDialogFile.exists()) {
                 friendDialogFile.createNewFile();
-                dialogue = new Dialogue(friendName, userName);
+                friDialog = new FriDialog(friendName, userName);
             }
             else {
                 InputStream is = new FileInputStream(friendDialogFile);
                 ObjectInputStream ois = new ObjectInputStream(is);
                 try {
-                    dialogue = (Dialogue) ois.readObject();
-                    if (dialogue.getHasNewMessage().get()) friend.getUserInfo().getUserCard().showCircle();
+                    friDialog = (FriDialog) ois.readObject();
+                    if (friDialog.getHasNewMessage().get()) friend.getUserInfo().getUserCard().showCircle();
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
                 ois.close();
                 is.close();
             }
-            dialogue.setChatView();
-            friend.setDialogue(dialogue);
+            friDialog.setChatView();
+            friend.setFriDialog(friDialog);
 
-            dialogue.getHasNewMessage().addListener((obs, ov, nv)->{
+            friDialog.getHasNewMessage().addListener((obs, ov, nv)->{
                 if (nv) friend.getUserInfo().getUserCard().showCircle();
                 else friend.getUserInfo().getUserCard().hideCircle();
             });
@@ -79,7 +77,7 @@ public class DialoguesManager {
             File friendDialogFile = new File(mDirPath + friend.getFriendName() + "/dialog.dat");
             OutputStream os = new FileOutputStream(friendDialogFile);
             ObjectOutputStream oos = new ObjectOutputStream(os);
-            oos.writeObject(friend.getDialogue());
+            oos.writeObject(friend.getFriDialog());
             oos.close();
             os.close();
         }

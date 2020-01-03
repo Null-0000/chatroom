@@ -4,7 +4,6 @@ import kit.*;
 import client.model.User;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -20,12 +19,12 @@ public class Connector {
     public boolean loadUserInfo(int ID, String password) throws Exception {
         Socket socket = new Socket(HOST, PORT);
 
-        DataPackage dataPackage = new DataPackage(ID, password);
-        dataPackage.setOperateType("loadUserInfo");
+        Data data = new Data(ID, password);
+        data.setOperateType("loadUserInfo");
 
-        IODealer.send(socket, dataPackage, false);
+        IODealer.send(socket, data, false);
 
-        DataPackage receive = IODealer.receive(socket, false);
+        Data receive = IODealer.receive(socket, false);
 
         if(receive.ID == -1) return false;
         else{
@@ -33,27 +32,27 @@ public class Connector {
             return true;
         }
     }
-    public int register(DataPackage dataPackage) throws IOException {
+    public int register(Data data) throws IOException {
         Socket socket = new Socket(HOST, PORT);
 
-        dataPackage.setOperateType("register");
+        data.setOperateType("register");
 
-        IODealer.send(socket, dataPackage, false);
+        IODealer.send(socket, data, false);
 
-        DataPackage receiveData = IODealer.receive(socket, false);
+        Data receiveData = IODealer.receive(socket, false);
 
         return receiveData.ID;
     }
     public boolean makeFriendWith(String info) throws Exception {
         Socket socket = new Socket(HOST, PORT);
 
-        DataPackage dataPackage = new DataPackage(info);
-        dataPackage.setOperateType("makeFriendWith");
-        dataPackage.operator = User.getInstance().getName();
+        Data data = new Data(info);
+        data.setOperateType("makeFriendWith");
+        data.operator = User.getInstance().getName();
 
-        IODealer.send(socket, dataPackage, false);
+        IODealer.send(socket, data, false);
 
-        DataPackage receive = IODealer.receive(socket, false);
+        Data receive = IODealer.receive(socket, false);
 
         User.getInstance().addFriend(new UserInfo(receive.ID, receive.name, receive.signature, receive.myIconBytes));
 
@@ -63,22 +62,22 @@ public class Connector {
 
     public Socket connectToRemote() throws Exception {
         Socket socket = new Socket(HOST, PORT);
-        DataPackage dataPackage = new DataPackage(User.getInstance().getName(), User.getInstance().getID());
-        dataPackage.setOperateType("connect");
+        Data data = new Data(User.getInstance().getName(), User.getInstance().getID());
+        data.setOperateType("connect");
 
-        IODealer.send(socket, dataPackage, false);
+        IODealer.send(socket, data, false);
 
         return socket;
     }
     public ArrayList<Message> loadDialogueData() throws Exception {
         Socket socket = new Socket(HOST, PORT);
 
-        DataPackage dataPackage = new DataPackage(User.getInstance().getName(), User.getInstance().getID());
-        dataPackage.setOperateType("loadDialogueData");
+        Data data = new Data(User.getInstance().getName(), User.getInstance().getID());
+        data.setOperateType("loadDialogueData");
 
-        IODealer.send(socket, dataPackage, false);
+        IODealer.send(socket, data, false);
 
-        DataPackage receive = IODealer.receive(socket, false);
+        Data receive = IODealer.receive(socket, false);
 
         return receive.messages;
     }

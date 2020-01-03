@@ -1,7 +1,7 @@
 package server;
 
 import kit.Message;
-import kit.DataPackage;
+import kit.Data;
 import kit.UserInfo;
 
 import java.io.ByteArrayInputStream;
@@ -22,16 +22,16 @@ public class UserDataBaseManager {
         Class.forName(driver);
         conn = DriverManager.getConnection(url, user, pass);
     }
-    public int register(DataPackage dataPackage) throws SQLException {
+    public int register(Data data) throws SQLException {
         addCurrentUsersAmount();
         int ID = getCurrentID();
-        byte[] icon = dataPackage.myIconBytes;
+        byte[] icon = data.myIconBytes;
         PreparedStatement pstmt = conn.prepareStatement(
                 "INSERT INTO users_info(ID, name, signature, password, icon) VALUES(?, ?, ?, ?, ?)");
         pstmt.setInt(1, ID);
-        pstmt.setString(2, dataPackage.name);
-        pstmt.setString(3, dataPackage.signature);
-        pstmt.setString(4, dataPackage.password);
+        pstmt.setString(2, data.name);
+        pstmt.setString(3, data.signature);
+        pstmt.setString(4, data.password);
         pstmt.setBlob(5, new ByteArrayInputStream(icon));
         pstmt.executeUpdate();
         pstmt.close();
@@ -54,7 +54,7 @@ public class UserDataBaseManager {
             stmt.executeUpdate("UPDATE global_info SET users=" + (rs.getInt(1) + 1) + " WHERE users=" + rs.getInt(1));
         stmt.close();
     }
-    public DataPackage selectByIDAndPassword(int id, String password) throws SQLException {
+    public Data selectByIDAndPassword(int id, String password) throws SQLException {
         if (id < 0) return null;
         Statement stmt = conn.createStatement();
         ResultSet rs1;
@@ -94,9 +94,9 @@ public class UserDataBaseManager {
             e.printStackTrace();
         }
         stmt.close();
-        return new DataPackage(id, name, sig, friendList, icon);
+        return new Data(id, name, sig, friendList, icon);
     }
-    public DataPackage makeFriend(String info, String byName) throws SQLException, IOException {
+    public Data makeFriend(String info, String byName) throws SQLException, IOException {
         Statement stmt = conn.createStatement();
         String name;
         UserInfo userInfo;
@@ -115,7 +115,7 @@ public class UserDataBaseManager {
                         rs.getString(3), blob.getBinaryStream().readAllBytes());
             } else {
                 stmt.close();
-                return new DataPackage(-1);
+                return new Data(-1);
             }
         }
 
@@ -125,7 +125,7 @@ public class UserDataBaseManager {
                 "VALUES(\'" + byName + "\',\'" + name + "\')");
 
         stmt.close();
-        return new DataPackage(userInfo);
+        return new Data(userInfo);
     }
     public void storeMessage(Message message) throws SQLException {
         PreparedStatement pstmt = conn.prepareStatement(
@@ -137,7 +137,7 @@ public class UserDataBaseManager {
         pstmt.setTimestamp(5, new Timestamp(message.date.getTime()));
         pstmt.execute();
     }
-    public DataPackage loadDialogues(String name) throws SQLException {
+    public Data loadDialogues(String name) throws SQLException {
         PreparedStatement pstmt = conn.prepareStatement("SELECT  * FROM messages WHERE receiver=?");
         pstmt.setString(1, name);
         ResultSet rs = pstmt.executeQuery();
@@ -159,8 +159,32 @@ public class UserDataBaseManager {
         Statement stmt = conn.createStatement();
         stmt.executeUpdate("DELETE FROM messages WHERE receiver=\'" + name + "\'");
         stmt.close();
-        return new DataPackage(dialogues);
+        return new Data(dialogues);
     }
+
+    /**
+     * return whether this operate goes successfully
+     * @param info
+     * @return
+     */
+    public boolean createGroup(Data info) {
+        //unfinished
+        return false;
+    }
+
+    /**
+     * return whether this operate goes successfully
+     * @param info
+     * @return
+     */
+    public boolean joinGroup(Data info){
+        //name, groupID
+        //更新group members，count
+        //更新用户的group info
+        //unfinished
+        return false;
+    }
+
 
 }
 

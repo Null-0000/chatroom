@@ -1,16 +1,13 @@
 package client.model;
 
 import client.view.ChatView;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
-
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import kit.Message;
-
 
 import javax.imageio.stream.FileImageOutputStream;
 import java.io.*;
@@ -18,34 +15,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
-/**
- * dialogue between user and one friend
- */
+public class Dialog implements Serializable {
+    protected transient ListProperty<Message> messageList;
+    protected transient String userA;
 
-public class Dialogue implements Serializable {
-    private transient ListProperty<Message> messageList;
-    private transient String friendName;
+    protected transient ChatView chatView;
+    protected transient BooleanProperty hasNewMessage;
 
-    private transient ChatView chatView;
-    private transient BooleanProperty hasNewMessage;
-
-
-    public Dialogue(String friendName, String userName) throws IOException {
-        this.friendName = friendName;
+    public Dialog(){}
+    public Dialog(String userA){
+        this.userA = userA;
         ObservableList<Message> observableList = FXCollections.observableArrayList();
         this.messageList = new SimpleListProperty<>(observableList);
         this.hasNewMessage = new SimpleBooleanProperty(false);
-
-        setChatView();
     }
+
     public void synchronizeMessage(){
         chatView.synchronizeMessage(messageList);
     }
-
-    public void setChatView() throws IOException {
-        chatView = new ChatView(friendName, messageList);
+/*    public void setChatView() throws IOException {
+        chatView = new ChatView(userB, messageList);
         //chatView不能被序列化，故每次读取本地文件后需要重新new哟个chatView
-    }
+    }*/
     public void updateMessage(Message message) {
         String user = User.getInstance().getName();
         String to = (message.sender.equals(user))? message.receiver: message.sender;
@@ -90,30 +81,23 @@ public class Dialogue implements Serializable {
         if (!chatView.isShowing()) hasNewMessage.set(true);
         messageList.add(message);
     }
-    public ListProperty<Message> getMessageList() {
-        return messageList;
-    }
+    public ListProperty<Message> getMessageList() { return messageList; }
 
-    public void show(){
-        chatView.show();
-    }
-    public void hide(){
-        chatView.hide();
-    }
-    public ChatView getChatView(){
-        return chatView;
-    }
+    public void show(){ chatView.show(); }
+    public void hide(){ chatView.hide(); }
+    public ChatView getChatView(){ return chatView; }
     public BooleanProperty getHasNewMessage() { return hasNewMessage;}
-    private void writeObject(ObjectOutputStream oos) throws IOException {
+
+    protected void writeObject(ObjectOutputStream oos) throws IOException {
         oos.defaultWriteObject();
         oos.writeObject(messageList.toArray());
-        oos.writeUTF(friendName);
+        oos.writeUTF(userA);
         oos.writeBoolean(hasNewMessage.get());
     }
-    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+    protected void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ArrayList list = new ArrayList(Arrays.asList((Object[]) ois.readObject()));
         messageList = new SimpleListProperty<>(FXCollections.observableArrayList(list));
-        friendName = ois.readUTF();
+        userA = ois.readUTF();
         hasNewMessage = new SimpleBooleanProperty(ois.readBoolean());
     }
 }

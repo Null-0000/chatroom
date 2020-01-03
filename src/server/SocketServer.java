@@ -1,5 +1,7 @@
 package server;
 
+import javafx.application.Platform;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -18,26 +20,23 @@ class SocketServer {
         manager = new UserDataBaseManager();
         socketMap = new HashMap<>();
         int count = 0;
-        System.out.println("-------Server Running--------");
-        new exitThread().start();
+        Platform.runLater(() -> {
+            ServerLauncher.update(ServerLauncher.MAIN, "-------Server Running--------");
+        });
+        System.out.println("");
         while (true){
             Socket socket = server.accept();
             ServerThread thread = new ServerThread(socket, manager, socketMap);
             System.out.println("-----收到请求，线程" + (++count) + "正在运行-----");
+            count ++;
+            int finalCount = count;
+            Platform.runLater(() -> {
+                ServerLauncher.update(ServerLauncher.MAIN, "-----收到请求，线程" + finalCount + "正在运行-----");
+            });
             thread.start();
-            System.out.println("有一个线程运行结束");
-        }
-    }
-    private class exitThread extends Thread {
-        Scanner scan = new Scanner(System.in);
-
-        @Override
-        public void run() {
-            while(true){
-                if(scan.nextLine().equals("exit".toLowerCase())){
-                    System.exit(0);
-                }
-            }
+            Platform.runLater(() -> {
+                ServerLauncher.update(ServerLauncher.MAIN, "有一个线程运行结束");
+            });
         }
     }
 }

@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
  * @author Furyton
  */
 
-public class ClassConverter {
+public class ClassConverter implements Serializable{
     public static Object getObjectFromBytes(byte[] objectBytes) throws Exception{
         if(objectBytes == null || objectBytes.length == 0){
             return null;

@@ -58,4 +58,8 @@ public class UserInfo implements Serializable {
         this.iconPath = iconPath;
     }
 
+    public String toString() {
+        return String.format("{ID: %d, name: %s}", ID, name);
+    }
+
 }

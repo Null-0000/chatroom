@@ -1,7 +1,7 @@
 package client.model;
 
 import javafx.beans.property.MapProperty;
-import kit.DataPackage;
+import kit.Data;
 import kit.IODealer;
 import kit.Message;
 
@@ -18,14 +18,14 @@ public class ReceiveMessageThread extends Thread{
     public void run() {
         System.out.println("开始接收信息");
         for (Friend friend: friends.values()){
-            friend.getDialogue().synchronizeMessage();
+            friend.getFriDialog().synchronizeMessage();
         }
 
         while (true) {
             try {
-                DataPackage receive = IODealer.receive(mySocket, false);
+                Data receive = IODealer.receive(mySocket, false);
                 Message message = receive.message;
-                friends.get(message.sender).getDialogue().updateMessage(message);
+                friends.get(message.sender).getFriDialog().updateMessage(message);
             } catch (Exception e) {
                 e.printStackTrace();
                 break;
