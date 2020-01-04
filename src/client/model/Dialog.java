@@ -15,32 +15,37 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
-public class Dialog implements Serializable {
+public abstract class Dialog implements Serializable {
     protected transient ListProperty<Message> messageList;
     protected transient String userA;
 
     protected transient ChatView chatView;
     protected transient BooleanProperty hasNewMessage;
 
-    public Dialog(){}
-    public Dialog(String userA){
+    public Dialog() {
+    }
+
+    public Dialog(String userA) {
         this.userA = userA;
         ObservableList<Message> observableList = FXCollections.observableArrayList();
         this.messageList = new SimpleListProperty<>(observableList);
         this.hasNewMessage = new SimpleBooleanProperty(false);
     }
 
-    public void synchronizeMessage(){
+    public abstract void setChatView() throws IOException;
+
+    public void synchronizeMessage() {
         chatView.synchronizeMessage(messageList);
     }
-/*    public void setChatView() throws IOException {
-        chatView = new ChatView(userB, messageList);
-        //chatView不能被序列化，故每次读取本地文件后需要重新new哟个chatView
-    }*/
+
+    /*    public void setChatView() throws IOException {
+            chatView = new ChatView(userB, messageList);
+            //chatView不能被序列化，故每次读取本地文件后需要重新new哟个chatView
+        }*/
     public void updateMessage(Message message) {
         String user = User.getInstance().getName();
-        String to = (message.sender.equals(user))? message.receiver: message.sender;
-        switch (message.ctype.replaceAll("/.*", "")){
+        String to = (message.sender.equals(user)) ? message.receiver : message.sender;
+        switch (message.ctype.replaceAll("/.*", "")) {
             case "image":
                 File imgDir = new File("out/production/chatroom/client/data/" + User.getInstance().getName() +
                         "/" + to + "/images");
@@ -81,12 +86,26 @@ public class Dialog implements Serializable {
         if (!chatView.isShowing()) hasNewMessage.set(true);
         messageList.add(message);
     }
-    public ListProperty<Message> getMessageList() { return messageList; }
 
-    public void show(){ chatView.show(); }
-    public void hide(){ chatView.hide(); }
-    public ChatView getChatView(){ return chatView; }
-    public BooleanProperty getHasNewMessage() { return hasNewMessage;}
+    public ListProperty<Message> getMessageList() {
+        return messageList;
+    }
+
+    public void show() {
+        chatView.show();
+    }
+
+    public void hide() {
+        chatView.hide();
+    }
+
+    public ChatView getChatView() {
+        return chatView;
+    }
+
+    public BooleanProperty getHasNewMessage() {
+        return hasNewMessage;
+    }
 
     protected void writeObject(ObjectOutputStream oos) throws IOException {
         oos.defaultWriteObject();
@@ -94,6 +113,7 @@ public class Dialog implements Serializable {
         oos.writeUTF(userA);
         oos.writeBoolean(hasNewMessage.get());
     }
+
     protected void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ArrayList list = new ArrayList(Arrays.asList((Object[]) ois.readObject()));
         messageList = new SimpleListProperty<>(FXCollections.observableArrayList(list));

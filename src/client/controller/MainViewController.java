@@ -28,20 +28,24 @@ public class MainViewController implements Initializable {
         StageM.getManager().resetStage(Resource.AddFriendView, new AddFriendView());
         StageM.getManager().show(Resource.AddFriendView);
     }
+    @FXML public void createGrp() {
+
+    }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         for (Friend friend: User.getInstance().getFriendList()){
             UserCard card = friend.getUserInfo().getUserCard();
             friendListView.getItems().add(card);
         }
-        User.getInstance().getFriends().addListener((obs, ov, nv)->{
-           for (Friend friend: nv.values()){
-               System.out.println(friend.getUserInfo());
-               UserCard card = friend.getUserInfo().getUserCard();
-               friendListView.getItems().add(card);
-           }
-        });
 
+        User.getInstance().getFriends().addListener((obs, ov, nv)->{
+            friendListView.getItems().clear();
+            for (Friend friend: nv.values()){
+                if (friend.getUserInfo().getUserCard() == null)
+                    friend.getUserInfo().prepareUserCard();
+                friendListView.getItems().add(friend.getUserInfo().getUserCard());
+            }
+        });
         friendListView.getSelectionModel().selectedItemProperty().addListener(new NoticeListItemChangeListener());
         addFriendButton.setTooltip(new Tooltip("添加好友"));
         addFriendButton.setOnAction(actionEvent -> {
@@ -61,7 +65,6 @@ public class MainViewController implements Initializable {
             FriDialog friDialog = User.getInstance().getDialogueFrom(userCard.getName());
             friDialog.show();
             friDialog.getHasNewMessage().set(false);
-
         }
     }
 

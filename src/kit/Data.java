@@ -25,6 +25,7 @@ public class Data implements Serializable {
     public ArrayList<Message> messages;
     public Message message;
     public String operator;
+    public UserInfo oprInfo;
 
     public Data(){}
     public Data(int ID, String name, String signature, ArrayList<UserInfo> friendList, byte[] myIconBytes) {//load user info
@@ -77,4 +78,5 @@ public class Data implements Serializable {
     public boolean isOperate(String operateType){
         return this.operateType.equals(operateType);
     }
+
 }

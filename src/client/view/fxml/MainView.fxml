@@ -40,7 +40,8 @@
                 </Tab>
                 <Tab fx:id="groupTab" text="my group">
                   <content>
-                              <ListView fx:id="groupListView" prefHeight="264.0" prefWidth="237.0" />
+                      <ListView fx:id="groupListView" prefHeight="264.0" prefWidth="237.0" />
+                      <Button fx:id="createGrp" onAction="#createGrp">create group</Button>
                   </content>
                 </Tab>
               </tabs>

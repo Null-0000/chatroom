@@ -1,5 +1,7 @@
 package client.controller;
 
+import client.model.FriDialog;
+import client.model.Friend;
 import kit.*;
 import client.model.User;
 
@@ -49,15 +51,21 @@ public class Connector {
         Data data = new Data(info);
         data.setOperateType("makeFriendWith");
         data.operator = User.getInstance().getName();
+        data.oprInfo = User.getInstance().getUserInfo();
 
         IODealer.send(socket, data, false);
 
         Data receive = IODealer.receive(socket, false);
 
-        User.getInstance().addFriend(new UserInfo(receive.ID, receive.name, receive.signature, receive.myIconBytes));
-
         if(receive.ID == -1) return false;
-        else return true;
+
+        UserInfo info1 = new UserInfo(receive.ID, receive.name, receive.signature, receive.myIconBytes);
+        Friend friend = new Friend(info1);
+        User.getInstance().addFriend(friend);
+        FriDialog dialog = new FriDialog(friend.getFriendName(), User.getInstance().getName());
+        friend.init(dialog);
+        dialog.synchronizeMessage();
+        return true;
     }
 
     public Socket connectToRemote() throws Exception {

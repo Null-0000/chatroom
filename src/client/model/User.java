@@ -1,7 +1,6 @@
 package client.model;
 
 import client.controller.Connector;
-import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
@@ -15,7 +14,7 @@ import java.util.Collection;
 
 public class User {
     private UserInfo userInfo;
-    private MapProperty<String, Friend> friends;
+    private SimpleMapProperty<String, Friend> friends;
 
     private DialogManager manager;
     private Socket mySocket;
@@ -59,12 +58,14 @@ public class User {
         }
     }
 
-    public void addFriend(UserInfo info) {
-        Friend friend = new Friend();
-        friend.setUserInfo(info);
-        friends.put(info.getName(), friend);
+    public void addFriend(Friend friend) {
+        friends.put(friend.getUserInfo().getName(), friend);
+        friend.getUserInfo().prepareUserCard();
+
         //此处为主界面更新好友列表
     }
+
+    public DialogManager getManager() { return manager; }
 
     public String getName() {
         return userInfo.getName();
@@ -94,7 +95,7 @@ public class User {
         return friends.keySet();
     }
 
-    public MapProperty<String, Friend> getFriends() { return friends; }
+    public SimpleMapProperty<String, Friend> getFriends() { return friends; }
 
     public void sendMessage(Message message) throws Exception {
         String receiver = message.receiver;
@@ -106,8 +107,8 @@ public class User {
     }
 
     private void receiveMessages() {
-        ReceiveMessageThread receiveMessageThread = new ReceiveMessageThread(friends, mySocket);
-        receiveMessageThread.start();
+        ConnThread connThread = new ConnThread(friends, mySocket);
+        connThread.start();
     }
 
     public void exit() throws Exception {
@@ -120,4 +121,5 @@ public class User {
         manager.updateMyDialogues(friends);
     }
 
+    public UserInfo getUserInfo() {return  userInfo;}
 }

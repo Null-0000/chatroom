@@ -22,7 +22,6 @@ public class FriDialog extends Dialog implements Serializable {
     public FriDialog(String userB, String userA) throws IOException {
         super(userA);
         this.userB = userB;
-        setChatView();
     }
 
     public void setChatView() throws IOException {

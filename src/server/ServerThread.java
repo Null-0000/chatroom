@@ -120,7 +120,14 @@ public class ServerThread extends Thread {
         return null;
     }
     private Data makeFriend(Data message) throws SQLException, IOException {
-        return manager.makeFriend(message.name, message.operator);
+        Data data = manager.makeFriend(message.name, message.operator);
+        Socket socket = socketMap.get(data.name);
+        if (data.ID != -1 && socket != null){
+            Data data1 = new Data(message.oprInfo);
+            data1.setOperateType(Data.ADD_FRIEND);
+            IODealer.send(socket, data1, false);
+        }
+        return data;
     }
     private Data sendUserInfo(Data userInfo) throws SQLException {
         int ID = userInfo.ID;

@@ -1,6 +1,7 @@
 package client.model;
 
 import javafx.beans.property.MapProperty;
+import kit.UserInfo;
 
 import java.io.*;
 
@@ -21,9 +22,11 @@ public class DialogManager {
         storeIcon(userIcon, User.getInstance().getMyIconBytes());
 
     }
+
     /**
      * initialise the user's dialogues from the data file
      * if the data file goes wrong ,then pop a alert message dialogue
+     *
      * @author Furyton
      * @since 11.27
      */
@@ -36,9 +39,7 @@ public class DialogManager {
                     mDirPath + friendName + "/dialog.dat");
 
             //写入朋友头像
-            File iconFile = new File(mDirPath + friendName + "/icon.jpg");
-            friend.getUserInfo().setIconPath("file:" + mDirPath + friendName + "/icon.jpg");
-            storeIcon(iconFile, friend.getUserInfo().getIcon());
+            storeIcon(friend.getUserInfo());
 
             //初始化UserCard
             friend.getUserInfo().prepareUserCard();
@@ -48,32 +49,25 @@ public class DialogManager {
             if (!friendDialogFile.exists()) {
                 friendDialogFile.createNewFile();
                 friDialog = new FriDialog(friendName, userName);
-            }
-            else {
+            } else {
                 InputStream is = new FileInputStream(friendDialogFile);
                 ObjectInputStream ois = new ObjectInputStream(is);
                 try {
                     friDialog = (FriDialog) ois.readObject();
-                    if (friDialog.getHasNewMessage().get()) friend.getUserInfo().getUserCard().showCircle();
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
+                } finally {
+                    ois.close();
+                    is.close();
                 }
-                ois.close();
-                is.close();
             }
-            friDialog.setChatView();
-            friend.setFriDialog(friDialog);
-
-            friDialog.getHasNewMessage().addListener((obs, ov, nv)->{
-                if (nv) friend.getUserInfo().getUserCard().showCircle();
-                else friend.getUserInfo().getUserCard().hideCircle();
-            });
+            friend.init(friDialog);
         }
 
     }
 
     public void updateMyDialogues(MapProperty<String, Friend> friends) throws IOException {
-        for (Friend friend: friends.values()){
+        for (Friend friend : friends.values()) {
             File friendDialogFile = new File(mDirPath + friend.getFriendName() + "/dialog.dat");
             OutputStream os = new FileOutputStream(friendDialogFile);
             ObjectOutputStream oos = new ObjectOutputStream(os);
@@ -83,8 +77,16 @@ public class DialogManager {
         }
     }
 
+    public void storeIcon(UserInfo friendInfo) {
+        UserInfo info = friendInfo;
+        File friendDir = new File(mDirPath + info.getName());
+        if (!friendDir.exists()) friendDir.mkdir();
+        File file = new File(mDirPath + info.getName() + "/icon.jpg");
+        friendInfo.setIconPath("file:" + mDirPath + info.getName() + "/icon.jpg");
+        storeIcon(file, friendInfo.getIcon());
+    }
 
-    public void storeIcon(File file, byte[] bytes){
+    public void storeIcon(File file, byte[] bytes) {
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -94,7 +96,7 @@ public class DialogManager {
         }
         try {
             FileOutputStream fos = new FileOutputStream(file);
-            fos.write(User.getInstance().getMyIconBytes());
+            fos.write(bytes);
             fos.flush();
             fos.close();
         } catch (FileNotFoundException e) {
@@ -103,4 +105,9 @@ public class DialogManager {
             e.printStackTrace();
         }
     }
+
+    public String getMDirPath() {
+        return mDirPath;
+    }
+
 }

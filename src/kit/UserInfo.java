@@ -1,7 +1,9 @@
 package kit;
 
+import client.model.User;
 import client.model.UserCard;
 
+import java.io.File;
 import java.io.Serializable;
 
 public class UserInfo implements Serializable {
@@ -22,8 +24,7 @@ public class UserInfo implements Serializable {
         return userCard;
     }
     public void prepareUserCard() {
-        UserCard card = new UserCard(name, sig, iconPath);
-        userCard = card;
+        userCard = new UserCard(name, sig, iconPath);
     }
 
 
