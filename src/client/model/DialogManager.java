@@ -1,6 +1,8 @@
 package client.model;
 
 import javafx.beans.property.MapProperty;
+import kit.GroupInfo;
+import kit.Info;
 import kit.UserInfo;
 
 import java.io.*;
@@ -30,30 +32,25 @@ public class DialogManager {
      * @author Furyton
      * @since 11.27
      */
-    public void initMyDialogues(MapProperty<String, Friend> friends) throws IOException {
+    public void initFriendsDialog(MapProperty<Integer, Friend> friends) throws IOException {
         for (Friend friend : friends.values()) {
+            UserInfo info = friend.getUserInfo();
             String friendName = friend.getFriendName();
             File friendDir = new File(mDirPath + friendName);
             if (!friendDir.exists()) friendDir.mkdir();
             File friendDialogFile = new File(
                     mDirPath + friendName + "/dialog.dat");
 
-            //写入朋友头像
-            storeIcon(friend.getUserInfo());
-
-            //初始化UserCard
-            friend.getUserInfo().prepareUserCard();
-
             //读入或初始化dialogue
-            FriDialog friDialog = null;
+            FriendDialog friendDialog = null;
             if (!friendDialogFile.exists()) {
                 friendDialogFile.createNewFile();
-                friDialog = new FriDialog(friendName, userName);
+                friendDialog = new FriendDialog(info.getID(), userName);
             } else {
                 InputStream is = new FileInputStream(friendDialogFile);
                 ObjectInputStream ois = new ObjectInputStream(is);
                 try {
-                    friDialog = (FriDialog) ois.readObject();
+                    friendDialog = (FriendDialog) ois.readObject();
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 } finally {
@@ -61,29 +58,68 @@ public class DialogManager {
                     is.close();
                 }
             }
-            friend.init(friDialog);
+            friend.init(friendDialog);
         }
 
     }
 
-    public void updateMyDialogues(MapProperty<String, Friend> friends) throws IOException {
+    public void initGroupsDialog(MapProperty<Integer, Group> groups) throws IOException {
+        for (Group group: groups.values()){
+            GroupInfo info = group.getGroupInfo();
+            String groupName = info.getName();
+            File groupDir = new File(mDirPath + groupName);
+            if (!groupDir.exists()) groupDir.mkdir();
+            File groupDialogFile = new File(
+                    mDirPath + groupName + "/dialog.dat");
+
+            //读入或初始化dialogue
+            GroupDialog groupDialog = null;
+            if (!groupDialogFile.exists()) {
+                groupDialogFile.createNewFile();
+                groupDialog = new GroupDialog(User.getInstance().getName(),
+                        info.getID(), info.getMembers());
+            } else {
+                InputStream is = new FileInputStream(groupDialogFile);
+                ObjectInputStream ois = new ObjectInputStream(is);
+                try {
+                    groupDialog = (GroupDialog) ois.readObject();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } finally {
+                    ois.close();
+                    is.close();
+                }
+            }
+            group.init(groupDialog);
+        }
+    }
+
+    public void updateMyDialogues(MapProperty<Integer, Friend> friends, MapProperty<Integer, Group> groups)
+            throws IOException {
         for (Friend friend : friends.values()) {
             File friendDialogFile = new File(mDirPath + friend.getFriendName() + "/dialog.dat");
             OutputStream os = new FileOutputStream(friendDialogFile);
             ObjectOutputStream oos = new ObjectOutputStream(os);
-            oos.writeObject(friend.getFriDialog());
+            oos.writeObject(friend.getFriendDialog());
+            oos.close();
+            os.close();
+        }
+        for (Group group : groups.values()) {
+            File friendDialogFile = new File(mDirPath + group.getGroupInfo().getName() + "/dialog.dat");
+            OutputStream os = new FileOutputStream(friendDialogFile);
+            ObjectOutputStream oos = new ObjectOutputStream(os);
+            oos.writeObject(group.getGroupDialog());
             oos.close();
             os.close();
         }
     }
 
-    public void storeIcon(UserInfo friendInfo) {
-        UserInfo info = friendInfo;
-        File friendDir = new File(mDirPath + info.getName());
-        if (!friendDir.exists()) friendDir.mkdir();
+    public void storeIcon(Info info) {
+        File dir = new File(mDirPath + info.getName());
+        if (!dir.exists()) dir.mkdir();
         File file = new File(mDirPath + info.getName() + "/icon.jpg");
-        friendInfo.setIconPath("file:" + mDirPath + info.getName() + "/icon.jpg");
-        storeIcon(file, friendInfo.getIcon());
+        info.setIconPath("file:" + mDirPath + info.getName() + "/icon.jpg");
+        storeIcon(file, info.getIcon());
     }
 
     public void storeIcon(File file, byte[] bytes) {

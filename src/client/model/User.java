@@ -3,7 +3,6 @@ package client.model;
 import client.controller.Connector;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
 import kit.*;
 
 import java.io.InputStream;
@@ -11,10 +10,12 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class User {
     private UserInfo userInfo;
-    private SimpleMapProperty<String, Friend> friends;
+    private SimpleMapProperty<Integer, Friend> friends;
+    private SimpleMapProperty<Integer, Group> groups;
 
     private DialogManager manager;
     private Socket mySocket;
@@ -28,20 +29,25 @@ public class User {
     }
 
     public void setField(Data u) {
-        this.userInfo = new UserInfo(u.ID, u.name, u.signature, u.myIconBytes);
-        //this.friends = new SimpleListProperty<>(observableList);
-        ObservableMap<String, Friend> obsMap = FXCollections.observableHashMap();
-        for (UserInfo userInfo : u.friendList) {
-            Friend friend = new Friend();
-            friend.setUserInfo(userInfo);
-            obsMap.put(userInfo.getName(), friend);
+        this.userInfo = new UserInfo(u.ID, u.name, u.signature, u.iconBytes);
+        manager = new DialogManager(u.name);
+        this.friends = new SimpleMapProperty<>(FXCollections.observableHashMap());
+
+        for (UserInfo userInfo : (List<UserInfo>)u.listA) {
+            Friend friend = new Friend(userInfo);
+            friends.putIfAbsent(userInfo.getID(), friend);
         }
-        this.friends = new SimpleMapProperty<>(obsMap);
-        manager = new DialogManager(userInfo.getName());
+        this.groups = new SimpleMapProperty<>(FXCollections.observableHashMap());
+        for (GroupInfo groupInfo : (List<GroupInfo>)u.listB){
+            Group group = new Group(groupInfo);
+            groups.putIfAbsent(groupInfo.getID(), group);
+        }
+
     }
 
     public void initialise() throws Exception {
-        manager.initMyDialogues(friends);
+        manager.initFriendsDialog(friends);
+        manager.initGroupsDialog(groups);
 
         loadRemoteData();
 
@@ -52,20 +58,30 @@ public class User {
     }
 
     public void loadRemoteData() throws Exception {
-        ArrayList<Message> messages = Connector.getInstance().loadDialogueData();
+        ArrayList<Message> messages =
+                Connector.getInstance().loadMessage(Data.LOAD_MESSAGE);
         for (Message message : messages) {
-            friends.get(message.sender).getFriDialog().updateMessage(message);
+            if (message.isMass)
+                groups.get(message.receiver).getGroupDialog().updateMessage(message);
+            else
+                friends.get(message.sender).getFriendDialog().updateMessage(message);
         }
+
     }
 
     public void addFriend(Friend friend) {
-        friends.put(friend.getUserInfo().getName(), friend);
-        friend.getUserInfo().prepareUserCard();
+        friends.put(friend.getUserInfo().getID(), friend);
 
         //此处为主界面更新好友列表
     }
 
-    public DialogManager getManager() { return manager; }
+    public void addGroup(Group group) {
+        groups.put(group.getGroupInfo().getID(), group);
+    }
+
+    public DialogManager getManager() {
+        return manager;
+    }
 
     public String getName() {
         return userInfo.getName();
@@ -83,31 +99,39 @@ public class User {
         return userInfo.getID();
     }
 
-    public FriDialog getDialogueFrom(String friendName) {
-        return friends.get(friendName).getFriDialog();
+    public FriendDialog getDialogueFrom(int friendID) {
+        return friends.get(friendID).getFriendDialog();
     }
 
     public Collection<Friend> getFriendList() {
         return friends.values();
     }
 
-    public Collection<String> getFriendNames() {
+    public Collection<Integer> getFriendIDs() {
         return friends.keySet();
     }
 
-    public SimpleMapProperty<String, Friend> getFriends() { return friends; }
+    public SimpleMapProperty<Integer, Friend> getFriends() {
+        return friends;
+    }
+
+    public SimpleMapProperty<Integer, Group> getGroups() {return groups;}
 
     public void sendMessage(Message message) throws Exception {
-        String receiver = message.receiver;
-        friends.get(receiver).getFriDialog().updateMessage(message);
-
+        int receiver_id = message.receiver;
         Data data = new Data(message);
         data.setOperateType("sendMessage");
+        if (message.isMass) {
+            groups.get(receiver_id).getGroupDialog().updateMessage(message);
+        }
+        else {
+            friends.get(receiver_id).getFriendDialog().updateMessage(message);
+        }
         IODealer.send(mySocket, data, false);
     }
 
     private void receiveMessages() {
-        ConnThread connThread = new ConnThread(friends, mySocket);
+        ConnThread connThread = new ConnThread(friends, groups, mySocket);
         connThread.start();
     }
 
@@ -118,8 +142,12 @@ public class User {
         IODealer.send(mySocket, data, false);
 
         /**登出时储存文件*/
-        manager.updateMyDialogues(friends);
+        manager.updateMyDialogues(friends, groups);
     }
 
-    public UserInfo getUserInfo() {return  userInfo;}
+    public UserInfo getUserInfo() {
+        return userInfo;
+    }
+
+
 }

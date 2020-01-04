@@ -6,33 +6,33 @@ import java.io.IOException;
 
 public class Friend {
     private UserInfo userInfo;
-    private FriDialog friDialog;
+    private FriendDialog friendDialog;
 
     public Friend(){}
-    public Friend(UserInfo info){
-        this.userInfo = info;
-        User.getInstance().getManager().storeIcon(info);
-        userInfo.prepareUserCard();
+    public Friend(UserInfo userInfo){
+        this.userInfo = userInfo;
+        User.getInstance().getManager().storeIcon(userInfo);
+        this.userInfo.prepareUserCard();
     }
 
-    public void init(FriDialog dialog) throws IOException {
-        friDialog = dialog;
-        if (friDialog.getHasNewMessage().get()) getUserInfo().getUserCard().showCircle();
-        friDialog.setChatView();
-        friDialog.getHasNewMessage().addListener((obs, ov, nv)->{
+    public void init(FriendDialog dialog) throws IOException {
+        friendDialog = dialog;
+        if (friendDialog.getHasNewMessage().get()) userInfo.getUserCard().showCircle();
+        friendDialog.setChatView();
+        friendDialog.getHasNewMessage().addListener((obs, ov, nv)->{
             if (nv) userInfo.getUserCard().showCircle();
             else userInfo.getUserCard().hideCircle();
         });
     }
 
-    public void setFriDialog(FriDialog friDialog) {
-        this.friDialog = friDialog;
+    public void setFriendDialog(FriendDialog friendDialog) {
+        this.friendDialog = friendDialog;
     }
     public void setUserInfo(UserInfo userInfo) {
         this.userInfo = userInfo;
     }
     public UserInfo getUserInfo() {return userInfo; }
-    public FriDialog getFriDialog() {return friDialog; }
+    public FriendDialog getFriendDialog() {return friendDialog; }
     public String getFriendName() { return userInfo.getName(); }
 
 }

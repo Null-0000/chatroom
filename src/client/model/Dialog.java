@@ -43,12 +43,17 @@ public abstract class Dialog implements Serializable {
             //chatView不能被序列化，故每次读取本地文件后需要重新new哟个chatView
         }*/
     public void updateMessage(Message message) {
-        String user = User.getInstance().getName();
-        String to = (message.sender.equals(user)) ? message.receiver : message.sender;
+        int user_id = User.getInstance().getID();
+        int to_id;
+        if (message.isMass)
+            to_id = message.receiver;
+        else
+            to_id = (message.sender == user_id)? message.receiver: message.sender;
+
         switch (message.ctype.replaceAll("/.*", "")) {
             case "image":
                 File imgDir = new File("out/production/chatroom/client/data/" + User.getInstance().getName() +
-                        "/" + to + "/images");
+                        "/" + to_id + "/images");
                 Date imgDate = new Date();
                 String imgSuffix = "." + message.ctype.replaceAll(".*/", "");
                 File imgFile = new File(imgDir.getPath() + "/img" + imgDate.getTime() + imgSuffix);
@@ -65,7 +70,7 @@ public abstract class Dialog implements Serializable {
                 break;
             case "audio":
                 File audDir = new File("out/production/chatroom/client/data/" + User.getInstance().getName() +
-                        "/" + to + "/audios");
+                        "/" + to_id + "/audios");
                 Date audDate = new Date();
                 String audSuffix = "." + message.ctype.replaceAll(".*/", "");
                 File audFile = new File(audDir.getPath() + "/aud" + audDate.getTime() + audSuffix);
@@ -107,17 +112,5 @@ public abstract class Dialog implements Serializable {
         return hasNewMessage;
     }
 
-    protected void writeObject(ObjectOutputStream oos) throws IOException {
-        oos.defaultWriteObject();
-        oos.writeObject(messageList.toArray());
-        oos.writeUTF(userA);
-        oos.writeBoolean(hasNewMessage.get());
-    }
-
-    protected void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-        ArrayList list = new ArrayList(Arrays.asList((Object[]) ois.readObject()));
-        messageList = new SimpleListProperty<>(FXCollections.observableArrayList(list));
-        userA = ois.readUTF();
-        hasNewMessage = new SimpleBooleanProperty(ois.readBoolean());
-    }
 }
+

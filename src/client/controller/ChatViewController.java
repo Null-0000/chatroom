@@ -1,7 +1,6 @@
 package client.controller;
 
 import client.model.MFileChooser;
-import com.sun.javafx.scene.control.behavior.ToggleButtonBehavior;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import kit.Message;
@@ -43,17 +42,25 @@ import java.util.regex.Pattern;
 
 public class ChatViewController implements Initializable {
     private final Font EMOJI_FONT = Font.font("Segoe UI Emoji", 20);
-    @FXML private GridPane root;
-    @FXML private Label chatToLabel;
-    @FXML private WebView dialogView;
-    @FXML private WebView show;
-    @FXML private TextArea typeArea;
-    @FXML private TilePane emojiView;
-    @FXML private ToggleButton emojiControl;
-    @FXML private ToggleButton fmlControl;
+    @FXML
+    private GridPane root;
+    @FXML
+    private Label chatToLabel;
+    @FXML
+    private WebView dialogView;
+    @FXML
+    private WebView show;
+    @FXML
+    private TextArea typeArea;
+    @FXML
+    private TilePane emojiView;
+    @FXML
+    private ToggleButton emojiControl;
+    @FXML
+    private ToggleButton fmlControl;
 
     private ListProperty<Message> messageList;
-
+    public boolean isGroup;
     private WebEngine webEngine1;
     private WebEngine webEngine2;
     private Document document;
@@ -63,30 +70,34 @@ public class ChatViewController implements Initializable {
     private SnuggleEngine engine = new SnuggleEngine();
     private SnuggleSession session = engine.createSession();
     private SnuggleInput input;
-    private String chatTo;
-    public ChatViewController(String chatTo, ListProperty<Message> messageList){
-        this.chatTo = chatTo;
+    private int chatTo_id;
+
+    public ChatViewController(int chatTo_id, ListProperty<Message> messageList) {
+        this.chatTo_id = chatTo_id;
         this.messageList = messageList;
     }
-    @FXML private void sendMessage() throws Exception {
+
+    @FXML
+    private void sendMessage() throws Exception {
         String content = typeArea.getText();
         typeArea.setText("");
-        if(content.equals("")) {
+        if (content.equals("")) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText("warning: can not send an empty message!");
             alert.show();
             return;
         }
-        synchronized (dialogView){
+        synchronized (dialogView) {
             Date now = new Date();
             byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
-            Message message = new Message(chatTo, User.getInstance().getName(), contentBytes, now);
+            Message message = new Message(chatTo_id, User.getInstance().getID(), contentBytes, now, isGroup);
             User.getInstance().sendMessage(message);
         }
     }
 
-    @FXML private void imageSelect() throws Exception {
-        File file = MFileChooser.showFileChooser("image", "jpg", "png", "jpeg");
+    @FXML
+    private void imageSelect() throws Exception {
+        File file = MFileChooser.showFileChooser("image", "jpg", "png", "jpeg", "bmp");
         if (file == null) return;
         String ctype = Files.probeContentType(Paths.get(file.getPath()));
         FileImageInputStream fiis = new FileImageInputStream(file);
@@ -94,18 +105,20 @@ public class ChatViewController implements Initializable {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buf = new byte[1024];
         int len;
-        while ((len = fiis.read(buf)) != -1){
+        while ((len = fiis.read(buf)) != -1) {
             baos.write(buf, 0, len);
         }
         content = baos.toByteArray();
         Date date = new Date();
-        Message message = new Message(chatTo, User.getInstance().getName(), ctype, content, date);
+        Message message = new Message(chatTo_id, User.getInstance().getID(), ctype, content, date, isGroup);
         //在html中连接文件时只能从当前目录出发,绝对路径和project下路径都没有效果
         User.getInstance().sendMessage(message);
         baos.close();
         fiis.close();
     }
-    @FXML private void audioSelect() throws Exception {
+
+    @FXML
+    private void audioSelect() throws Exception {
         File file = MFileChooser.showFileChooser("audio", "mp3", "mpeg", "wma", "aac");
         if (file == null) return;
         String ctype = Files.probeContentType(Paths.get(file.getPath()));
@@ -114,12 +127,12 @@ public class ChatViewController implements Initializable {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buf = new byte[1024];
         int len;
-        while ((len = fiis.read(buf)) != -1){
+        while ((len = fiis.read(buf)) != -1) {
             baos.write(buf, 0, len);
         }
         content = baos.toByteArray();
         Date date = new Date();
-        Message message = new Message(chatTo, User.getInstance().getName(), ctype, content, date);
+        Message message = new Message(chatTo_id, User.getInstance().getID(), ctype, content, date, isGroup);
         //在html中连接文件时只能从当前目录出发,绝对路径和project下路径都没有效果
         User.getInstance().sendMessage(message);
         baos.close();
@@ -132,12 +145,11 @@ public class ChatViewController implements Initializable {
         //隐藏TextArea的滚动条
         webEngine1 = dialogView.getEngine();
         webEngine1.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0");
-        webEngine1.getLoadWorker().stateProperty().addListener((obs, ov, nv)->{
-            System.out.println(nv + chatTo);
-            if (nv == Worker.State.SUCCEEDED){
+        webEngine1.getLoadWorker().stateProperty().addListener((obs, ov, nv) -> {
+            if (nv == Worker.State.SUCCEEDED) {
                 document = webEngine1.getDocument();
                 body = document.getElementsByTagName("body").item(0);
-                for (Message message: messageList) {
+                for (Message message : messageList) {
                     showMessage(message);
                 }
             }
@@ -162,10 +174,10 @@ public class ChatViewController implements Initializable {
         });
         typeArea.setFont(EMOJI_FONT);
 
-        for (int i=0x1F600; i<0x1F644; i++){
+        for (int i = 0x1F600; i < 0x1F644; i++) {
             Label label = new Label(Character.toString(i));
             label.setFont(EMOJI_FONT);
-            label.setOnMouseClicked((e)->{
+            label.setOnMouseClicked((e) -> {
                 typeArea.setText(typeArea.getText() + label.getText());
             });
             emojiView.getChildren().add(label);
@@ -175,20 +187,18 @@ public class ChatViewController implements Initializable {
         ToggleGroup group = new ToggleGroup();
         emojiControl.setToggleGroup(group);
         fmlControl.setToggleGroup(group);
-        group.selectedToggleProperty().addListener((obs, ov, nv)->{
+        group.selectedToggleProperty().addListener((obs, ov, nv) -> {
             if (nv == null) {
                 emojiView.setVisible(false);
                 emojiView.setManaged(false);
                 show.setVisible(false);
                 show.setManaged(false);
-            }
-            else if(nv == emojiControl) {
+            } else if (nv == emojiControl) {
                 show.setVisible(false);
                 show.setManaged(false);
                 emojiView.setVisible(true);
                 emojiView.setManaged(true);
-            }
-            else if (nv == fmlControl){
+            } else if (nv == fmlControl) {
                 emojiView.setVisible(false);
                 emojiView.setManaged(false);
                 show.setVisible(true);
@@ -197,17 +207,20 @@ public class ChatViewController implements Initializable {
         });
 
     }
-    public void synchroniseMessages(ListProperty<Message> messageList){
+
+    public void synchroniseMessages(ListProperty<Message> messageList) {
         messageList.addListener((obs, ov, nv) -> {
             Message newMessage = nv.get(nv.size() - 1);
 
             showMessage(newMessage);
         });
     }
-    public void scrollToBottom(){
+
+    public void scrollToBottom() {
         webEngine1.executeScript("window.scrollTo(0, document.body.scrollHeight);");
         //第一次打开的时候仍然不会执行
     }
+
     private String translateOne(String s) throws IOException {
         input = new SnuggleInput(s);
         session.parseInput(input);
@@ -217,6 +230,7 @@ public class ChatViewController implements Initializable {
         session.reset();
         return out;
     }
+
     public void translate(String s, Element element) throws IOException {
         input = new SnuggleInput(s);
         session.parseInput(input);
@@ -225,12 +239,13 @@ public class ChatViewController implements Initializable {
         input = null;
         session.reset();
     }
+
     private void translateAll(String text, Element element) throws IOException {
         Pattern p = Pattern.compile("\\$\\$.*?\\$\\$");
         Matcher m = p.matcher(text);
         int lt = 0, rt = 0;
         Element appendElement;
-        while (m.find()){
+        while (m.find()) {
             rt = m.start();
             appendElement = document.createElement("a");
             appendElement.setTextContent(text.substring(lt, rt));
@@ -242,13 +257,14 @@ public class ChatViewController implements Initializable {
         appendElement.setTextContent(text.substring(lt));
         element.appendChild(appendElement);
     }
+
     private String translate() throws IOException {
         String text = typeArea.getText();
         Pattern p = Pattern.compile("\\$\\$.*?\\$\\$");
         Matcher m = p.matcher(text);
         String result = "";
         int lt = 0, rt = 0;
-        while (m.find()){
+        while (m.find()) {
             rt = m.start();
             result += text.substring(lt, rt);
             lt = m.end();
@@ -257,13 +273,15 @@ public class ChatViewController implements Initializable {
         result += text.substring(lt);
         return result;
     }
-    public void showMessage(Message message){
-        Platform.runLater(()-> {
+
+    public void showMessage(Message message) {
+        Platform.runLater(() -> {
             //不加这玩意的话，程序不会报错，但是debug时却发现Element div显示的是java.lang.illegalStateError，发消息时还没事
             //接受的消息没有成功被指定的css渲染？？？？？？加了这玩意后时灵时不灵
             Element div = document.createElement("div");
-            div.setAttribute("class", (message.sender.equals(chatTo)) ? "lt_div" : "rt_div");
-            div.setAttribute("align", (message.sender.equals(chatTo)) ? "LEFT" : "RIGHT");
+            int user_id = User.getInstance().getID();
+            div.setAttribute("class", (message.sender == user_id) ? "rt_div" : "lt_div");
+            div.setAttribute("align", (message.sender == user_id) ? "RIGHT" : "LEFT");
             Element pHead = document.createElement("p");
             pHead.setTextContent(message.getHead());
             div.appendChild(pHead);

@@ -18,16 +18,17 @@ import java.io.IOException;
 
 public class ChatView extends Stage {
     private ChatViewController controller;
-    public ChatView(String name, ListProperty<Message> messageList) throws IOException {
+    public ChatView(int id, ListProperty<Message> messageList, boolean isGroup) throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        controller = new ChatViewController(name, messageList);
+        controller = new ChatViewController(id, messageList);
+        controller.isGroup = isGroup;
         loader.setController(controller);
         loader.setLocation(this.getClass().getResource(Resource.ChatViewResource));
         setTitle("chatting chamber");
 
         GridPane root = loader.load();
 
-        ((Label)((HBox)root.getChildren().get(0)).getChildren().get(0)).setText(name);
+        ((Label)((HBox)root.getChildren().get(0)).getChildren().get(0)).setText("" + id);
 
         Scene scene = new Scene(root);
         this.setScene(scene);

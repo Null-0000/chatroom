@@ -14,6 +14,7 @@ import java.io.IOException;
 public class AddFriendViewController {
     @FXML private GridPane root;
     @FXML private TextField friendNameField;
+    @FXML private TextField groupNameField;
 
     public void SearchButtonAction(ActionEvent actionEvent) {
         String friendName;
@@ -26,7 +27,7 @@ public class AddFriendViewController {
             ShowDialog.showWarning("添加的好友不能为自己");
             return;
         }
-        if(User.getInstance().getFriendNames().contains(friendName)){
+        if(User.getInstance().getFriendIDs().contains(friendName)){
             ShowDialog.showMessage("你已添加" + friendName + "为好友");
             return;
         }
@@ -45,6 +46,35 @@ public class AddFriendViewController {
         } catch (IOException e) {
             ShowDialog.showAlert(e.getMessage());
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML public void searchGroupButtonAction(ActionEvent actionEvent) {
+        String groupName;
+        groupName = groupNameField.getText();
+        if(groupName == null){
+            ShowDialog.showWarning("请输入群信息");
+            return;
+        }
+
+        if(User.getInstance().getGroups().containsKey(groupName)){
+            ShowDialog.showMessage("你已添加群" + groupName );
+            return;
+        }
+        try {
+            if(ShowDialog.showConfirm("确认进群", groupName)){
+                if(Connector.getInstance().enterGroup(groupName)){
+//                    User.getInstance().addFriend(friendName);
+                    ShowDialog.showMessage("成功进入群");
+                } else {
+                    ShowDialog.showMessage("未找到该群，请确认群信息");
+                }
+            } else {
+                return;
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }

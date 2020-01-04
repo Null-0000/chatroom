@@ -16,6 +16,7 @@ import javafx.util.Duration;
 
 
 public class UserCard extends BorderPane {
+    private int ID;
     private String name;
     private String sig;
     private String imgUrl;
@@ -24,7 +25,8 @@ public class UserCard extends BorderPane {
     private Circle circle;
     private FadeTransition fadeTransition;
     //private Dialogue dialogue;
-    public UserCard(String name, String sig, String imgUrl){
+    public UserCard(int ID, String name, String sig, String imgUrl){
+        this.ID = ID;
         this.name = name;
         this.sig = sig;
         this.imgUrl = imgUrl;
@@ -74,4 +76,11 @@ public class UserCard extends BorderPane {
         fadeTransition.stop();
     }
 
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+
+    public int getID() {
+        return this.ID;
+    }
 }

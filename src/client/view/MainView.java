@@ -28,6 +28,7 @@ import java.util.ArrayList;
 
 public class MainView extends Stage {
     private static ListView<UserCard> friendListView;
+    private static ListView<UserCard> groupListView;
 
     public MainView(User user) throws IOException {
 
@@ -52,6 +53,7 @@ public class MainView extends Stage {
 
         ((ImageView)userInfoGridPane.getChildren().get(0)).setImage(new Image(new FileInputStream(userIcon)));
         friendListView = (ListView<UserCard>) ((Tab)tabs.get(0)).getContent().lookup("#friendListView");
+        groupListView = (ListView<UserCard>) ((Tab)tabs.get(1)).getContent().lookup("#groupListView");
 
         setScene(new Scene(root));
 

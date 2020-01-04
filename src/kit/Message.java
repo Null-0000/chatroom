@@ -5,21 +5,23 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Message implements Comparable<Message>, Serializable {
-    public String receiver;
-    public String sender;
+    public boolean isMass;
+    public int receiver;
+    public int sender;
     public String ctype;
     public byte[] content;
     public Date date;
     private String url;
-    public Message(String receiver, String sender, byte[] content, Date date){
+    public Message(int receiver, int sender, byte[] content, Date date, boolean isMass) {
         this.receiver = receiver;
         this.sender = sender;
         this.ctype = "text";
         this.content = content;
         this.date = date;
+        this.isMass = isMass;
     }
-    public Message(String receiver, String sender, String ctype, byte[] content, Date date){
-        this(receiver, sender, content, date);
+    public Message(int receiver, int sender, String ctype, byte[] content, Date date, boolean isMass){
+        this(receiver, sender, content, date, isMass);
         this.ctype = ctype;
     }
     public Date getDate(){
@@ -37,9 +39,6 @@ public class Message implements Comparable<Message>, Serializable {
     @Override
     public int compareTo(Message o) {
         return date.compareTo(o.date);
-    }
-    public int compareTo(Date date){
-        return this.date.compareTo(date);
     }
 
     public String getHead(){

@@ -14,7 +14,7 @@ class SocketServer {
     private final int PORT = 5432;
     private ServerSocket server;
     private UserDataBaseManager manager;
-    private Map<String, Socket> socketMap;
+    private Map<Integer, Socket> socketMap;
     public SocketServer() throws IOException, SQLException, ClassNotFoundException {
         server = new ServerSocket(PORT);
         manager = new UserDataBaseManager();
