@@ -23,6 +23,4 @@ public class UserInfo extends Info implements Serializable {
     public void setSig(String sig) {
         this.sig = sig;
     }
-
-
 }

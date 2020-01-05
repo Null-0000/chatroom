@@ -72,8 +72,12 @@ public class ServerThread extends Thread {
         } else if (inMessage.isOperate(Data.LOAD_MESSAGE)) {
             updateLog(inMessage.operatorInfo.getName(), "-------正在查找用户的对话信息-------");
             output = loadDialogues(inMessage);//ArrayList<Message>
-            System.out.println("user's operatorInfo.getName() " + inMessage.operatorInfo.getName());
+//            System.out.println("user's operatorInfo.getName() " + inMessage.operatorInfo.getName());
             updateLog(inMessage.operatorInfo.getName(), "-------查找用户的对话信息完毕-------\n");
+        } else if (inMessage.isOperate(Data.MODIFY)) {
+            updateLog(inMessage.operatorInfo.getName(), "---------正在修改用户信息-----------");
+            modify(inMessage);
+            updateLog(inMessage.operatorInfo.getName(), "---------修改完毕-----------");
         }
         //
         else if (inMessage.isOperate(Data.CREATE_GROUP)) {
@@ -93,6 +97,11 @@ public class ServerThread extends Thread {
         return output;
     }
 
+    private Data modify(Data data) throws Exception {
+        manager.modify(data, data.ID);
+
+        return new Data(-1);
+    }
     private Data loadDialogues(Data inMessage) throws Exception {
         return manager.loadDialogues(inMessage.operatorInfo.getID());
     }
@@ -124,6 +133,7 @@ public class ServerThread extends Thread {
         if (msg.isMass) {
             updateLog(currentUser, "用户发送了一条群消息 " + msg);
             ArrayList<Integer> targetIDs = (ArrayList<Integer>) manager.getMembers(msg.receiver.getID(), true);
+            updateLog(currentUser, "群消息的接收者为：" + targetIDs);
             for (int id : targetIDs) {
                 if (id == currentID) continue;
                 Socket targetSocket = socketMap.get(id);
@@ -131,7 +141,7 @@ public class ServerThread extends Thread {
             }
         } else {
             updateLog(currentUser, "用户发送了一条消息 " + msg);
-            sendMsg(socketMap.get(msg.receiver), msg);
+            sendMsg(socketMap.get(msg.receiver.getID()), msg);
         }
         updateLog(currentUser, "发送完毕");
     }
@@ -140,12 +150,14 @@ public class ServerThread extends Thread {
         if (socket == null) {
             manager.storeMessage(msg);
         } else {
-            IODealer.send(socket, new Data(msg), false);
+            Data data = new Data(msg);
+            data.setOperateType("MESSAGE");
+            IODealer.send(socket, data, false);
         }
     }
 
     private Data makeFriend(Data message) throws SQLException, IOException {
-        Data data = manager.makeFriend(message.name, message.operatorInfo.getName());
+        Data data = manager.makeFriend(message.name, message.operatorInfo.getID());
         Socket socket = socketMap.get(data.name);
         if (data.ID != -1 && socket != null) {
             Data data1 = new Data(message.operatorInfo);
@@ -189,24 +201,22 @@ public class ServerThread extends Thread {
         return new Data(manager.createGroup(info));
     }
 
-    private Data joinGroup(Data info) {
+    private Data joinGroup(Data info) throws Exception {
         /*
         info 数据包需要包括 name：群名 或 ID：群ID， operator， operatorID
          */
         Data data = manager.joinGroup(info);
         if (data.ID != -1) {
-            info.setOperateType(Data.JOIN_GROUP);
-            IODealer.send(socketMap.get(info.operatorInfo.getID()), info, false);
+            data.setOperateType(Data.JOIN_GROUP);
+            ArrayList<Integer> members = (ArrayList<Integer>) manager.getMembers(data.ID, true);
+            for (int id : members) {
+                Socket socket = socketMap.get(id);
+                if (socket != null) {
+                    IODealer.send(socket, data, false);
+                }
+            }
         }
         return data;
-/*
-        if(manager.joinGroup(info)){
-            return new Data(1);
-        } else {
-            return new Data(-1);
-        }
-
- */
     }
 
     private Data getMembers(Data data) {

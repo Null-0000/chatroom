@@ -38,6 +38,7 @@ public class SetViewController implements Initializable {
         UserInfo userInfo = User.getInstance().getUserInfo();
         try {
             icon.setImage(new Image(new FileInputStream(new File(userInfo.getIconPath().substring(5)))));
+            imageFile = new File(userInfo.getIconPath().substring(5));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -64,7 +65,9 @@ public class SetViewController implements Initializable {
         User.getInstance().getManager().storeMyIcon();
 
         Data data = new Data(info);
-        Connector.getInstance().modifyInfo(data);
+        data.setOperatorInfo();
+        data.setOperateType(Data.MODIFY);
 
+        Connector.getInstance().modifyInfo(data);
     }
 }

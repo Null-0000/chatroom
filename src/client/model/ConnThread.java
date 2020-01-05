@@ -33,6 +33,7 @@ public class ConnThread extends Thread {
 
         while (true) {
             Data receive = IODealer.receive(mySocket, false);
+            System.out.println("获得一条信息");
             if(receive.isOperate(Data.EXIT)) {
                 try {
                     mySocket.close();
@@ -59,17 +60,18 @@ public class ConnThread extends Thread {
                 });
             }
             else if (receive.isOperate(Data.JOIN_GROUP)) {
-                String groupName = receive.name;//从Data中取得组名
+                int id = receive.ID;//从Data中取得组名
                 UserInfo userInfo = receive.operatorInfo;//从Data中获取新成员的信息
-                groups.get(groupName).getGroupInfo().getMembers().add(userInfo);
+                groups.get(id).getGroupInfo().getMembers().add(userInfo);
             }
 
             else {
                 Message message = receive.message;
+                System.out.println("收到一条消息");
                 if (message.isMass)//判断消息是否是群发的
-                    groups.get(message.receiver).getGroupDialog().updateMessage(message);
+                    groups.get(message.receiver.getID()).getGroupDialog().updateMessage(message);
                 else
-                    friends.get(message.sender).getFriendDialog().updateMessage(message);
+                    friends.get(message.sender.getID()).getFriendDialog().updateMessage(message);
             }
 
         }

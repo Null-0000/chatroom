@@ -15,8 +15,8 @@ import java.util.Scanner;
 public class UserDataBaseManager {
     private final String driver = "com.mysql.cj.jdbc.Driver";
     private final String url = "jdbc:mysql://localhost:3306/chat_room?serverTimezone=Asia/Shanghai";
-    private final String user = "henry";
-    private final String pass = "mxylfbcz4321";
+    private final String user = "root";
+    private final String pass = "123456";
     private Connection conn;
 
     public UserDataBaseManager() throws ClassNotFoundException, SQLException {
@@ -94,7 +94,7 @@ public class UserDataBaseManager {
                 rs3 = stmt2.executeQuery("select * from users_info where ID = " + friend_id);
                 if (rs3.next()) {
                     Blob blob = rs3.getBlob(5);
-                    friendList.add(new UserInfo(friend_id, rs3.getString(1), rs3.getString(3),
+                    friendList.add(new UserInfo(friend_id, rs3.getString(2), rs3.getString(3),
                             blob.getBinaryStream().readAllBytes()));
                 }
             }
@@ -145,9 +145,9 @@ public class UserDataBaseManager {
         }
 
         stmt.executeUpdate("INSERT INTO friend_map(id,friend_id) " +
-                "VALUES(\'" + ID + "\',\'" + friend_id + "\')");
+                "VALUES(" + ID + "," + friend_id + ")");
         stmt.executeUpdate("INSERT INTO friend_map(id,friend_id) " +
-                "VALUES(\'" + friend_id + "\',\'" + ID + "\')");
+                "VALUES(" + friend_id + "," + ID + ")");
 
         stmt.close();
         return new Data(userInfo);
@@ -423,6 +423,23 @@ public class UserDataBaseManager {
         else return members;
     }
 
+    public void modify(Data data, int id) throws SQLException {
+        String name = data.name;
+        String sig = data.signature;
+        byte[] icon = data.iconBytes;
+
+        PreparedStatement pstmt = conn.prepareStatement("update users_info set name = ? where ID=" + id);
+        pstmt.setString(1, name);
+        pstmt.executeUpdate();
+
+        pstmt = conn.prepareStatement("update users_info set signature = ? where ID=" + id);
+        pstmt.setString(1, sig);
+        pstmt.executeUpdate();
+
+        pstmt = conn.prepareStatement("update users_info set icon = ? where ID=" + id);
+        pstmt.setBlob(1, new ByteArrayInputStream(icon));
+        pstmt.executeUpdate();
+    }
 
 
     /**

@@ -122,7 +122,7 @@ public class Connector {
 
     public void modifyInfo(Data data) throws IOException {
         Socket socket = new Socket(HOST, PORT);
-        IODealer.send(socket, data, true);
+        IODealer.send(socket, data, false);
     }
 
     public Socket connectToRemote() throws Exception {
