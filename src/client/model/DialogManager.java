@@ -52,7 +52,7 @@ public class DialogManager {
             FriendDialog friendDialog = null;
             if (!friendDialogFile.exists()) {
                 friendDialogFile.createNewFile();
-                friendDialog = new FriendDialog(info.getID(), userID);
+                friendDialog = new FriendDialog(info, userID);
             } else {
                 FileInputStream is = new FileInputStream(friendDialogFile);
                 ObjectInputStream ois = new ObjectInputStream(is);
@@ -89,7 +89,7 @@ public class DialogManager {
             if (!groupDialogFile.exists()) {
                 groupDialogFile.createNewFile();
                 groupDialog = new GroupDialog(User.getInstance().getID(),
-                        info.getID(), info.getMembers());
+                        info, info.getMembers());
             } else {
                 FileInputStream is = new FileInputStream(groupDialogFile);
                 ObjectInputStream ois = new ObjectInputStream(is);
@@ -129,7 +129,7 @@ public class DialogManager {
     public void storeMyIcon() {
         File userIcon = new File("out/production/chatroom/client/data/M" + userID + "/icon.png");
         storeIcon(userIcon, User.getInstance().getMyIconBytes());
-        User.getInstance().getUserInfo().setIconPath("file:" + mDirPath + "icon.jpg");
+        User.getInstance().getUserInfo().setIconPath("file:" + mDirPath + "icon.png");
     }
 
     public void storeIcon(Info info) {

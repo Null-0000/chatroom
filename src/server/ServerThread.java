@@ -44,7 +44,7 @@ public class ServerThread extends Thread {
                 sends = new Data();
                 //sends.operator = Data.EXIT;
                 sends.setOperateType(Data.EXIT);
-                IODealer.send(socket, sends, true);
+                IODealer.send(socket, sends, false);
             }
 
         } catch (Exception e) {
@@ -93,7 +93,7 @@ public class ServerThread extends Thread {
         return output;
     }
 
-    private Data loadDialogues(Data inMessage) throws SQLException {
+    private Data loadDialogues(Data inMessage) throws Exception {
         return manager.loadDialogues(inMessage.operatorInfo.getID());
     }
 
@@ -123,7 +123,7 @@ public class ServerThread extends Thread {
     private void sendMessage(int currentID, String currentUser, Message msg) throws Exception {
         if (msg.isMass) {
             updateLog(currentUser, "用户发送了一条群消息 " + msg);
-            ArrayList<Integer> targetIDs = (ArrayList<Integer>) manager.getMembers(msg.receiver, true);
+            ArrayList<Integer> targetIDs = (ArrayList<Integer>) manager.getMembers(msg.receiver.getID(), true);
             for (int id : targetIDs) {
                 if (id == currentID) continue;
                 Socket targetSocket = socketMap.get(id);

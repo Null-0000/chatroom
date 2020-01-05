@@ -1,12 +1,10 @@
 package kit;
 
-import client.model.UserCard;
-
 import java.io.Serializable;
 import java.util.List;
 
 public class GroupInfo extends Info implements Serializable {
-    private UserCard groupCard;
+    private transient UserCard groupCard;
     private List<UserInfo> members;
     private int groupOwner;
     public GroupInfo(int groupID, String groupName, byte[] groupIcon, List<UserInfo> members, int groupOwner){

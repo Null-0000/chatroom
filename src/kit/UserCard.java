@@ -1,4 +1,4 @@
-package client.model;
+package kit;
 
 
 import javafx.animation.Animation;

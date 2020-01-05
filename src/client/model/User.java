@@ -62,9 +62,9 @@ public class User {
                 Connector.getInstance().loadMessage(Data.LOAD_MESSAGE);
         for (Message message : messages) {
             if (message.isMass)
-                groups.get(message.receiver).getGroupDialog().updateMessage(message);
+                groups.get(message.receiver.getID()).getGroupDialog().updateMessage(message);
             else
-                friends.get(message.sender).getFriendDialog().updateMessage(message);
+                friends.get(message.sender.getID()).getFriendDialog().updateMessage(message);
         }
 
     }
@@ -118,14 +118,14 @@ public class User {
     public SimpleMapProperty<Integer, Group> getGroups() {return groups;}
 
     public void sendMessage(Message message) throws Exception {
-        int receiver_id = message.receiver;
+        Info receiver = message.receiver;
         Data data = new Data(message);
         data.setOperateType("sendMessage");
         if (message.isMass) {
-            groups.get(receiver_id).getGroupDialog().updateMessage(message);
+            groups.get(receiver.getID()).getGroupDialog().updateMessage(message);
         }
         else {
-            friends.get(receiver_id).getFriendDialog().updateMessage(message);
+            friends.get(receiver.getID()).getFriendDialog().updateMessage(message);
         }
         IODealer.send(mySocket, data, false);
     }

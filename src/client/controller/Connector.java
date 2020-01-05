@@ -62,7 +62,7 @@ public class Connector {
         UserInfo userInfo1 = new UserInfo(receive.ID, receive.name, receive.signature, receive.iconBytes);
         Friend friend = new Friend(userInfo1);
         User.getInstance().addFriend(friend);
-        FriendDialog dialog = new FriendDialog(friend.getUserInfo().getID()
+        FriendDialog dialog = new FriendDialog(friend.getUserInfo()
                 , User.getInstance().getID());
         friend.init(dialog);
         dialog.synchronizeMessage();
@@ -114,10 +114,15 @@ public class Connector {
     private void setGroup(GroupInfo groupInfo) throws IOException {
         Group group = new Group(groupInfo);
         GroupDialog dialog = new GroupDialog(User.getInstance().getID(),
-                groupInfo.getID(), groupInfo.getMembers());
+                groupInfo, groupInfo.getMembers());
         group.init(dialog);
         dialog.synchronizeMessage();
         User.getInstance().addGroup(group);
+    }
+
+    public void modifyInfo(Data data) throws IOException {
+        Socket socket = new Socket(HOST, PORT);
+        IODealer.send(socket, data, true);
     }
 
     public Socket connectToRemote() throws Exception {

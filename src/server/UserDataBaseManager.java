@@ -1,10 +1,7 @@
 package server;
 
 import javafx.application.Platform;
-import kit.Data;
-import kit.GroupInfo;
-import kit.Message;
-import kit.UserInfo;
+import kit.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -89,28 +86,30 @@ public class UserDataBaseManager {
         ArrayList<GroupInfo> groupList = new ArrayList<>();
 
         try {
-            rs2 = stmt.executeQuery("select friend_name from friend_map where name=\'" + name + "\'");
+            //find friends
+            rs2 = stmt.executeQuery("select friend_id from friend_map where id=" + id);
             while (rs2.next()) {
-                String friendName = rs2.getString(1);
+                int friend_id = rs2.getInt(1);
                 Statement stmt2 = conn.createStatement();
-                rs3 = stmt2.executeQuery("select * from users_info where name=\'" + friendName + "\'");
+                rs3 = stmt2.executeQuery("select * from users_info where ID = " + friend_id);
                 if (rs3.next()) {
                     Blob blob = rs3.getBlob(5);
-                    friendList.add(new UserInfo(rs3.getInt(1), friendName, rs3.getString(3),
+                    friendList.add(new UserInfo(friend_id, rs3.getString(1), rs3.getString(3),
                             blob.getBinaryStream().readAllBytes()));
                 }
             }
 
-            rs2 = stmt.executeQuery("select group_id from users_group where name=\'" + name + "\'");
+            //find group
+            rs2 = stmt.executeQuery("select group_id from users_group where id=" + id);
             while (rs2.next()) {
                 int groupID = rs2.getInt(1);
                 Statement stmt2 = conn.createStatement();
                 rs3 = stmt2.executeQuery("select * from group_info where group_id=" + groupID);
-                if(rs3.next()) {
+                if (rs3.next()) {
                     Blob blob = rs3.getBlob(6);
                     ArrayList<UserInfo> list = (ArrayList<UserInfo>) getMembers(groupID, false);
                     groupList.add(new GroupInfo(groupID, rs3.getString(2),
-                            blob.getBinaryStream().readAllBytes(), list, 0));
+                            blob.getBinaryStream().readAllBytes(), list, id));
                 }
             }
 
@@ -129,33 +128,26 @@ public class UserDataBaseManager {
     }
 
 
-    public Data makeFriend(String info, String byName) throws SQLException, IOException {
+    public Data makeFriend(String name, int ID) throws SQLException, IOException {
         Statement stmt = conn.createStatement();
-        String name;
+
+        int friend_id;
         UserInfo userInfo;
-        ResultSet rs = stmt.executeQuery("SELECT * FROM users_info WHERE name=\'" + info + "\'");
+        ResultSet rs = stmt.executeQuery("SELECT * FROM users_info WHERE name= \'" + name + "\'");
+
         if (rs.next()) {
-            name = rs.getString(2);
+            friend_id = rs.getInt(1);
             Blob blob = rs.getBlob(5);
-            userInfo = new UserInfo(rs.getInt(1), name,
+            userInfo = new UserInfo(friend_id, name,
                     rs.getString(3), blob.getBinaryStream().readAllBytes());
         } else {
-            rs = stmt.executeQuery("SELECT * FROM users_info WHERE ID=" + info);
-            if (rs.next()) {
-                name = rs.getString(2);
-                Blob blob = rs.getBlob(5);
-                userInfo = new UserInfo(rs.getInt(1), name,
-                        rs.getString(3), blob.getBinaryStream().readAllBytes());
-            } else {
-                stmt.close();
-                return new Data(-1);
-            }
+            return new Data(-1);
         }
 
-        stmt.executeUpdate("INSERT INTO friend_map(name,friend_name) " +
-                "VALUES(\'" + name + "\',\'" + byName + "\')");
-        stmt.executeUpdate("INSERT INTO friend_map(name,friend_name) " +
-                "VALUES(\'" + byName + "\',\'" + name + "\')");
+        stmt.executeUpdate("INSERT INTO friend_map(id,friend_id) " +
+                "VALUES(\'" + ID + "\',\'" + friend_id + "\')");
+        stmt.executeUpdate("INSERT INTO friend_map(id,friend_id) " +
+                "VALUES(\'" + friend_id + "\',\'" + ID + "\')");
 
         stmt.close();
         return new Data(userInfo);
@@ -164,21 +156,20 @@ public class UserDataBaseManager {
     public void storeMessage(Message message) throws Exception {
         if (!message.isMass) storeMsg(message, -1);
         else {
-            ArrayList<Integer> list = (ArrayList<Integer>) getMembers(message.receiver, true);
+            ArrayList<Info> list = (ArrayList<Info>) getMembers(message.receiver.getID(), false);
 
-            for (int recID : list) {
+            for (Info recID : list) {
                 Message msg = new Message(recID, message.sender, message.ctype, message.content, message.date, true);
-                storeMsg(msg, message.receiver);
+                storeMsg(msg, message.receiver.getID());
             }
-
         }
     }
 
     private void storeMsg(Message message, int fromGroup) throws SQLException {
         PreparedStatement pstmt = conn.prepareStatement(
                 "INSERT INTO messages(receiver, sender, ctype, content, datetime, fromgrp) VALUES(?, ?, ?, ?, ?, ?)");
-        pstmt.setInt(1, message.receiver);
-        pstmt.setInt(2, message.sender);
+        pstmt.setInt(1, message.receiver.getID());
+        pstmt.setInt(2, message.sender.getID());
         pstmt.setString(3, message.ctype);
         pstmt.setBlob(4, new ByteArrayInputStream(message.content));
         pstmt.setTimestamp(5, new Timestamp(message.date.getTime()));
@@ -186,7 +177,7 @@ public class UserDataBaseManager {
         pstmt.execute();
     }
 
-    public Data loadDialogues(int ID) throws SQLException {
+    public Data loadDialogues(int ID) throws Exception {
         PreparedStatement pstmt = conn.prepareStatement("SELECT  * FROM messages WHERE receiver=?");
         pstmt.setInt(1, ID);
         ResultSet rs = pstmt.executeQuery();
@@ -206,15 +197,48 @@ public class UserDataBaseManager {
 //            boolean isMass = rs.getBoolean(6);
             int fromGroup = rs.getInt(6);
             Message newMsg;
-            if (fromGroup == -1) newMsg = new Message(ID, sender, ctype, content, date, false);
-            else newMsg = new Message(fromGroup, sender, ctype, content, date, true);
+            if (fromGroup == -1) newMsg = new Message(getInfo(ID, false), getInfo(sender, false), ctype, content, date, false);
+            else newMsg = new Message(getInfo(fromGroup, true), getInfo(sender, false), ctype, content, date, true);
 
             dialogues.add(newMsg);
         }
         Statement stmt = conn.createStatement();
-        stmt.executeUpdate("DELETE FROM messages WHERE receiver=\'" + ID + "\'");
+        stmt.executeUpdate("DELETE FROM messages WHERE receiver=" + ID + "");
         stmt.close();
         return new Data(dialogues);
+    }
+
+    private Info getInfo(int id, boolean isGroup) throws Exception {
+        int ID = id;
+        String name = null;
+        byte[] icon = new byte[0];
+
+        Statement stmt = conn.createStatement();
+        ResultSet resultSet;
+
+        if (!isGroup) {
+            resultSet = stmt.executeQuery("SELECT * FROM group_info WHERE group_id = " + id);
+
+            if(resultSet.next()){
+
+                name = resultSet.getString("group_name");
+                icon = resultSet.getBlob("icon").getBinaryStream().readAllBytes();
+            } else {
+                return null;
+            }
+        } else {
+            resultSet = stmt.executeQuery("SELECT * FROM users_info WHERE ID = " + id);
+
+            if(resultSet.next()){
+                name = resultSet.getString("name");
+                icon = resultSet.getBlob("icon").getBinaryStream().readAllBytes();
+
+            } else {
+                return null;
+            }
+        }
+
+        return new Info(ID, name, icon);
     }
 
     /**
@@ -264,7 +288,7 @@ public class UserDataBaseManager {
             pstmt.executeUpdate();
 
             Statement stmt = conn.createStatement();
-            stmt.executeUpdate("INSERT INTO users_group(name, group_id) " + "VALUES(\'" + data.operatorInfo.getName() + "\',\'" + ID + "\')");
+            stmt.executeUpdate("INSERT INTO users_group(id, group_id) " + "VALUES(" + data.operatorInfo.getID() + "," + ID + ")");
         } catch (Exception e) {
             e.printStackTrace();
             updateLog(data.operatorInfo.getName(), "创建群聊过程中，数据库操作出现错误");
@@ -284,7 +308,8 @@ public class UserDataBaseManager {
         //更新用户的group info
         Data data = new Data();
         try {
-            String name = info.operatorInfo.getName();
+//            String name = info.operatorInfo.getName();
+            int user_id = info.operatorInfo.getID();
             int group_id = -1;
             boolean found = false;
             if (info.name != null) {
@@ -339,8 +364,8 @@ public class UserDataBaseManager {
 
                 Statement stmt = conn.createStatement();
 
-                stmt.executeUpdate("INSERT INTO users_group(name,group_id) " +
-                        "VALUES(\'" + name + "\',\'" + group_id + "\')");
+                stmt.executeUpdate("INSERT INTO users_group(id,group_id) " +
+                        "VALUES(" + user_id + "," + group_id + ")");
 
                 PreparedStatement pstmt = conn.prepareStatement("select * from group_info where group_id=" + group_id);
                 ResultSet rs = pstmt.executeQuery();
@@ -386,7 +411,7 @@ public class UserDataBaseManager {
             memberIDs.add(ID);
             if (isOnlyId) continue;
 
-            rs = stmt.executeQuery("select * from users_info where ID=\'" + ID + "\'");
+            rs = stmt.executeQuery("select * from users_info where ID=" + ID + "");
 
             if (rs.next()) {
                 Blob blob = rs.getBlob(5);
@@ -397,6 +422,8 @@ public class UserDataBaseManager {
         if (isOnlyId) return memberIDs;
         else return members;
     }
+
+
 
     /**
      * @author Furyton

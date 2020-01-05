@@ -4,6 +4,7 @@ import client.view.FriendChatView;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
+import kit.Info;
 import kit.UserInfo;
 
 import java.io.*;
@@ -15,16 +16,15 @@ import java.util.Arrays;
  */
 
 public class FriendDialog extends Dialog implements Serializable {
-    private transient int userB_id;
+    private transient Info userB;
 
-    public FriendDialog(int userB_id, int userAID) throws IOException {
+    public FriendDialog(Info userB, int userAID) throws IOException {
         super(userAID);
-        this.userB_id = userB_id;
+        this.userB = userB;
     }
 
     public void setChatView() throws IOException {
-        UserInfo info = User.getInstance().getFriends().get(userB_id).getUserInfo();
-        chatView = new FriendChatView(info, messageList);
+        chatView = new FriendChatView((UserInfo) userB, messageList);
         //chatView不能被序列化，故每次读取本地文件后需要重新new哟个chatView
     }
 
@@ -35,13 +35,13 @@ public class FriendDialog extends Dialog implements Serializable {
         oos.writeObject(messageList.toArray());
         oos.writeInt(userAID);
         oos.writeBoolean(hasNewMessage.get());
-        oos.writeInt(userB_id);
+        oos.writeObject(userB);
     }
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ArrayList list = new ArrayList(Arrays.asList((Object[]) ois.readObject()));
         messageList = new SimpleListProperty<>(FXCollections.observableArrayList(list));
         userAID = ois.readInt();
         hasNewMessage = new SimpleBooleanProperty(ois.readBoolean());
-        userB_id = ois.readInt();
+        userB = (UserInfo) ois.readObject();
     }
 }

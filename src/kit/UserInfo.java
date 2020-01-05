@@ -1,12 +1,10 @@
 package kit;
 
-import client.model.UserCard;
-
 import java.io.Serializable;
 
 public class UserInfo extends Info implements Serializable {
     private String sig;
-    private UserCard userCard;
+    private transient UserCard userCard;
     public UserInfo(int ID, String name, String sig, byte[] icon){
         super(ID, name, icon);
         this.sig = sig;

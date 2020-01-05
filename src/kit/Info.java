@@ -1,7 +1,5 @@
 package kit;
 
-import client.model.UserCard;
-
 import java.io.Serializable;
 
 public class Info implements Serializable {

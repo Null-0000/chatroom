@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import kit.Data;
 import kit.UserInfo;
 
 import java.io.*;
@@ -61,6 +62,9 @@ public class SetViewController implements Initializable {
                 userName.getText(), userSig.getText(), iconByte);
         User.getInstance().setUserInfo(info);
         User.getInstance().getManager().storeMyIcon();
+
+        Data data = new Data(info);
+        Connector.getInstance().modifyInfo(data);
 
     }
 }

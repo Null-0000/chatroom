@@ -44,10 +44,10 @@ public abstract class Dialog implements Serializable {
         String userFileName = "M" + User.getInstance().getID();
         String toDirName;
         if (message.isMass)
-            toDirName = "G" + message.receiver;
+            toDirName = "G" + message.receiver.getID();
         else
-            toDirName = "F" + ((message.sender == User.getInstance().getID())?
-                    message.receiver: message.sender);
+            toDirName = "F" + ((message.sender.getID() == User.getInstance().getID())?
+                    message.receiver.getID(): message.sender.getID());
 
         switch (message.ctype.replaceAll("/.*", "")) {
             case "image":

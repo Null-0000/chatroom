@@ -7,12 +7,12 @@
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="client.controller.SetViewController"
-            prefHeight="300.0" prefWidth="450.0">
-    <TabPane>
+            prefHeight="200.0" prefWidth="300.0">
+    <TabPane tabClosingPolicy="UNAVAILABLE">
         <Tab text="个人信息">
             <GridPane>
                 <ImageView fx:id="icon" GridPane.rowIndex="0" GridPane.columnIndex="0"
-                           GridPane.rowSpan="2"></ImageView>
+                           GridPane.rowSpan="3" fitWidth="80" fitHeight="80"></ImageView>
                 <Button fx:id="alterIcon" GridPane.rowIndex="3" GridPane.columnIndex="0"
                         onAction="#selectImage">alter</Button>
 
@@ -26,9 +26,9 @@
                 <Label GridPane.rowIndex="2" GridPane.columnIndex="1">signature</Label>
                 <TextField fx:id="userSig" GridPane.rowIndex="2" GridPane.columnIndex="2"></TextField>
 
-
-                <Button fx:id="submit" GridPane.rowIndex="3" GridPane.columnIndex="2"
-                        onAction="#submitUserInfo">submit</Button>
+                <VBox  GridPane.rowIndex="3" GridPane.columnIndex="2" alignment="BOTTOM_RIGHT">
+                    <Button fx:id="submit" onAction="#submitUserInfo">submit</Button>
+                </VBox>
 
             </GridPane>
         </Tab>
