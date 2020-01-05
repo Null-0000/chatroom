@@ -6,13 +6,13 @@ import java.util.Date;
 
 public class Message implements Comparable<Message>, Serializable {
     public boolean isMass;
-    public int receiver;
-    public int sender;
+    public Info receiver;
+    public Info sender;
     public String ctype;
     public byte[] content;
     public Date date;
     private String url;
-    public Message(int receiver, int sender, byte[] content, Date date, boolean isMass) {
+    public Message(Info receiver, Info sender, byte[] content, Date date, boolean isMass) {
         this.receiver = receiver;
         this.sender = sender;
         this.ctype = "text";
@@ -20,7 +20,7 @@ public class Message implements Comparable<Message>, Serializable {
         this.date = date;
         this.isMass = isMass;
     }
-    public Message(int receiver, int sender, String ctype, byte[] content, Date date, boolean isMass){
+    public Message(Info receiver, Info sender, String ctype, byte[] content, Date date, boolean isMass){
         this(receiver, sender, content, date, isMass);
         this.ctype = ctype;
     }
@@ -33,8 +33,8 @@ public class Message implements Comparable<Message>, Serializable {
     }
     @Override
     public String toString() {
-        return String.format("{receiver:%s,sender:%s,content:%s,date:%s}",receiver,
-                sender,content,date);
+        return String.format("{receiver:%s,sender:%s,content:%s,date:%s}",receiver.name,
+                sender.name,content,date);
     }
     @Override
     public int compareTo(Message o) {
@@ -42,7 +42,7 @@ public class Message implements Comparable<Message>, Serializable {
     }
 
     public String getHead(){
-        return getFormattedDate() + " " + sender + ":\n";
+        return getFormattedDate() + " " + sender.name + ":\n";
     }
     public byte[] getContent(){
         return content;

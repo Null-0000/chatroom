@@ -3,6 +3,7 @@ package client.controller;
 import client.model.MFileChooser;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import kit.Info;
 import kit.Message;
 import client.model.User;
 
@@ -70,10 +71,10 @@ public class ChatViewController implements Initializable {
     private SnuggleEngine engine = new SnuggleEngine();
     private SnuggleSession session = engine.createSession();
     private SnuggleInput input;
-    private int chatToID;
+    private Info chatTo;
 
-    public ChatViewController(int chatToID, ListProperty<Message> messageList) {
-        this.chatToID = chatToID;
+    public ChatViewController(Info chatToID, ListProperty<Message> messageList) {
+        this.chatTo = chatToID;
         this.messageList = messageList;
     }
 
@@ -90,7 +91,7 @@ public class ChatViewController implements Initializable {
         synchronized (dialogView) {
             Date now = new Date();
             byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
-            Message message = new Message(chatToID, User.getInstance().getID(), contentBytes, now, isGroup);
+            Message message = new Message(chatTo, User.getInstance().getUserInfo(), contentBytes, now, isGroup);
             User.getInstance().sendMessage(message);
         }
     }
@@ -110,7 +111,7 @@ public class ChatViewController implements Initializable {
         }
         content = baos.toByteArray();
         Date date = new Date();
-        Message message = new Message(chatToID, User.getInstance().getID(), ctype, content, date, isGroup);
+        Message message = new Message(chatTo, User.getInstance().getUserInfo(), ctype, content, date, isGroup);
         //在html中连接文件时只能从当前目录出发,绝对路径和project下路径都没有效果
         User.getInstance().sendMessage(message);
         baos.close();
@@ -132,7 +133,7 @@ public class ChatViewController implements Initializable {
         }
         content = baos.toByteArray();
         Date date = new Date();
-        Message message = new Message(chatToID, User.getInstance().getID(), ctype, content, date, isGroup);
+        Message message = new Message(chatTo, User.getInstance().getUserInfo(), ctype, content, date, isGroup);
         //在html中连接文件时只能从当前目录出发,绝对路径和project下路径都没有效果
         User.getInstance().sendMessage(message);
         baos.close();
@@ -280,8 +281,8 @@ public class ChatViewController implements Initializable {
             //接受的消息没有成功被指定的css渲染？？？？？？加了这玩意后时灵时不灵
             Element div = document.createElement("div");
             int user_id = User.getInstance().getID();
-            div.setAttribute("class", (message.sender == user_id) ? "rt_div" : "lt_div");
-            div.setAttribute("align", (message.sender == user_id) ? "RIGHT" : "LEFT");
+            div.setAttribute("class", (message.sender.getID() == user_id) ? "rt_div" : "lt_div");
+            div.setAttribute("align", (message.sender.getID() == user_id) ? "RIGHT" : "LEFT");
             Element pHead = document.createElement("p");
             pHead.setTextContent(message.getHead());
             div.appendChild(pHead);

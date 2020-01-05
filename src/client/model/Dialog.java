@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import kit.Info;
 import kit.Message;
 
 import javax.imageio.stream.FileImageOutputStream;
@@ -43,17 +44,17 @@ public abstract class Dialog implements Serializable {
             //chatView不能被序列化，故每次读取本地文件后需要重新new哟个chatView
         }*/
     public void updateMessage(Message message) {
-        int user_id = User.getInstance().getID();
-        int to_id;
+        Info user_id = User.getInstance().getUserInfo();
+        Info to;
         if (message.isMass)
-            to_id = message.receiver;
+            to = message.receiver;
         else
-            to_id = (message.sender == user_id)? message.receiver: message.sender;
+            to = (message.sender == user_id)? message.receiver: message.sender;
 
         switch (message.ctype.replaceAll("/.*", "")) {
             case "image":
                 File imgDir = new File("out/production/chatroom/client/data/" + User.getInstance().getName() +
-                        "/" + to_id + "/images");
+                        "/" + to.getID() + "/images");
                 Date imgDate = new Date();
                 String imgSuffix = "." + message.ctype.replaceAll(".*/", "");
                 File imgFile = new File(imgDir.getPath() + "/img" + imgDate.getTime() + imgSuffix);
@@ -70,7 +71,7 @@ public abstract class Dialog implements Serializable {
                 break;
             case "audio":
                 File audDir = new File("out/production/chatroom/client/data/" + User.getInstance().getName() +
-                        "/" + to_id + "/audios");
+                        "/" + to.getID() + "/audios");
                 Date audDate = new Date();
                 String audSuffix = "." + message.ctype.replaceAll(".*/", "");
                 File audFile = new File(audDir.getPath() + "/aud" + audDate.getTime() + audSuffix);

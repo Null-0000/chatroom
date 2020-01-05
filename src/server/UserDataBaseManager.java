@@ -1,10 +1,7 @@
 package server;
 
 import javafx.application.Platform;
-import kit.Data;
-import kit.GroupInfo;
-import kit.Message;
-import kit.UserInfo;
+import kit.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -106,7 +103,7 @@ public class UserDataBaseManager {
                 int groupID = rs2.getInt(1);
                 Statement stmt2 = conn.createStatement();
                 rs3 = stmt2.executeQuery("select * from group_info where group_id=" + groupID);
-                if(rs3.next()) {
+                if (rs3.next()) {
                     Blob blob = rs3.getBlob(6);
                     ArrayList<UserInfo> list = (ArrayList<UserInfo>) getMembers(groupID, false);
                     groupList.add(new GroupInfo(groupID, rs3.getString(2),
@@ -164,21 +161,20 @@ public class UserDataBaseManager {
     public void storeMessage(Message message) throws Exception {
         if (!message.isMass) storeMsg(message, -1);
         else {
-            ArrayList<Integer> list = (ArrayList<Integer>) getMembers(message.receiver, true);
+            ArrayList<Info> list = (ArrayList<Info>) getMembers(message.receiver.getID(), false);
 
-            for (int recID : list) {
+            for (Info recID : list) {
                 Message msg = new Message(recID, message.sender, message.ctype, message.content, message.date, true);
-                storeMsg(msg, message.receiver);
+                storeMsg(msg, message.receiver.getID());
             }
-
         }
     }
 
     private void storeMsg(Message message, int fromGroup) throws SQLException {
         PreparedStatement pstmt = conn.prepareStatement(
                 "INSERT INTO messages(receiver, sender, ctype, content, datetime, fromgrp) VALUES(?, ?, ?, ?, ?, ?)");
-        pstmt.setInt(1, message.receiver);
-        pstmt.setInt(2, message.sender);
+        pstmt.setInt(1, message.receiver.getID());
+        pstmt.setInt(2, message.sender.getID());
         pstmt.setString(3, message.ctype);
         pstmt.setBlob(4, new ByteArrayInputStream(message.content));
         pstmt.setTimestamp(5, new Timestamp(message.date.getTime()));
@@ -186,7 +182,7 @@ public class UserDataBaseManager {
         pstmt.execute();
     }
 
-    public Data loadDialogues(int ID) throws SQLException {
+    public Data loadDialogues(int ID) throws Exception {
         PreparedStatement pstmt = conn.prepareStatement("SELECT  * FROM messages WHERE receiver=?");
         pstmt.setInt(1, ID);
         ResultSet rs = pstmt.executeQuery();
@@ -206,8 +202,8 @@ public class UserDataBaseManager {
 //            boolean isMass = rs.getBoolean(6);
             int fromGroup = rs.getInt(6);
             Message newMsg;
-            if (fromGroup == -1) newMsg = new Message(ID, sender, ctype, content, date, false);
-            else newMsg = new Message(fromGroup, sender, ctype, content, date, true);
+            if (fromGroup == -1) newMsg = new Message(getInfo(ID, false), getInfo(sender, false), ctype, content, date, false);
+            else newMsg = new Message(getInfo(fromGroup, true), getInfo(sender, false), ctype, content, date, true);
 
             dialogues.add(newMsg);
         }
@@ -215,6 +211,29 @@ public class UserDataBaseManager {
         stmt.executeUpdate("DELETE FROM messages WHERE receiver=\'" + ID + "\'");
         stmt.close();
         return new Data(dialogues);
+    }
+
+    private Info getInfo(int id, boolean isGroup) throws Exception {
+        int ID = id;
+        String name;
+        byte[] icon;
+
+        Statement stmt = conn.createStatement();
+        ResultSet resultSet;
+
+        if (!isGroup) {
+            resultSet = stmt.executeQuery("SELECT * FROM group_info WHERE group_id = " + id);
+
+            name = resultSet.getString("group_name");
+            icon = resultSet.getBlob("icon").getBinaryStream().readAllBytes();
+        } else {
+            resultSet = stmt.executeQuery("SELECT * FROM users_info WHERE ID = " + id);
+
+            name = resultSet.getString("name");
+            icon = resultSet.getBlob("icon").getBinaryStream().readAllBytes();
+        }
+
+        return new Info(ID, name, icon);
     }
 
     /**

@@ -1,7 +1,5 @@
 package kit;
 
-import client.model.UserCard;
-
 import java.io.Serializable;
 
 public class Info implements Serializable {
@@ -9,7 +7,7 @@ public class Info implements Serializable {
     protected String name;
     protected byte[] icon;
     protected String iconPath;
-    protected Info() {}
+    public Info() {}
 
     public Info(int ID, String name, byte[] icon){
         this.ID = ID;

@@ -93,7 +93,7 @@ public class ServerThread extends Thread {
         return output;
     }
 
-    private Data loadDialogues(Data inMessage) throws SQLException {
+    private Data loadDialogues(Data inMessage) throws Exception {
         return manager.loadDialogues(inMessage.operatorInfo.getID());
     }
 
@@ -123,7 +123,7 @@ public class ServerThread extends Thread {
     private void sendMessage(int currentID, String currentUser, Message msg) throws Exception {
         if (msg.isMass) {
             updateLog(currentUser, "用户发送了一条群消息 " + msg);
-            ArrayList<Integer> targetIDs = (ArrayList<Integer>) manager.getMembers(msg.receiver, true);
+            ArrayList<Integer> targetIDs = (ArrayList<Integer>) manager.getMembers(msg.receiver.getID(), true);
             for (int id : targetIDs) {
                 if (id == currentID) continue;
                 Socket targetSocket = socketMap.get(id);
@@ -197,14 +197,6 @@ public class ServerThread extends Thread {
             IODealer.send(socketMap.get(info.operatorInfo.getID()), info, false);
         }
         return data;
-/*
-        if(manager.joinGroup(info)){
-            return new Data(1);
-        } else {
-            return new Data(-1);
-        }
-
- */
     }
 
     private Data getMembers(Data data) {

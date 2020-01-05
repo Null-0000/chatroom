@@ -3,6 +3,7 @@ package client.view;
 import client.controller.ChatViewController;
 import client.launcher.Resource;
 import javafx.application.Platform;
+import kit.Info;
 import kit.Message;
 import javafx.beans.property.ListProperty;
 import javafx.fxml.FXMLLoader;
@@ -18,9 +19,9 @@ import java.io.IOException;
 
 public class ChatView extends Stage {
     private ChatViewController controller;
-    public ChatView(int id, ListProperty<Message> messageList, boolean isGroup) throws IOException {
+    public ChatView(Info to, ListProperty<Message> messageList, boolean isGroup) throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        controller = new ChatViewController(id, messageList);
+        controller = new ChatViewController(to, messageList);
         controller.isGroup = isGroup;
         loader.setController(controller);
         loader.setLocation(this.getClass().getResource(Resource.ChatViewResource));
@@ -28,7 +29,7 @@ public class ChatView extends Stage {
 
         GridPane root = loader.load();
 
-        ((Label)((HBox)root.getChildren().get(0)).getChildren().get(0)).setText("" + id);
+        ((Label)((HBox)root.getChildren().get(0)).getChildren().get(0)).setText("" + to.getName());
 
         Scene scene = new Scene(root);
         this.setScene(scene);
