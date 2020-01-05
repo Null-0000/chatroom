@@ -51,8 +51,7 @@ public class Connector {
 
         Data data = new Data(info);
         data.setOperateType("makeFriendWith");
-        data.operator = User.getInstance().getName();
-        data.oprUserInfo = User.getInstance().getUserInfo();
+        data.setOperatorInfo();
 
         IODealer.send(socket, data, false);
 
@@ -76,7 +75,7 @@ public class Connector {
         Data data = new Data();
         data.name = groupName;
         data.iconBytes = bytes;
-        data.setOperator();
+        data.setOperatorInfo();
         data.setOperateType(Data.CREATE_GROUP);
         IODealer.send(socket, data, false);
 
@@ -90,14 +89,14 @@ public class Connector {
         return true;
     }
 
-    public boolean enterGroup(String info) throws IOException {
+    public boolean joinGroup(String info) throws IOException {
         Socket socket = new Socket(HOST, PORT);
 
         //暂时只能按群名加群
         Data data = new Data();
         data.name = info;
         data.ID = -1;
-        data.setOperator();
+        data.setOperatorInfo();
         data.setOperateType(Data.JOIN_GROUP);
         IODealer.send(socket, data, false);
 
@@ -135,7 +134,7 @@ public class Connector {
         Socket socket = new Socket(HOST, PORT);
 
         Data data = new Data();
-        data.setOperator();
+        data.setOperatorInfo();
         data.setOperateType(type);
 
         IODealer.send(socket, data, false);

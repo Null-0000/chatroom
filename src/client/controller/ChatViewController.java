@@ -70,10 +70,10 @@ public class ChatViewController implements Initializable {
     private SnuggleEngine engine = new SnuggleEngine();
     private SnuggleSession session = engine.createSession();
     private SnuggleInput input;
-    private int chatTo_id;
+    private int chatToID;
 
-    public ChatViewController(int chatTo_id, ListProperty<Message> messageList) {
-        this.chatTo_id = chatTo_id;
+    public ChatViewController(int chatToID, ListProperty<Message> messageList) {
+        this.chatToID = chatToID;
         this.messageList = messageList;
     }
 
@@ -90,7 +90,7 @@ public class ChatViewController implements Initializable {
         synchronized (dialogView) {
             Date now = new Date();
             byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
-            Message message = new Message(chatTo_id, User.getInstance().getID(), contentBytes, now, isGroup);
+            Message message = new Message(chatToID, User.getInstance().getID(), contentBytes, now, isGroup);
             User.getInstance().sendMessage(message);
         }
     }
@@ -110,7 +110,7 @@ public class ChatViewController implements Initializable {
         }
         content = baos.toByteArray();
         Date date = new Date();
-        Message message = new Message(chatTo_id, User.getInstance().getID(), ctype, content, date, isGroup);
+        Message message = new Message(chatToID, User.getInstance().getID(), ctype, content, date, isGroup);
         //在html中连接文件时只能从当前目录出发,绝对路径和project下路径都没有效果
         User.getInstance().sendMessage(message);
         baos.close();
@@ -132,7 +132,7 @@ public class ChatViewController implements Initializable {
         }
         content = baos.toByteArray();
         Date date = new Date();
-        Message message = new Message(chatTo_id, User.getInstance().getID(), ctype, content, date, isGroup);
+        Message message = new Message(chatToID, User.getInstance().getID(), ctype, content, date, isGroup);
         //在html中连接文件时只能从当前目录出发,绝对路径和project下路径都没有效果
         User.getInstance().sendMessage(message);
         baos.close();

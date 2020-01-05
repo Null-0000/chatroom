@@ -38,11 +38,12 @@ public class ServerThread extends Thread {
 
             if (sends != null) IODealer.send(socket, sends, true);
             else {
-                updateLog(receive.operator, "User log out");
+                updateLog(receive.operatorInfo.getName(), "User log out");
 //                IODealer.send(socket, sends, true);
 //                socket.close();
                 sends = new Data();
-                sends.operator = Data.EXIT;
+                //sends.operator = Data.EXIT;
+                sends.setOperateType(Data.EXIT);
                 IODealer.send(socket, sends, true);
             }
 
@@ -62,38 +63,38 @@ public class ServerThread extends Thread {
             output = register(inMessage);//userInfo
             updateLog(null, "-------注册完毕-------");
         } else if (inMessage.isOperate(Data.ADD_FRIEND)) {
-            updateLog(inMessage.operator, "-------正在查找用户的信息-------");
+            updateLog(inMessage.operatorInfo.getName(), "-------正在查找用户的信息-------");
             output = makeFriend(inMessage);//userInfo
-            updateLog(inMessage.operator, "-------添加朋友完毕-------");
+            updateLog(inMessage.operatorInfo.getName(), "-------添加朋友完毕-------");
         } else if (inMessage.isOperate(Data.CONNECT)) {
-            updateLog(inMessage.operator, "-------与用户开始进行通讯-------");
+            updateLog(inMessage.operatorInfo.getName(), "-------与用户开始进行通讯-------");
             output = connectToClient(inMessage);//Message
         } else if (inMessage.isOperate(Data.LOAD_MESSAGE)) {
-            updateLog(inMessage.operator, "-------正在查找用户的对话信息-------");
+            updateLog(inMessage.operatorInfo.getName(), "-------正在查找用户的对话信息-------");
             output = loadDialogues(inMessage);//ArrayList<Message>
-            System.out.println("user's operator " + inMessage.operator);
-            updateLog(inMessage.operator, "-------查找用户的对话信息完毕-------\n");
+            System.out.println("user's operatorInfo.getName() " + inMessage.operatorInfo.getName());
+            updateLog(inMessage.operatorInfo.getName(), "-------查找用户的对话信息完毕-------\n");
         }
         //
         else if (inMessage.isOperate(Data.CREATE_GROUP)) {
-            updateLog(inMessage.operator, "--------正在创建新的群---------");
+            updateLog(inMessage.operatorInfo.getName(), "--------正在创建新的群---------");
             output = createGroup(inMessage);
-            updateLog(inMessage.operator, "--------创建新的群完毕---------");
+            updateLog(inMessage.operatorInfo.getName(), "--------创建新的群完毕---------");
         } else if (inMessage.isOperate(Data.JOIN_GROUP)) {
-            updateLog(inMessage.operator, "--------正在加入群" + inMessage.ID + "----------");
+            updateLog(inMessage.operatorInfo.getName(), "--------正在加入群" + inMessage.ID + "----------");
             output = joinGroup(inMessage);
-            updateLog(inMessage.operator, "--------加入群" + inMessage.ID + "完毕----------");
+            updateLog(inMessage.operatorInfo.getName(), "--------加入群" + inMessage.ID + "完毕----------");
         } else if (inMessage.isOperate(Data.GET_GROUP_MEM)) {
-            updateLog(inMessage.operator, "--------获取群" + inMessage.ID + "的群成员---------");
+            updateLog(inMessage.operatorInfo.getName(), "--------获取群" + inMessage.ID + "的群成员---------");
             output = getMembers(inMessage);
-            updateLog(inMessage.operator, "--------获取群" + inMessage.ID + " 成员列表完毕---------");
+            updateLog(inMessage.operatorInfo.getName(), "--------获取群" + inMessage.ID + " 成员列表完毕---------");
         }
 
         return output;
     }
 
     private Data loadDialogues(Data inMessage) throws SQLException {
-        return manager.loadDialogues(inMessage.operatorID);
+        return manager.loadDialogues(inMessage.operatorInfo.getID());
     }
 
     private Data connectToClient(Data inMessage) throws Exception {
@@ -144,10 +145,10 @@ public class ServerThread extends Thread {
     }
 
     private Data makeFriend(Data message) throws SQLException, IOException {
-        Data data = manager.makeFriend(message.name, message.operator);
+        Data data = manager.makeFriend(message.name, message.operatorInfo.getName());
         Socket socket = socketMap.get(data.name);
         if (data.ID != -1 && socket != null) {
-            Data data1 = new Data(message.oprUserInfo);
+            Data data1 = new Data(message.operatorInfo);
             data1.setOperateType(Data.ADD_FRIEND);
             IODealer.send(socket, data1, false);
         }
@@ -190,7 +191,12 @@ public class ServerThread extends Thread {
         /*
         info 数据包需要包括 name：群名 或 ID：群ID， operator， operatorID
          */
-        return manager.joinGroup(info);
+        Data data = manager.joinGroup(info);
+        if (data.ID != -1) {
+            info.setOperateType(Data.JOIN_GROUP);
+            IODealer.send(socketMap.get(info.operatorInfo.getID()), info, false);
+        }
+        return data;
 /*
         if(manager.joinGroup(info)){
             return new Data(1);
@@ -205,7 +211,7 @@ public class ServerThread extends Thread {
         try {
             return new Data(manager.getMembers(data.ID, false));
         } catch (Exception e) {
-            updateLog(data.operator, "获得群聊成员列表错误");
+            updateLog(data.operatorInfo.getName(), "获得群聊成员列表错误");
             e.printStackTrace();
         }
         return new Data(new ArrayList());

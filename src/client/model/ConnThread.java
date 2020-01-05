@@ -51,8 +51,8 @@ public class ConnThread extends Thread {
                 });
             }
             else if (receive.isOperate(Data.JOIN_GROUP)) {
-                String groupName = null;//从Data中取得组名
-                UserInfo userInfo = null;//从Data中获取新成员的信息
+                String groupName = receive.name;//从Data中取得组名
+                UserInfo userInfo = receive.operatorInfo;//从Data中获取新成员的信息
                 groups.get(groupName).getGroupInfo().getMembers().add(userInfo);
             }
 

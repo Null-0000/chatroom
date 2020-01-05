@@ -47,7 +47,7 @@ public class DialogManager {
                 friendDialogFile.createNewFile();
                 friendDialog = new FriendDialog(info.getID(), userName);
             } else {
-                InputStream is = new FileInputStream(friendDialogFile);
+                FileInputStream is = new FileInputStream(friendDialogFile);
                 ObjectInputStream ois = new ObjectInputStream(is);
                 try {
                     friendDialog = (FriendDialog) ois.readObject();
@@ -79,7 +79,7 @@ public class DialogManager {
                 groupDialog = new GroupDialog(User.getInstance().getName(),
                         info.getID(), info.getMembers());
             } else {
-                InputStream is = new FileInputStream(groupDialogFile);
+                FileInputStream is = new FileInputStream(groupDialogFile);
                 ObjectInputStream ois = new ObjectInputStream(is);
                 try {
                     groupDialog = (GroupDialog) ois.readObject();

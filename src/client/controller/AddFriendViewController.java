@@ -65,7 +65,7 @@ public class AddFriendViewController {
         }
         try {
             if(ShowDialog.showConfirm("确认进群", groupName)){
-                if(Connector.getInstance().enterGroup(groupName)){
+                if(Connector.getInstance().joinGroup(groupName)){
 //                    User.getInstance().addFriend(friendName);
                     ShowDialog.showMessage("成功进入群");
                 } else {

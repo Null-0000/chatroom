@@ -257,17 +257,17 @@ public class UserDataBaseManager {
                     "(group_id, group_name, builder, member_count, members, icon) VALUES(?, ?, ?, ?, ?, ?)");
             pstmt.setInt(1, ID);
             pstmt.setString(2, data.name);
-            pstmt.setString(3, data.operator);
+            pstmt.setString(3, data.operatorInfo.getName());
             pstmt.setInt(4, 1);
-            pstmt.setString(5, "" + data.operatorID);
+            pstmt.setString(5, "" + data.operatorInfo.getID());
             pstmt.setBlob(6, new ByteArrayInputStream(data.iconBytes));
             pstmt.executeUpdate();
 
             Statement stmt = conn.createStatement();
-            stmt.executeUpdate("INSERT INTO users_group(name, group_id) " + "VALUES(\'" + data.operator + "\',\'" + ID + "\')");
+            stmt.executeUpdate("INSERT INTO users_group(name, group_id) " + "VALUES(\'" + data.operatorInfo.getName() + "\',\'" + ID + "\')");
         } catch (Exception e) {
             e.printStackTrace();
-            updateLog(data.operator, "创建群聊过程中，数据库操作出现错误");
+            updateLog(data.operatorInfo.getName(), "创建群聊过程中，数据库操作出现错误");
             return -1;
         }
 
@@ -284,7 +284,7 @@ public class UserDataBaseManager {
         //更新用户的group info
         Data data = new Data();
         try {
-            String name = info.operator;
+            String name = info.operatorInfo.getName();
             int group_id = -1;
             boolean found = false;
             if (info.name != null) {
@@ -350,7 +350,7 @@ public class UserDataBaseManager {
                 String members = rs.getString(5);
 
                 memCount++;
-                members = members + "," + info.operatorID;
+                members = members + "," + info.operatorInfo.getID();
 
                 stmt.executeUpdate("update group_info set member_count=" + memCount + " where group_id=" + group_id);
                 stmt.executeUpdate("update group_info set members='" + members + "' where group_id=" + group_id);
@@ -359,7 +359,7 @@ public class UserDataBaseManager {
             } else data.ID = -1;
         } catch (Exception e) {
             e.printStackTrace();
-            updateLog(info.operator, "加入群聊过程中，数据库操作出现错误");
+            updateLog(info.operatorInfo.getName(), "加入群聊过程中，数据库操作出现错误");
             data.ID = -1;
         }
         return data;

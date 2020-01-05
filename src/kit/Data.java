@@ -10,7 +10,6 @@ public class Data implements Serializable {
     public static final String REGISTER = "register";
     public static final String ADD_FRIEND = "makeFriendWith";
     public static final String CONNECT = "connect";
-    //public static final String LOAD_DIALOGUE = "loadDialogueData";
     public static final String LOAD_MESSAGE = "loadFriendMessage";
     public static final String EXIT = "exit";
     public static final String CREATE_GROUP = "createNewGroup";
@@ -27,12 +26,8 @@ public class Data implements Serializable {
     public List listB;
     public byte[] iconBytes;
     public Message message;
-    public String operator;
-    public int operatorID;
     public String builder;
-
-
-    public UserInfo oprUserInfo;
+    public UserInfo operatorInfo;
 
     public Data(){}
     public Data(int ID, String name, String signature, List listA, byte[] iconBytes) {//load user info
@@ -42,10 +37,8 @@ public class Data implements Serializable {
         this.listA = listA;
         this.iconBytes = iconBytes;
     }
-    public void setOperator(){
-        operator = User.getInstance().getName();
-        oprUserInfo = User.getInstance().getUserInfo();
-        operatorID = User.getInstance().getID();
+    public void setOperatorInfo(){
+        operatorInfo = User.getInstance().getUserInfo();
     }
 
     public Data(int ID, String password) {//log in data package
