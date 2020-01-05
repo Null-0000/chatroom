@@ -36,7 +36,10 @@ public class ChatView extends Stage {
 
         setOnCloseRequest((e)->{
             Platform.runLater(()->{
-                MainView.clearListSelection();
+                if (controller.isGroup)
+                    MainView.clearGroupListSelection();
+                else
+                    MainView.clearFriendListSelection();
             });
         });
     }

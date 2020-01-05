@@ -339,7 +339,7 @@ public class UserDataBaseManager {
 
                 Statement stmt = conn.createStatement();
 
-                stmt.executeUpdate("INSERT INTO user's_group(name,group_id) " +
+                stmt.executeUpdate("INSERT INTO users_group(name,group_id) " +
                         "VALUES(\'" + name + "\',\'" + group_id + "\')");
 
                 PreparedStatement pstmt = conn.prepareStatement("select * from group_info where group_id=" + group_id);
@@ -352,8 +352,8 @@ public class UserDataBaseManager {
                 memCount++;
                 members = members + "," + info.operatorID;
 
-                stmt.executeUpdate("update global_info set member_count=" + memCount + " where group_id=" + group_id);
-                stmt.executeUpdate("update global_info set members='" + members + "' where group_id=" + group_id);
+                stmt.executeUpdate("update group_info set member_count=" + memCount + " where group_id=" + group_id);
+                stmt.executeUpdate("update group_info set members='" + members + "' where group_id=" + group_id);
 
                 stmt.close();
             } else data.ID = -1;

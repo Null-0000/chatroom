@@ -73,7 +73,11 @@ public class MainView extends Stage {
         getIcons().add(new Image(String.valueOf(this.getClass().getResource("images/AppIcon.png"))));
     }
 
-    public static void clearListSelection(){
+    public static void clearFriendListSelection(){
         friendListView.getSelectionModel().clearSelection();
+    }
+
+    public static void clearGroupListSelection() {
+        groupListView.getSelectionModel().clearSelection();
     }
 }

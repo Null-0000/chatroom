@@ -4,7 +4,6 @@ math {
 body {
     margin-right: 5%;
     border-width: 4px;
-    border-style: double;
     border-color: orangered;
     border-collapse: collapse;
     border-radius: 25px;
