@@ -184,9 +184,9 @@ public class UserDataBaseManager {
         ResultSet rs = pstmt.executeQuery();
         ArrayList<Message> dialogues = new ArrayList<>();
         while (rs.next()) {
-            int sender = rs.getInt(2);
-            String ctype = rs.getString(3);
-            Blob contentBlob = rs.getBlob(4);
+            int sender = rs.getInt("sender");
+            String ctype = rs.getString("ctype");
+            Blob contentBlob = rs.getBlob("content");
             byte[] content = new byte[(int) contentBlob.length()];
             InputStream inputStream = contentBlob.getBinaryStream();
             try {
@@ -194,18 +194,24 @@ public class UserDataBaseManager {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Date date = new Date(rs.getTimestamp(5).getTime());
+            Date date = new Date(rs.getTimestamp("datetime").getTime());
 //            boolean isMass = rs.getBoolean(6);
-            int fromGroup = rs.getInt(6);
+            int fromGroup = rs.getInt("fromgrp");
             Message newMsg;
+
+//            System.out.println("sender :" + sender + " , fromgrp :" + fromGroup + " , receiver: " + ID);
+
             if (fromGroup == -1) newMsg = new Message(getInfo(ID, false), getInfo(sender, false), ctype, content, date, false);
             else newMsg = new Message(getInfo(fromGroup, true), getInfo(sender, false), ctype, content, date, true);
-
+//            System.out.println(newMsg);
             dialogues.add(newMsg);
         }
         Statement stmt = conn.createStatement();
         stmt.executeUpdate("DELETE FROM messages WHERE receiver=" + ID + "");
         stmt.close();
+
+//        updateLog(null, dialogues + "");
+
         return new Data(dialogues);
     }
 
@@ -217,11 +223,10 @@ public class UserDataBaseManager {
         Statement stmt = conn.createStatement();
         ResultSet resultSet;
 
-        if (!isGroup) {
+        if (isGroup) {
             resultSet = stmt.executeQuery("SELECT * FROM group_info WHERE group_id = " + id);
 
             if(resultSet.next()){
-
                 name = resultSet.getString("group_name");
                 icon = resultSet.getBlob("icon").getBinaryStream().readAllBytes();
             } else {

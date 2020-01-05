@@ -147,6 +147,8 @@ public class Connector {
 
         Data receive = IODealer.receive(socket, false);
 
+//        System.out.println((ArrayList<Message>)receive.listA);
+
         return (ArrayList<Message>)receive.listA;
     }
 

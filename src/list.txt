@@ -1,0 +1,101 @@
+D:.
+©¦  
+©À©¤client
+©¦  ©À©¤controller
+©¦  ©¦      AddFriendViewController.java
+©¦  ©¦      ChatView.css
+©¦  ©¦      ChatViewController.java
+©¦  ©¦      Connector.java
+©¦  ©¦      Dialog.css
+©¦  ©¦      Dialog.html
+©¦  ©¦      LoginViewController.java
+©¦  ©¦      MainViewController.java
+©¦  ©¦      RegisterViewController.java
+©¦  ©¦      SetViewController.java
+©¦  ©¦      
+©¦  ©À©¤exceptions
+©¦  ©¦      HTMLFormatException.java
+©¦  ©¦      PasswordException.java
+©¦  ©¦      ServerNotFoundException.java
+©¦  ©¦      UnknownException.java
+©¦  ©¦      
+©¦  ©À©¤launcher
+©¦  ©¦      Debug.java
+©¦  ©¦      Launcher.java
+©¦  ©¦      Resource.java
+©¦  ©¦      Test.java
+©¦  ©¦      
+©¦  ©À©¤model
+©¦  ©¦      ConnThread.java
+©¦  ©¦      Dialog.java
+©¦  ©¦      DialogManager.java
+©¦  ©¦      Friend.java
+©¦  ©¦      FriendDialog.java
+©¦  ©¦      Group.java
+©¦  ©¦      GroupDialog.java
+©¦  ©¦      MFileChooser.java
+©¦  ©¦      User.java
+©¦  ©¦      
+©¦  ©¸©¤view
+©¦      ©¦  AddFriendView.java
+©¦      ©¦  ChatView.java
+©¦      ©¦  FriendChatView.java
+©¦      ©¦  GroupChatView.java
+©¦      ©¦  LoginView.java
+©¦      ©¦  MainView.java
+©¦      ©¦  RegisterView.java
+©¦      ©¦  SetView.java
+©¦      ©¦  StageM.java
+©¦      ©¦  
+©¦      ©À©¤css
+©¦      ©¦      ChatView.css
+©¦      ©¦      LoginView.css
+©¦      ©¦      MainView.css
+©¦      ©¦      RegisterView.css
+©¦      ©¦      SuperView.css
+©¦      ©¦      WebView.css
+©¦      ©¦      
+©¦      ©À©¤fxml
+©¦      ©¦      AddFriendView.fxml
+©¦      ©¦      ChatView.fxml
+©¦      ©¦      LoginView.fxml
+©¦      ©¦      MainView.fxml
+©¦      ©¦      RegisterView.fxml
+©¦      ©¦      SetView.fxml
+©¦      ©¦      WebView.html
+©¦      ©¦      
+©¦      ©¸©¤images
+©¦              addf.png
+©¦              addf1.png
+©¦              AppIcon.png
+©¦              aud_icon.png
+©¦              background.jpg
+©¦              background02.jpg
+©¦              defaultUserIcon.jpeg
+©¦              emoji_icon.png
+©¦              fml_icon.png
+©¦              img_icon.png
+©¦              mem_icon.png
+©¦              newGrp_icon.png
+©¦              setting_icon.png
+©¦              userIcon.jpeg
+©¦              
+©À©¤kit
+©¦      ClassConverter.java
+©¦      Data.java
+©¦      GroupInfo.java
+©¦      Info.java
+©¦      IODealer.java
+©¦      Message.java
+©¦      ShowDialog.java
+©¦      UserCard.java
+©¦      UserInfo.java
+©¦      
+©¸©¤server
+       RegexFunctions.java
+       ServerLauncher.java
+       ServerThread.java
+       SocketServer.java
+       UserDataBaseManager.java
+
+            

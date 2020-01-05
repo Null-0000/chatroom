@@ -57,7 +57,7 @@ public class RegisterViewController {
         try {
 //            int ID = Integer.parseInt(Connector.getInstance().register(name, password, signature));
 
-            ShowDialog.showMessage("your image url is: " + IconUrl);
+//            ShowDialog.showMessage("your image url is: " + IconUrl);
             File file= new File(IconUrl);
             FileInputStream fileInputStream = new FileInputStream(file);
 //            selectedIcon.setImage(new Image(fileInputStream));
