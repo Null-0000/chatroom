@@ -33,6 +33,14 @@ public class ConnThread extends Thread {
 
         while (true) {
             Data receive = IODealer.receive(mySocket, false);
+            if(receive.isOperate(Data.EXIT)) {
+                try {
+                    mySocket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
             if (receive.isOperate(Data.ADD_FRIEND)) {
                 Platform.runLater(() ->
                 {
@@ -42,7 +50,7 @@ public class ConnThread extends Thread {
                         Friend friend = new Friend(userInfo);
                         User.getInstance().addFriend(friend);
                         FriendDialog dialog = new FriendDialog(
-                                friend.getUserInfo().getID(), User.getInstance().getName());
+                                friend.getUserInfo(), User.getInstance().getName());
                         friend.init(dialog);
                         dialog.synchronizeMessage();
                     } catch (IOException e) {

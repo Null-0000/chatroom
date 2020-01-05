@@ -15,8 +15,8 @@ import java.util.Scanner;
 public class UserDataBaseManager {
     private final String driver = "com.mysql.cj.jdbc.Driver";
     private final String url = "jdbc:mysql://localhost:3306/chat_room?serverTimezone=Asia/Shanghai";
-    private final String user = "henry";
-    private final String pass = "mxylfbcz4321";
+    private final String user = "root";
+    private final String pass = "123456";
     private Connection conn;
 
     public UserDataBaseManager() throws ClassNotFoundException, SQLException {
@@ -208,15 +208,15 @@ public class UserDataBaseManager {
             dialogues.add(newMsg);
         }
         Statement stmt = conn.createStatement();
-        stmt.executeUpdate("DELETE FROM messages WHERE receiver=\'" + ID + "\'");
+        stmt.executeUpdate("DELETE FROM messages WHERE receiver=" + ID + "");
         stmt.close();
         return new Data(dialogues);
     }
 
     private Info getInfo(int id, boolean isGroup) throws Exception {
         int ID = id;
-        String name;
-        byte[] icon;
+        String name = null;
+        byte[] icon = new byte[0];
 
         Statement stmt = conn.createStatement();
         ResultSet resultSet;
@@ -224,13 +224,23 @@ public class UserDataBaseManager {
         if (!isGroup) {
             resultSet = stmt.executeQuery("SELECT * FROM group_info WHERE group_id = " + id);
 
-            name = resultSet.getString("group_name");
-            icon = resultSet.getBlob("icon").getBinaryStream().readAllBytes();
+            if(resultSet.next()){
+
+                name = resultSet.getString("group_name");
+                icon = resultSet.getBlob("icon").getBinaryStream().readAllBytes();
+            } else {
+                return null;
+            }
         } else {
             resultSet = stmt.executeQuery("SELECT * FROM users_info WHERE ID = " + id);
 
-            name = resultSet.getString("name");
-            icon = resultSet.getBlob("icon").getBinaryStream().readAllBytes();
+            if(resultSet.next()){
+                name = resultSet.getString("name");
+                icon = resultSet.getBlob("icon").getBinaryStream().readAllBytes();
+
+            } else {
+                return null;
+            }
         }
 
         return new Info(ID, name, icon);

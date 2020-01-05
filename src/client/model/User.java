@@ -60,6 +60,7 @@ public class User {
     public void loadRemoteData() throws Exception {
         ArrayList<Message> messages =
                 Connector.getInstance().loadMessage(Data.LOAD_MESSAGE);
+        System.out.println(messages);
         for (Message message : messages) {
             if (message.isMass)
                 groups.get(message.receiver).getGroupDialog().updateMessage(message);

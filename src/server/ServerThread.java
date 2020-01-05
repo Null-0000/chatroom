@@ -44,7 +44,7 @@ public class ServerThread extends Thread {
                 sends = new Data();
                 //sends.operator = Data.EXIT;
                 sends.setOperateType(Data.EXIT);
-                IODealer.send(socket, sends, true);
+                IODealer.send(socket, sends, false);
             }
 
         } catch (Exception e) {

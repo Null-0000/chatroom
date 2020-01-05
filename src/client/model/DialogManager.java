@@ -45,7 +45,7 @@ public class DialogManager {
             FriendDialog friendDialog = null;
             if (!friendDialogFile.exists()) {
                 friendDialogFile.createNewFile();
-                friendDialog = new FriendDialog(info.getID(), userName);
+                friendDialog = new FriendDialog(info, userName);
             } else {
                 FileInputStream is = new FileInputStream(friendDialogFile);
                 ObjectInputStream ois = new ObjectInputStream(is);
@@ -77,7 +77,7 @@ public class DialogManager {
             if (!groupDialogFile.exists()) {
                 groupDialogFile.createNewFile();
                 groupDialog = new GroupDialog(User.getInstance().getName(),
-                        info.getID(), info.getMembers());
+                        info, info.getMembers());
             } else {
                 FileInputStream is = new FileInputStream(groupDialogFile);
                 ObjectInputStream ois = new ObjectInputStream(is);
