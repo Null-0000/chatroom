@@ -3,6 +3,7 @@ package client.view;
 import client.controller.ChatViewController;
 import client.launcher.Resource;
 import javafx.application.Platform;
+import kit.Info;
 import kit.Message;
 import javafx.beans.property.ListProperty;
 import javafx.fxml.FXMLLoader;
@@ -17,31 +18,27 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class ChatView extends Stage {
-    private ChatViewController controller;
-    public ChatView(int id, ListProperty<Message> messageList, boolean isGroup) throws IOException {
+    protected ChatViewController controller;
+    protected Info info;
+    protected GridPane root;
+    public ChatView() {}
+    public ChatView(Info info, ListProperty<Message> messageList) throws IOException {
+        this.info = info;
         FXMLLoader loader = new FXMLLoader();
-        controller = new ChatViewController(id, messageList);
-        controller.isGroup = isGroup;
+        controller = new ChatViewController(info, messageList);
         loader.setController(controller);
         loader.setLocation(this.getClass().getResource(Resource.ChatViewResource));
         setTitle("chatting chamber");
 
-        GridPane root = loader.load();
+        root = loader.load();
 
-        ((Label)((HBox)root.getChildren().get(0)).getChildren().get(0)).setText("" + id);
+        ((Label)((HBox)root.getChildren().get(0)).getChildren().get(0)).setText(info.getName());
 
         Scene scene = new Scene(root);
         this.setScene(scene);
         setResizable(false);
 
-        setOnCloseRequest((e)->{
-            Platform.runLater(()->{
-                if (controller.isGroup)
-                    MainView.clearGroupListSelection();
-                else
-                    MainView.clearFriendListSelection();
-            });
-        });
+
     }
     public ChatViewController getController(){
         return controller;

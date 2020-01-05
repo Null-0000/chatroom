@@ -17,7 +17,7 @@ public class Connector {
         return instance;
     }
 
-    public boolean loadUserInfo(int ID, String password) throws Exception {
+    public String loadUserInfo(int ID, String password) throws Exception {
         Socket socket = new Socket(HOST, PORT);
 
         Data data = new Data(ID, password);
@@ -27,11 +27,11 @@ public class Connector {
 
         Data receive = IODealer.receive(socket, false);
 
-        if (receive.ID == -1) return false;
-        else {
-            User.getInstance().setField(receive);
-            return true;
-        }
+        if (receive.ID == -1) return "ID不存在或密码错误";
+        if (receive.ID == -2) return "不能重复登录";
+        User.getInstance().setField(receive);
+        return "SUCCESS";
+
     }
 
     public int register(Data data) throws IOException {
@@ -63,7 +63,7 @@ public class Connector {
         Friend friend = new Friend(userInfo1);
         User.getInstance().addFriend(friend);
         FriendDialog dialog = new FriendDialog(friend.getUserInfo().getID()
-                , User.getInstance().getName());
+                , User.getInstance().getID());
         friend.init(dialog);
         dialog.synchronizeMessage();
         return true;
@@ -113,7 +113,7 @@ public class Connector {
 
     private void setGroup(GroupInfo groupInfo) throws IOException {
         Group group = new Group(groupInfo);
-        GroupDialog dialog = new GroupDialog(User.getInstance().getName(),
+        GroupDialog dialog = new GroupDialog(User.getInstance().getID(),
                 groupInfo.getID(), groupInfo.getMembers());
         group.init(dialog);
         dialog.synchronizeMessage();
@@ -124,6 +124,7 @@ public class Connector {
         Socket socket = new Socket(HOST, PORT);
         Data data = new Data(User.getInstance().getName(), User.getInstance().getID());
         data.setOperateType("connect");
+        data.setOperatorInfo();
 
         IODealer.send(socket, data, false);
 

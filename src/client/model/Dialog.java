@@ -11,13 +11,11 @@ import kit.Message;
 
 import javax.imageio.stream.FileImageOutputStream;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 
 public abstract class Dialog implements Serializable {
     protected transient ListProperty<Message> messageList;
-    protected transient String userA;
+    protected transient int userAID;
 
     protected transient ChatView chatView;
     protected transient BooleanProperty hasNewMessage;
@@ -25,8 +23,8 @@ public abstract class Dialog implements Serializable {
     public Dialog() {
     }
 
-    public Dialog(String userA) {
-        this.userA = userA;
+    public Dialog(int userAID) {
+        this.userAID = userAID;
         ObservableList<Message> observableList = FXCollections.observableArrayList();
         this.messageList = new SimpleListProperty<>(observableList);
         this.hasNewMessage = new SimpleBooleanProperty(false);
@@ -43,17 +41,18 @@ public abstract class Dialog implements Serializable {
             //chatView不能被序列化，故每次读取本地文件后需要重新new哟个chatView
         }*/
     public void updateMessage(Message message) {
-        int user_id = User.getInstance().getID();
-        int to_id;
+        String userFileName = "M" + User.getInstance().getID();
+        String toDirName;
         if (message.isMass)
-            to_id = message.receiver;
+            toDirName = "G" + message.receiver;
         else
-            to_id = (message.sender == user_id)? message.receiver: message.sender;
+            toDirName = "F" + ((message.sender == User.getInstance().getID())?
+                    message.receiver: message.sender);
 
         switch (message.ctype.replaceAll("/.*", "")) {
             case "image":
-                File imgDir = new File("out/production/chatroom/client/data/" + User.getInstance().getName() +
-                        "/" + to_id + "/images");
+                File imgDir = new File("out/production/chatroom/client/data/" +  userFileName +
+                        "/" + toDirName + "/images");
                 Date imgDate = new Date();
                 String imgSuffix = "." + message.ctype.replaceAll(".*/", "");
                 File imgFile = new File(imgDir.getPath() + "/img" + imgDate.getTime() + imgSuffix);
@@ -69,8 +68,8 @@ public abstract class Dialog implements Serializable {
                 }
                 break;
             case "audio":
-                File audDir = new File("out/production/chatroom/client/data/" + User.getInstance().getName() +
-                        "/" + to_id + "/audios");
+                File audDir = new File("out/production/chatroom/client/data/" + userFileName +
+                        "/" + toDirName + "/audios");
                 Date audDate = new Date();
                 String audSuffix = "." + message.ctype.replaceAll(".*/", "");
                 File audFile = new File(audDir.getPath() + "/aud" + audDate.getTime() + audSuffix);

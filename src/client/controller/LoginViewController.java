@@ -43,17 +43,14 @@ public class LoginViewController {
             ShowDialog.showAlert("您输入的ID不合法，请重新输入");
             return;
         }
-        boolean isAccessible = false;
+        String recvMes;
         try {
-            isAccessible = Connector.getInstance().loadUserInfo(ID, password);
-        } catch (IOException e) {
-            e.printStackTrace();
-            ShowDialog.showAlert("服务器连接错误");
-            return;
+            recvMes = Connector.getInstance().loadUserInfo(ID, password);
         } catch (Exception e) {
             e.printStackTrace();
+            return;
         }
-        if (isAccessible) {
+        if (recvMes.equals("SUCCESS")) {
             try {
                 User.getInstance().initialise();
                 StageM.getManager().addStage(Resource.MainViewID, new MainView(User.getInstance()));
@@ -62,7 +59,7 @@ public class LoginViewController {
                 e.printStackTrace();
                 ShowDialog.showAlert("载入服务端用户信息错误");
             }
-        } else ShowDialog.showAlert("ID不存在或密码错误");
+        } else ShowDialog.showAlert(recvMes);
     }
 
     @FXML

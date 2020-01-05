@@ -42,7 +42,7 @@ public class ConnThread extends Thread {
                         Friend friend = new Friend(userInfo);
                         User.getInstance().addFriend(friend);
                         FriendDialog dialog = new FriendDialog(
-                                friend.getUserInfo().getID(), User.getInstance().getName());
+                                friend.getUserInfo().getID(), User.getInstance().getID());
                         friend.init(dialog);
                         dialog.synchronizeMessage();
                     } catch (IOException e) {

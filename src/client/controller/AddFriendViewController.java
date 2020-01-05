@@ -63,6 +63,7 @@ public class AddFriendViewController {
             ShowDialog.showMessage("你已添加群" + groupName );
             return;
         }
+
         try {
             if(ShowDialog.showConfirm("确认进群", groupName)){
                 if(Connector.getInstance().joinGroup(groupName)){

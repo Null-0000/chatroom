@@ -49,7 +49,7 @@ public class MainView extends Stage {
         ((Label)userInfoGridPane.getChildren().get(7)).setText(user.getSignature());
         ((Label)userInfoGridPane.getChildren().get(7)).setTooltip(new Tooltip(user.getSignature()));
 
-        File userIcon = new File("out/production/chatroom/client/data/" + user.getName() + "/icon.png");
+        File userIcon = new File("out/production/chatroom/client/data/M" + user.getID() + "/icon.png");
 
         ((ImageView)userInfoGridPane.getChildren().get(0)).setImage(new Image(new FileInputStream(userIcon)));
         friendListView = (ListView<UserCard>) ((Tab)tabs.get(0)).getContent().lookup("#friendListView");

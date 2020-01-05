@@ -4,9 +4,10 @@ math {
 body {
     margin-right: 5%;
     border-width: 4px;
-    border-color: orangered;
+    border-style: wave;
+    border-color: darkblue;
     border-collapse: collapse;
-    border-radius: 25px;
+    border-radius: 215px;
 }
 div {
     word-wrap: break-word;

@@ -1,9 +1,10 @@
 package client.model;
 
-import client.view.ChatView;
+import client.view.GroupChatView;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
+import kit.GroupInfo;
 import kit.UserInfo;
 
 import java.io.IOException;
@@ -15,33 +16,34 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GroupDialog extends Dialog implements Serializable {
-    private transient int group_id;
+    private transient int groupID;
     private transient List<UserInfo> members;
 
-    public GroupDialog(String userA, int group_id, List<UserInfo> members){
-        super(userA);
-        this.group_id = group_id;
+    public GroupDialog(int userAID, int groupID, List<UserInfo> members){
+        super(userAID);
+        this.groupID = groupID;
         this.members = members;
     }
 
     public void setChatView() throws IOException{
-        chatView = new ChatView(group_id, messageList, true);
+        GroupInfo info = User.getInstance().getGroups().get(groupID).getGroupInfo();
+        chatView = new GroupChatView(info, messageList);
     }
 
     private void writeObject(ObjectOutputStream oos) throws IOException {
         oos.defaultWriteObject();
         oos.writeObject(messageList.toArray());
-        oos.writeUTF(userA);
+        oos.writeInt(userAID);
         oos.writeBoolean(hasNewMessage.get());
-        oos.writeInt(group_id);
+        oos.writeInt(groupID);
         oos.writeObject(members);
     }
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ArrayList list = new ArrayList(Arrays.asList((Object[]) ois.readObject()));
         messageList = new SimpleListProperty<>(FXCollections.observableArrayList(list));
-        userA = ois.readUTF();
+        userAID = ois.readInt();
         hasNewMessage = new SimpleBooleanProperty(ois.readBoolean());
-        group_id = ois.readInt();
+        groupID = ois.readInt();
         members = (List<UserInfo>) ois.readObject();
     }
 }

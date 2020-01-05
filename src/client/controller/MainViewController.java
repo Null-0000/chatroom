@@ -31,8 +31,8 @@ public class MainViewController implements Initializable {
         TextInputDialog tid = new TextInputDialog();
         Optional<String> rs = tid.showAndWait();
         if (!rs.isPresent()) return;
-        File iconFile = MFileChooser.showFileChooser("group icon", "jpg"
-            , "jpeg", "bmp", "png");
+        File iconFile = MFileChooser.showFileChooser("group icon",
+                "jpg", "jpeg", "bmp", "png");
         if (iconFile == null) return;
         FileInputStream fis = new FileInputStream(iconFile);
         byte[] bytes = fis.readAllBytes();

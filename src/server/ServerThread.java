@@ -170,6 +170,8 @@ public class ServerThread extends Thread {
             updateLog(null, "ID与密码不匹配");
             return tmp;
         }
+        if (socketMap.containsKey(proceeded.ID))
+            return new Data(-2);
         addUser(proceeded.name);
         return proceeded;
     }

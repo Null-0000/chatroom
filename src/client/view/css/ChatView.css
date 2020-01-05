@@ -24,7 +24,7 @@
 }
 
 #emojiControl {
-    -fx-background-image: url("../images/emoji_icon1.png");
+    -fx-background-image: url("../images/emoji_icon.png");
     -fx-background-position: center center;
     -fx-background-repeat: no-repeat;
     -fx-background-color: rgba(255, 255, 255, 0);
@@ -36,7 +36,7 @@
 }
 
 #imgControl {
-    -fx-background-image: url("../images/img_icon1.png");
+    -fx-background-image: url("../images/img_icon.png");
     -fx-background-position: center center;
     -fx-background-repeat: no-repeat;
     -fx-background-color: rgba(255, 255, 255, 0);
@@ -48,7 +48,7 @@
 }
 
 #audControl {
-    -fx-background-image: url("../images/aud_icon1.png");
+    -fx-background-image: url("../images/aud_icon.png");
     -fx-background-position: center center;
     -fx-background-repeat: no-repeat;
     -fx-background-color: rgba(255, 255, 255, 0);
@@ -60,7 +60,7 @@
 }
 
 #fmlControl {
-    -fx-background-image: url("../images/fml_icon1.png");
+    -fx-background-image: url("../images/fml_icon.png");
     -fx-background-position: center center;
     -fx-background-repeat: no-repeat;
     -fx-background-color: rgba(255, 255, 255, 0);
@@ -70,3 +70,15 @@
 #fmlControl:hover {
     -fx-effect: innershadow(three-pass-box, rgba(255, 255, 255, 0.7), 6, 0.0, 0, 2);
 }
+
+#memControl {
+    -fx-background-image: url("../images/mem_icon.png");
+    -fx-background-position: center center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: rgba(255, 255, 255, 0);
+    -fx-cursor: hand;
+}
+
+#memControl:hover {
+     -fx-effect: innershadow(three-pass-box, rgba(255, 255, 255, 0.7), 6, 0.0, 0, 2);
+ }

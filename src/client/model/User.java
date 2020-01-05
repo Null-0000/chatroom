@@ -30,7 +30,7 @@ public class User {
 
     public void setField(Data u) {
         this.userInfo = new UserInfo(u.ID, u.name, u.signature, u.iconBytes);
-        manager = new DialogManager(u.name);
+        manager = new DialogManager(u.ID);
         this.friends = new SimpleMapProperty<>(FXCollections.observableHashMap());
 
         for (UserInfo userInfo : (List<UserInfo>)u.listA) {
