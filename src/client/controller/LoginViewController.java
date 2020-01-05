@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.launcher.Resource;
+import client.view.SetView;
 import kit.ShowDialog;
 import client.model.User;
 import client.view.MainView;
@@ -54,6 +55,7 @@ public class LoginViewController {
             try {
                 User.getInstance().initialise();
                 StageM.getManager().addStage(Resource.MainViewID, new MainView(User.getInstance()));
+                StageM.getManager().addStage(Resource.SetViewID, new SetView());
                 StageM.getManager().shift(Resource.LoginViewID, Resource.MainViewID);
             } catch (Exception e) {
                 e.printStackTrace();

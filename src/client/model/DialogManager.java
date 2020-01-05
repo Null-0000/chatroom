@@ -22,8 +22,7 @@ public class DialogManager {
         //ShowDialog.showMessage("正在构造DialoguesManager\n" + file.exists());
 
         //写入User自己的图片文件
-        File userIcon = new File("out/production/chatroom/client/data/M" + userID + "/icon.png");
-        storeIcon(userIcon, User.getInstance().getMyIconBytes());
+        storeMyIcon();
 
     }
 
@@ -125,6 +124,12 @@ public class DialogManager {
             oos.close();
             os.close();
         }
+    }
+
+    public void storeMyIcon() {
+        File userIcon = new File("out/production/chatroom/client/data/M" + userID + "/icon.png");
+        storeIcon(userIcon, User.getInstance().getMyIconBytes());
+        User.getInstance().getUserInfo().setIconPath("file:" + mDirPath + "icon.jpg");
     }
 
     public void storeIcon(Info info) {

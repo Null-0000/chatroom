@@ -22,12 +22,14 @@ public class MainViewController implements Initializable {
     @FXML private ListView<UserCard> friendListView;
     @FXML private ListView<UserCard> groupListView;
     @FXML private Button addFriendButton;
+    @FXML private Button createGroup;
+    @FXML private Button settingsButton;
 
-    @FXML public void addFriend() throws IOException {
-        StageM.getManager().resetStage(Resource.AddFriendView, new AddFriendView());
-        StageM.getManager().show(Resource.AddFriendView);
+    @FXML private void addFriend() throws IOException {
+        StageM.getManager().resetStage(Resource.AddFriendViewID, new AddFriendView());
+        StageM.getManager().show(Resource.AddFriendViewID);
     }
-    @FXML public void createGroup() throws IOException {
+    @FXML private void createGroup() throws IOException {
         TextInputDialog tid = new TextInputDialog();
         Optional<String> rs = tid.showAndWait();
         if (!rs.isPresent()) return;
@@ -48,6 +50,9 @@ public class MainViewController implements Initializable {
             alert.setContentText("create group error");
             alert.show();
         }
+    }
+    @FXML private void showSettings() {
+        StageM.getManager().show(Resource.SetViewID);
     }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -84,14 +89,6 @@ public class MainViewController implements Initializable {
         groupListView.getSelectionModel().selectedItemProperty().
                 addListener(new NoticeGroupListItemChangeListener());
 
-        addFriendButton.setTooltip(new Tooltip("添加好友"));
-        addFriendButton.setOnAction(actionEvent -> {
-            try {
-                addFriend();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     private class NoticeFriendListItemChangeListener implements ChangeListener<Object> {

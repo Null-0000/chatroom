@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="client.controller.SetViewController"
+            prefHeight="300.0" prefWidth="450.0">
+    <TabPane>
+        <Tab text="个人信息">
+            <GridPane>
+                <ImageView fx:id="icon" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                           GridPane.rowSpan="2"></ImageView>
+                <Button fx:id="alterIcon" GridPane.rowIndex="3" GridPane.columnIndex="0"
+                        onAction="#selectImage">alter</Button>
+
+
+                <Label GridPane.rowIndex="0" GridPane.columnIndex="1">ID</Label>
+                <Label fx:id="userID" GridPane.rowIndex="0" GridPane.columnIndex="2"></Label>
+
+                <Label GridPane.rowIndex="1" GridPane.columnIndex="1">name</Label>
+                <TextField fx:id="userName" GridPane.rowIndex="1" GridPane.columnIndex="2"></TextField>
+
+                <Label GridPane.rowIndex="2" GridPane.columnIndex="1">signature</Label>
+                <TextField fx:id="userSig" GridPane.rowIndex="2" GridPane.columnIndex="2"></TextField>
+
+
+                <Button fx:id="submit" GridPane.rowIndex="3" GridPane.columnIndex="2"
+                        onAction="#submitUserInfo">submit</Button>
+
+            </GridPane>
+        </Tab>
+    </TabPane>
+</AnchorPane>

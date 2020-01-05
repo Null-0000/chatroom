@@ -52,14 +52,19 @@
                 </Tab>
                 <Tab fx:id="groupTab" text="my group">
                     <VBox>
-                        <Button fx:id="createGroup" onAction="#createGroup">create group</Button>
                         <ListView fx:id="groupListView" prefHeight="264.0" prefWidth="237.0"/>
                     </VBox>
                 </Tab>
             </tabs>
         </TabPane>
-        <Button fx:id="addFriendButton" alignment="BOTTOM_CENTER" layoutX="90.0" layoutY="293.0" mnemonicParsing="false"
-                prefHeight="30.0" prefWidth="31.0" text="    "/>
+        <FlowPane>
+            <Button fx:id="settingsButton" mnemonicParsing="false" prefHeight="25" prefWidth="25"
+                    onAction="#showSettings"/>
+            <Button fx:id="addFriendButton" mnemonicParsing="false" prefHeight="25" prefWidth="25"
+                    onAction="#addFriend"/>
+            <Button fx:id="createGroup" mnemonicParsing="false" prefHeight="24" prefWidth="24"
+                    onAction="#createGroup"></Button>
+        </FlowPane>
 
     </items>
 </SplitPane>

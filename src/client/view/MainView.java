@@ -69,7 +69,7 @@ public class MainView extends Stage {
         setOnShowing((e) -> {
             this.requestFocus();
         });
-        setTitle("Chatting Room");
+        setTitle("chat");
         getIcons().add(new Image(String.valueOf(this.getClass().getResource("images/AppIcon.png"))));
     }
 

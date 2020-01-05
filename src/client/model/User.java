@@ -149,5 +149,5 @@ public class User {
         return userInfo;
     }
 
-
+    public void setUserInfo(UserInfo userInfo) { this.userInfo = userInfo;}
 }

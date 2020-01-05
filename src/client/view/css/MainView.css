@@ -6,28 +6,30 @@
 }
 #addFriendButton
 {
-    -fx-background-image: url("../images/addf.png");
+    -fx-background-image: url("../images/addf1.png");
     -fx-background-position: center center;
     -fx-background-repeat: no-repeat;
     -fx-background-color: rgba(255,255,255,0);
     -fx-cursor: hand;
     -fx-background-size :30px 30px;
 }
-#addFriendButton:hover
-{
-    -fx-background-image: url("../images/addf1.png");
+
+#createGroup {
+    -fx-background-image: url("../images/newGrp_icon.png");
     -fx-background-position: center center;
     -fx-background-repeat: no-repeat;
     -fx-background-color: rgba(255,255,255,0);
     -fx-cursor: hand;
+    -fx-background-size :30px 30px;
 }
-#addFriendButton:pressed
-{
-    -fx-background-image: url("../images/addf.png");
+
+#settingsButton {
+    -fx-background-image: url("../images/setting_icon.png");
     -fx-background-position: center center;
     -fx-background-repeat: no-repeat;
     -fx-background-color: rgba(255,255,255,0);
     -fx-cursor: hand;
+    -fx-background-size :30px 30px;
 }
 
 .head{
