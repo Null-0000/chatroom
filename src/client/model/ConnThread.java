@@ -62,7 +62,8 @@ public class ConnThread extends Thread {
             else if (receive.isOperate(Data.JOIN_GROUP)) {
                 int id = receive.ID;//从Data中取得组名
                 UserInfo userInfo = receive.operatorInfo;//从Data中获取新成员的信息
-                groups.get(id).getGroupInfo().getMembers().add(userInfo);
+                System.out.println(".......");
+                groups.get(id).addMember(userInfo);
             }
 
             else {
@@ -75,5 +76,6 @@ public class ConnThread extends Thread {
             }
 
         }
+        System.out.println("接收线程结束");
     }
 }

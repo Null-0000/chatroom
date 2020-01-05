@@ -20,7 +20,7 @@ public class IODealer {
 
             dataOutput.writeLong(buffer.length);
 
-            System.out.println("发送数据的长度： " + buffer.length);
+//            System.out.println("发送数据的长度： " + buffer.length);
 
             dataOutput.write(buffer);
 
@@ -48,7 +48,7 @@ public class IODealer {
 
             buffer = new byte[WIDTH];
 
-            System.out.println("接受数据的长度： " + length);
+//            System.out.println("接受数据的长度： " + length);
 
             long current = 0;
 
@@ -61,7 +61,7 @@ public class IODealer {
             if(isClose) {
                 socket.close();
             }
-            System.out.println("接受数据byteArrayOutputStream长度: " + byteArrayOutputStream.toByteArray().length);
+//            System.out.println("接受数据byteArrayOutputStream长度: " + byteArrayOutputStream.toByteArray().length);
             return (Data) ClassConverter.getObjectFromBytes(byteArrayOutputStream.toByteArray());
 
         } catch (Exception e) {

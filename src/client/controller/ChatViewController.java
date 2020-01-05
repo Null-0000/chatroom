@@ -60,6 +60,8 @@ public class ChatViewController implements Initializable {
     private ToggleButton emojiControl;
     @FXML
     private ToggleButton fmlControl;
+    @FXML
+    private ToggleButton memControl;
 
     private ListProperty<Message> messageList;
     public boolean isGroup;
@@ -192,22 +194,46 @@ public class ChatViewController implements Initializable {
         ToggleGroup group = new ToggleGroup();
         emojiControl.setToggleGroup(group);
         fmlControl.setToggleGroup(group);
+        if (memControl != null) {
+            memControl.setToggleGroup(group);
+        }
         group.selectedToggleProperty().addListener((obs, ov, nv) -> {
             if (nv == null) {
                 emojiView.setVisible(false);
                 emojiView.setManaged(false);
                 show.setVisible(false);
                 show.setManaged(false);
+                if (memControl != null){
+                    memControl.setVisible(false);
+                    memControl.setManaged(false);
+                }
             } else if (nv == emojiControl) {
                 show.setVisible(false);
                 show.setManaged(false);
                 emojiView.setVisible(true);
                 emojiView.setManaged(true);
+                if (memControl != null){
+                    memControl.setVisible(false);
+                    memControl.setManaged(false);
+                }
             } else if (nv == fmlControl) {
                 emojiView.setVisible(false);
                 emojiView.setManaged(false);
                 show.setVisible(true);
                 show.setManaged(true);
+                if (memControl != null){
+                    memControl.setVisible(false);
+                    memControl.setManaged(false);
+                }
+            } else if (nv == memControl) {
+                emojiView.setVisible(false);
+                emojiView.setManaged(false);
+                show.setVisible(false);
+                show.setManaged(false);
+                if (memControl != null){
+                    memControl.setVisible(true);
+                    memControl.setManaged(true);
+                }
             }
         });
 

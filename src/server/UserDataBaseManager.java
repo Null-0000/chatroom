@@ -69,7 +69,7 @@ public class UserDataBaseManager {
         try {
             PreparedStatement pstmt = conn.prepareStatement("select * from users_info where id=" + id);
             rs1 = pstmt.executeQuery();
-            rs1.next();
+            if(!rs1.next()) return null;
             if (!rs1.getString(4).equals(password))
                 return null;
             name = rs1.getString(2);
@@ -159,6 +159,7 @@ public class UserDataBaseManager {
             ArrayList<Info> list = (ArrayList<Info>) getMembers(message.receiver.getID(), false);
 
             for (Info recID : list) {
+                if(recID.getID() == message.sender.getID()) continue;
                 Message msg = new Message(recID, message.sender, message.ctype, message.content, message.date, true);
                 storeMsg(msg, message.receiver.getID());
             }
@@ -381,6 +382,8 @@ public class UserDataBaseManager {
                 stmt.executeUpdate("update group_info set members='" + members + "' where group_id=" + group_id);
 
                 stmt.close();
+
+                data.listA.add(info.operatorInfo);
             } else data.ID = -1;
         } catch (Exception e) {
             e.printStackTrace();

@@ -120,8 +120,9 @@ public class ServerThread extends Thread {
 
             if (data == null) break;
             if (data.isOperate(Data.EXIT)) break;
-
-            sendMessage(currentID, currentUserName, data.message);
+            if(data.isOperate(Data.SEND_MESSAGE)){
+                sendMessage(currentID, currentUserName, data.message);
+            }
         }
 
         socketMap.remove(currentID);
@@ -136,6 +137,7 @@ public class ServerThread extends Thread {
             updateLog(currentUser, "群消息的接收者为：" + targetIDs);
             for (int id : targetIDs) {
                 if (id == currentID) continue;
+                updateLog(currentUser, "sending to " + id + "...");
                 Socket targetSocket = socketMap.get(id);
                 sendMsg(targetSocket, msg);
             }
@@ -151,14 +153,14 @@ public class ServerThread extends Thread {
             manager.storeMessage(msg);
         } else {
             Data data = new Data(msg);
-            data.setOperateType("MESSAGE");
+            data.setOperateType(Data.SEND_MESSAGE);
             IODealer.send(socket, data, false);
         }
     }
 
     private Data makeFriend(Data message) throws SQLException, IOException {
         Data data = manager.makeFriend(message.name, message.operatorInfo.getID());
-        Socket socket = socketMap.get(data.name);
+        Socket socket = socketMap.get(data.ID);
         if (data.ID != -1 && socket != null) {
             Data data1 = new Data(message.operatorInfo);
             data1.setOperateType(Data.ADD_FRIEND);
@@ -209,10 +211,15 @@ public class ServerThread extends Thread {
         if (data.ID != -1) {
             data.setOperateType(Data.JOIN_GROUP);
             ArrayList<Integer> members = (ArrayList<Integer>) manager.getMembers(data.ID, true);
+            updateLog(info.operatorInfo.getName(), "当前群成员" + members);
             for (int id : members) {
+                if(id == info.operatorInfo.getID()) continue;
                 Socket socket = socketMap.get(id);
                 if (socket != null) {
-                    IODealer.send(socket, data, false);
+                    Data data1 = new Data(data.ID);
+                    data1.operatorInfo = info.operatorInfo;
+                    data1.setOperateType(Data.JOIN_GROUP);
+                    IODealer.send(socket, data1, false);
                 }
             }
         }

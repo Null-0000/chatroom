@@ -55,7 +55,7 @@ public abstract class Dialog implements Serializable {
                         "/" + toDirName + "/images");
                 Date imgDate = new Date();
                 String imgSuffix = "." + message.ctype.replaceAll(".*/", "");
-                File imgFile = new File(imgDir.getPath() + "/img" + imgDate.getTime() + imgSuffix);
+                File imgFile = new File(imgDir.getPath() + "/imags" + imgDate.getTime() + imgSuffix);
                 message.setUrl(".." + imgFile.getPath().replaceAll(".*?client", "").replaceAll("\\\\", "/"));
                 try {
                     imgFile.createNewFile();
@@ -72,7 +72,7 @@ public abstract class Dialog implements Serializable {
                         "/" + toDirName + "/audios");
                 Date audDate = new Date();
                 String audSuffix = "." + message.ctype.replaceAll(".*/", "");
-                File audFile = new File(audDir.getPath() + "/aud" + audDate.getTime() + audSuffix);
+                File audFile = new File(audDir.getPath() + "/audios" + audDate.getTime() + audSuffix);
                 message.setUrl(".." + audFile.getPath().replaceAll(".*?client", "").replaceAll("\\\\", "/"));
                 try {
                     audFile.createNewFile();

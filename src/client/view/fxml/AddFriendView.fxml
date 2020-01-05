@@ -5,37 +5,43 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Text?>
-<GridPane
+<?import java.lang.String?>
+<AnchorPane
         stylesheets="@../css/SuperView.css"
         xmlns="http://javafx.com/javafx"
         xmlns:fx="http://javafx.com/fxml"
         fx:controller="client.controller.AddFriendViewController"
-        prefHeight="300.0" prefWidth="600.0"
-        alignment="CENTER" hgap="10" vgap="10">
-    <padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
-    <TabPane>
+        prefHeight="100" prefWidth="350">
+    <TabPane AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+    tabClosingPolicy="UNAVAILABLE">
         <Tab text="search user">
-            <GridPane>
-                <Text fx:id="AddFriendTitle" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2" styleClass="font-title">Make new friends here</Text>
-                <Label GridPane.columnIndex="0" GridPane.rowIndex="1">your friend's name</Label>
-                <TextField fx:id="friendNameField" GridPane.columnIndex="1" GridPane.rowIndex="1" onAction="#keyAction" promptText="请输入好友的昵称"></TextField>
-
-                <HBox GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="BOTTOM_RIGHT" spacing="10">
-                    <Button onAction="#SearchButtonAction" styleClass="btn-basic:hover,btn-radius-large">Search</Button>
-                </HBox>
-            </GridPane>
+            <HBox spacing="5" alignment="CENTER">
+                <Label>昵称</Label>
+                <TextField fx:id="friendNameField" onAction="#keyAction" promptText="请输入好友的昵称"></TextField>
+                <Button onAction="#SearchButtonAction"
+                        styleClass="btn-basic:hover,btn-radius-large" text="Search">
+                    <styleClass>
+                        <String fx:value="btn-basic:hover" />
+                        <String fx:value="btn-radius-large" />
+                        <String fx:value="warm-theme" />
+                    </styleClass>
+                </Button>
+            </HBox>
         </Tab>
         <Tab text="search group">
-            <GridPane>
-                <Text fx:id="searchGroupTitle" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2" styleClass="font-title">Make new friends here</Text>
-                <Label GridPane.columnIndex="0" GridPane.rowIndex="1">your friend's name</Label>
-                <TextField fx:id="groupNameField" GridPane.columnIndex="1" GridPane.rowIndex="1" onAction="#keyAction" promptText="请输入群名称"></TextField>
-
-                <HBox GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="BOTTOM_RIGHT" spacing="10">
-                    <Button onAction="#searchGroupButtonAction" styleClass="btn-basic:hover,btn-radius-large">Search</Button>
-                </HBox>
-            </GridPane>
+            <HBox spacing="5" alignment="CENTER">
+                <Label>群名</Label>
+                <TextField fx:id="groupNameField" onAction="#keyAction" promptText="请输入群名"></TextField>
+                <Button onAction="#searchGroupButtonAction"
+                        styleClass="btn-basic:hover,btn-radius-large" text="Search">
+                    <styleClass>
+                        <String fx:value="btn-basic:hover" />
+                        <String fx:value="btn-radius-large" />
+                        <String fx:value="warm-theme" />
+                    </styleClass>
+                </Button>
+            </HBox>
         </Tab>
     </TabPane>
 
-</GridPane>
+</AnchorPane>

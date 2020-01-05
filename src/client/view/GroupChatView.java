@@ -18,6 +18,7 @@ import kit.UserInfo;
 import java.io.IOException;
 
 public class GroupChatView extends ChatView {
+    private ListView<String> membersView;
     public GroupChatView(GroupInfo groupInfo, ListProperty<Message> messageList) throws IOException {
         super(groupInfo, messageList);
 
@@ -25,12 +26,11 @@ public class GroupChatView extends ChatView {
         Label label = new Label();
         label.setText("群成员");
 
-        ListView<String> membersView = new ListView<>();
+        membersView = new ListView<>();
         for (UserInfo info: groupInfo.getMembers()){
             membersView.getItems().add(info.getName());
         }
         membersView.setVisible(false);
-        membersView.setManaged(false);
         membersView.setPrefWidth(400);
 
         vBox.getChildren().addAll(label, membersView);
@@ -55,6 +55,10 @@ public class GroupChatView extends ChatView {
                 MainView.clearGroupListSelection();
             });
         });
+    }
+
+    public ListView<String> getMembersView() {
+        return membersView;
     }
 
 }

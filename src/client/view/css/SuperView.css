@@ -9,13 +9,6 @@
     -fx-font-fill:#818181;
     -fx-effect:innershadow(three-pass-box, rgba(255,0,0,0.7), 6,0.0,0,2);
 }
-#AddFriendTitle {
-    -fx-font-size:35px;
-    -fx-font-family:"Comic Sans MS";
-    -fx-font-weight:bold;
-    -fx-font-fill:#818181;
-    -fx-effect:innershadow(three-pass-box, rgba(255,0,0,0.7), 6,0.0,0,2);
-}
 #registerTitle {
     -fx-font-family:"Comic Sans MS";
     -fx-font-weight:bold;
@@ -27,6 +20,13 @@
     -fx-font-fill:#333333;
     -fx-effect:dropshadow(gaussian,rgba(255,255,255,0.5),0,0,0,1);
 }
+.hBox {
+   -fx-border-color: black;
+   -fx-border-width: 1px;
+   -fx-border-style: dotted;
+   -fx-border-radius: 0%;
+}
+
 /*按钮基础样式*/
 .btn-basic {
    /*文本对齐方式*/
@@ -48,6 +48,7 @@
    /*透明度*/
    -fx-opacity: 0.8;
 }
+
 
 /*边框正常弧度按钮*/
 .btn-radius-normal {

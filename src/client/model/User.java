@@ -33,6 +33,8 @@ public class User {
         manager = new DialogManager(u.ID);
         this.friends = new SimpleMapProperty<>(FXCollections.observableHashMap());
 
+        System.out.println("This is " + u.name);
+
         for (UserInfo userInfo : (List<UserInfo>)u.listA) {
             Friend friend = new Friend(userInfo);
             friends.putIfAbsent(userInfo.getID(), friend);
@@ -120,7 +122,7 @@ public class User {
     public void sendMessage(Message message) throws Exception {
         Info receiver = message.receiver;
         Data data = new Data(message);
-        data.setOperateType("sendMessage");
+        data.setOperateType(Data.SEND_MESSAGE);
         if (message.isMass) {
             groups.get(receiver.getID()).getGroupDialog().updateMessage(message);
         }

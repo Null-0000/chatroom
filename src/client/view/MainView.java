@@ -13,33 +13,36 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import kit.UserInfo;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class MainView extends Stage {
     private static ListView<UserCard> friendListView;
     private static ListView<UserCard> groupListView;
+    private static GridPane userInfoGridPane;
 
     public MainView(User user) throws IOException {
 
         SplitPane root= FXMLLoader.load(this.getClass().getResource(Resource.MainViewResource));
 
         ObservableList items = root.getItems();
-        GridPane userInfoGridPane = (GridPane) items.get(0);
+        userInfoGridPane = (GridPane) items.get(0);
         TabPane tabPane = (TabPane) items.get(1);
         ObservableList tabs = tabPane.getTabs();
         ((Tab)tabs.get(0)).getContent().lookup("#friendListView");
 
-        ((Label)userInfoGridPane.getChildren().get(5)).setText(String.valueOf(user.getID()));
-        ((Label)userInfoGridPane.getChildren().get(5)).setTooltip(new Tooltip(String.valueOf(user.getID())));
+        ((Label)userInfoGridPane.getChildren().get(4)).setText(String.valueOf(user.getID()));
+        ((Label)userInfoGridPane.getChildren().get(4)).setTooltip(new Tooltip(String.valueOf(user.getID())));
 
-        ((Label)userInfoGridPane.getChildren().get(4)).setText(user.getName());
-        ((Label)userInfoGridPane.getChildren().get(4)).setTooltip(new Tooltip(user.getName()));
+        ((Label)userInfoGridPane.getChildren().get(3)).setText(user.getName());
+        ((Label)userInfoGridPane.getChildren().get(3)).setTooltip(new Tooltip(user.getName()));
 
-        ((Label)userInfoGridPane.getChildren().get(7)).setText(user.getSignature());
-        ((Label)userInfoGridPane.getChildren().get(7)).setTooltip(new Tooltip(user.getSignature()));
+        ((Label)userInfoGridPane.getChildren().get(6)).setText(user.getSignature());
+        ((Label)userInfoGridPane.getChildren().get(6)).setTooltip(new Tooltip(user.getSignature()));
 
         File userIcon = new File("out/production/chatroom/client/data/M" + user.getID() + "/icon.png");
 
@@ -63,6 +66,16 @@ public class MainView extends Stage {
         });
         setTitle("chat");
         getIcons().add(new Image(String.valueOf(this.getClass().getResource("images/AppIcon.png"))));
+    }
+
+    public static void reloadInfo() throws FileNotFoundException {
+        UserInfo info = User.getInstance().getUserInfo();
+        ((Label)userInfoGridPane.getChildren().get(4)).setText(String.valueOf(info.getID()));
+        ((Label)userInfoGridPane.getChildren().get(3)).setText(info.getName());
+        ((Label)userInfoGridPane.getChildren().get(6)).setText(info.getSig());
+        File userIcon = new File("out/production/chatroom/client/data/M" + info.getID() + "/icon.png");
+        ((ImageView)userInfoGridPane.getChildren().get(0)).setImage(new Image(new FileInputStream(userIcon)));
+
     }
 
     public static void clearFriendListSelection(){

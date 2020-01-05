@@ -30,8 +30,6 @@
                        text="my name:" GridPane.columnIndex="2" GridPane.columnSpan="2"/>
                 <Label fx:id="idLabel" alignment="CENTER" prefHeight="44.0" prefWidth="54.0" text="my id:"
                        GridPane.columnIndex="2" GridPane.rowIndex="1"/>
-                <Button fx:id="modifyButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false"
-                        prefHeight="23.0" prefWidth="61.0" text="modify" GridPane.rowIndex="3"/>
                 <Label fx:id="userName" alignment="CENTER" contentDisplay="CENTER" prefHeight="46.0" prefWidth="58.0"
                        text="name" GridPane.columnIndex="3"/>
                 <Label fx:id="userID" alignment="CENTER" contentDisplay="CENTER" prefHeight="45.0" prefWidth="59.0"

@@ -2,6 +2,7 @@ package client.view;
 
 import client.launcher.Resource;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
@@ -12,7 +13,7 @@ import java.io.IOException;
 
 public class AddFriendView extends Stage {
     public AddFriendView() throws IOException {
-        GridPane root = FXMLLoader.load(this.getClass().getResource(Resource.AddFriendViewResource));
+        Parent root = FXMLLoader.load(this.getClass().getResource(Resource.AddFriendViewResource));
 
         this.setTitle("Add New Friend");
 
@@ -20,7 +21,7 @@ public class AddFriendView extends Stage {
             root.requestFocus();
         });
 
-        this.setScene(new Scene(root, 600, 300));
+        this.setScene(new Scene(root));
         setResizable(false);
         getIcons().add(new Image(String.valueOf(this.getClass().getResource("images/AppIcon.png"))));
     }

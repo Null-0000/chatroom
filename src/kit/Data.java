@@ -16,6 +16,7 @@ public class Data implements Serializable {
     public static final String JOIN_GROUP = "joinInAGroup";
     public static final String GET_GROUP_MEM = "getGroupMemberList";
     public static final String MODIFY = "modify";
+    public static final String SEND_MESSAGE = "sendMessage";
 
     private String operateType;
 

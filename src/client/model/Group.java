@@ -1,6 +1,8 @@
 package client.model;
 
+import client.view.GroupChatView;
 import kit.GroupInfo;
+import kit.UserInfo;
 
 import java.io.IOException;
 
@@ -31,4 +33,9 @@ public class Group {
     public GroupInfo getGroupInfo() {return groupInfo;}
 
     public GroupDialog getGroupDialog() {return groupDialog;}
+
+    public void addMember(UserInfo info) {
+        groupInfo.getMembers().add(info);
+        ((GroupChatView) groupDialog.getChatView()).getMembersView().getItems().add(info.getName());
+    }
 }

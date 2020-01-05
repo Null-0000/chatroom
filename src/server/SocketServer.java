@@ -23,11 +23,9 @@ class SocketServer {
         Platform.runLater(() -> {
             ServerLauncher.update(ServerLauncher.MAIN, "-------Server Running--------");
         });
-        System.out.println("");
         while (true){
             Socket socket = server.accept();
             ServerThread thread = new ServerThread(socket, manager, socketMap);
-            System.out.println("-----收到请求，线程" + (++count) + "正在运行-----");
             count ++;
             int finalCount = count;
             Platform.runLater(() -> {

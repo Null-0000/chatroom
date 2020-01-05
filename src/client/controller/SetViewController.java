@@ -2,6 +2,7 @@ package client.controller;
 
 import client.model.MFileChooser;
 import client.model.User;
+import client.view.MainView;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -43,8 +44,8 @@ public class SetViewController implements Initializable {
             e.printStackTrace();
         }
         userID.setText("" + userInfo.getID());
-        userName.setPromptText(userInfo.getName());
-        userSig.setPromptText(userInfo.getSig());
+        userName.setText(userInfo.getName());
+        userSig.setText(userInfo.getSig());
     }
 
     @FXML
@@ -69,5 +70,7 @@ public class SetViewController implements Initializable {
         data.setOperateType(Data.MODIFY);
 
         Connector.getInstance().modifyInfo(data);
+
+        MainView.reloadInfo();
     }
 }
