@@ -10,7 +10,7 @@
         stylesheets="@../css/SuperView.css"
         xmlns="http://javafx.com/javafx"
         xmlns:fx="http://javafx.com/fxml"
-        fx:controller="client.controller.AddFriendViewController"
+        fx:controller="client.controller.SearchViewController"
         prefHeight="100" prefWidth="350">
     <TabPane AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
     tabClosingPolicy="UNAVAILABLE">

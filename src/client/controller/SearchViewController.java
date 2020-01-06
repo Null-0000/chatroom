@@ -11,7 +11,7 @@ import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
 
-public class AddFriendViewController {
+public class SearchViewController {
     @FXML private GridPane root;
     @FXML private TextField friendNameField;
     @FXML private TextField groupNameField;

@@ -11,8 +11,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class AddFriendView extends Stage {
-    public AddFriendView() throws IOException {
+public class SearchView extends Stage {
+    public SearchView() throws IOException {
         Parent root = FXMLLoader.load(this.getClass().getResource(Resource.AddFriendViewResource));
 
         this.setTitle("Add New Friend");

@@ -2,7 +2,7 @@ package client.controller;
 
 import client.launcher.Resource;
 import client.model.*;
-import client.view.AddFriendView;
+import client.view.SearchView;
 import client.view.StageM;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -27,7 +27,7 @@ public class MainViewController implements Initializable {
     @FXML private Button settingsButton;
 
     @FXML private void addFriend() throws IOException {
-        StageM.getManager().resetStage(Resource.AddFriendViewID, new AddFriendView());
+        StageM.getManager().resetStage(Resource.AddFriendViewID, new SearchView());
         StageM.getManager().show(Resource.AddFriendViewID);
     }
     @FXML private void createGroup() throws IOException {
