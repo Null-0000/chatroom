@@ -1,4 +1,13 @@
-#1. 实现的功能:       
+#1. 环境： 
+   - jdk 11+
+   - javafx 11+
+#2. 导入工具
+   - [SnuggleTex](https://www2.ph.ed.ac.uk/snuggletex/documentation/generating-content-mathml.html)
+   - [阿里巴巴矢量图标库](https://www.iconfont.cn/)
+   - [Apache Commons Lang](https://commons.apache.org/proper/commons-lang/)
+#3. 存储目录
+   - out/production/chatroom/client/data/M+(用户的ID)
+#4. 实现的功能:       
 - ##注册
      用户名，密码，签名（可空），图片  
 - ##登录：  
@@ -41,10 +50,10 @@
                 </div>
             ```
 - 群聊
-#2.项目结构:
+#5.项目结构:
    - [程序文件结构](file:///D:/IdeaProjects/chatroom/src/list.txt)
    - [数据库结构]()
-#3.关键class的功能描述：
+#6.关键class的功能描述：
    - 客户端：
         - model 
             - User
@@ -77,7 +86,7 @@
         - ServerLauncher
         
        
-#3.基本实现原理：
+#7.基本实现原理：
    - 服务器负责处理用户的请求或传递用户的信息，而不会主动向用户发送数据
    - 所有操作都是由客户端向服务器发送请求得到结果反馈实现
    - 注册
@@ -93,7 +102,7 @@
    - 建群，加群，加好友
    - 将消息记录保存到本地
    
-#4.project难点：
+#8.project难点：
    - 图形界面有关的类与其他类关系较复杂，如好友列表的实时更新和储存，在本地储存过程中，需要将一些ListProperty等javafx有关的组件序列化
    - 客户端与服务器通信的协议，由于发送的内容更加复杂，发送协议和发送方式经过了多次较大的修改
    - 实现的功能较多，细节繁杂，导致代码量较大 大约有 3600+ 行 （不含fxml，css等其他文件）
