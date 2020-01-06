@@ -15,8 +15,8 @@ import java.util.Scanner;
 public class UserDataBaseManager {
     private final String driver = "com.mysql.cj.jdbc.Driver";
     private final String url = "jdbc:mysql://localhost:3306/chat_room?serverTimezone=Asia/Shanghai";
-    private final String user = "root";
-    private final String pass = "123456";
+    private final String user = "henry";
+    private final String pass = "mxylfbcz4321";
     private Connection conn;
 
     public UserDataBaseManager() throws ClassNotFoundException, SQLException {

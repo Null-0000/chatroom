@@ -55,7 +55,7 @@ public class ChatViewController implements Initializable {
     @FXML
     private TextArea typeArea;
     @FXML
-    private TilePane emojiView;
+    private ScrollPane emojiView;
     @FXML
     private ToggleButton emojiControl;
     @FXML
@@ -181,13 +181,23 @@ public class ChatViewController implements Initializable {
         });
         typeArea.setFont(EMOJI_FONT);
 
-        for (int i = 0x1F600; i < 0x1F644; i++) {
+        TilePane tilePane = (TilePane) emojiView.getContent().lookup("#emojis");
+        for (int i = 0x1F600; i < 128723; i++) {
             Label label = new Label(Character.toString(i));
             label.setFont(EMOJI_FONT);
             label.setOnMouseClicked((e) -> {
                 typeArea.setText(typeArea.getText() + label.getText());
             });
-            emojiView.getChildren().add(label);
+            tilePane.getChildren().add(label);
+            //将unicode编码为0x1F600到0x1F644的所有emoji写到一个个的Label上
+        }
+        for (int i = 128735; i < 128762; i++) {
+            Label label = new Label(Character.toString(i));
+            label.setFont(EMOJI_FONT);
+            label.setOnMouseClicked((e) -> {
+                typeArea.setText(typeArea.getText() + label.getText());
+            });
+            tilePane.getChildren().add(label);
             //将unicode编码为0x1F600到0x1F644的所有emoji写到一个个的Label上
         }
 

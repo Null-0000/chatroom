@@ -45,9 +45,7 @@ public class GroupChatView extends ChatView {
         ((ToolBar) root.getChildren().get(2)).getItems().add(memberBut);
         memberBut.selectedProperty().addListener((obs, ov, nv) -> {
             membersView.setVisible(nv);
-            membersView.setManaged(nv);
             vBox.setVisible(nv);
-            vBox.setManaged(nv);
         });
 
         setOnCloseRequest((e)->{

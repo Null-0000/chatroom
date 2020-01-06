@@ -31,8 +31,12 @@
     </HBox>
     <WebView fx:id="show" prefWidth="400" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.rowSpan="5"
              visible="false" managed="false"></WebView>
-    <TilePane fx:id="emojiView" vgap="5" hgap="5" prefWidth="400" GridPane.columnIndex="1" GridPane.rowIndex="0"
-              GridPane.rowSpan="5" visible="false" managed="false"></TilePane>
+    <ScrollPane fx:id="emojiView" prefWidth="400" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                GridPane.rowSpan="5" visible="false">
+        <content>
+        <TilePane fx:id="emojis" vgap="5" hgap="5" prefWidth="180"></TilePane>
+        </content>
+    </ScrollPane>
     <stylesheets>
         <URL value="@../css/ChatView.css"></URL>
     </stylesheets>
